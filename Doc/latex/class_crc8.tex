@@ -1,0 +1,59 @@
+\hypertarget{class_crc8}{}\doxysection{Класс Crc8}
+\label{class_crc8}\index{Crc8@{Crc8}}
+\doxysubsection*{Открытые статические члены}
+\begin{DoxyCompactItemize}
+\item 
+static uint8\+\_\+t \mbox{\hyperlink{class_crc8_abad336904c239ef4eb58ae536147f41b}{calculate}} (const void $\ast$a\+Data, size\+\_\+t a\+Length)
+\begin{DoxyCompactList}\small\item\em Рассчитывает C\+R\+C8 для буфера \end{DoxyCompactList}\item 
+static uint8\+\_\+t \mbox{\hyperlink{class_crc8_a3e531638c451272663a282bfcbb6634c}{update}} (uint8\+\_\+t a\+Checksum, const void $\ast$a\+Buffer, size\+\_\+t a\+Length)
+\begin{DoxyCompactList}\small\item\em Функция для расчета C\+R\+C8 для принимаемых сообщений \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Методы}
+\mbox{\Hypertarget{class_crc8_abad336904c239ef4eb58ae536147f41b}\label{class_crc8_abad336904c239ef4eb58ae536147f41b}} 
+\index{Crc8@{Crc8}!calculate@{calculate}}
+\index{calculate@{calculate}!Crc8@{Crc8}}
+\doxysubsubsection{\texorpdfstring{calculate()}{calculate()}}
+{\footnotesize\ttfamily static uint8\+\_\+t Crc8\+::calculate (\begin{DoxyParamCaption}\item[{const void $\ast$}]{a\+Data,  }\item[{size\+\_\+t}]{a\+Length }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Рассчитывает C\+R\+C8 для буфера 
+
+
+\begin{DoxyParams}{Аргументы}
+{\em a\+Data} & -\/ указатель на буффер с данными \\
+\hline
+{\em a\+Length} & -\/ длина буффера с данными \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Возвращает}
+Рассчитанный C\+R\+C8 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_crc8_a3e531638c451272663a282bfcbb6634c}\label{class_crc8_a3e531638c451272663a282bfcbb6634c}} 
+\index{Crc8@{Crc8}!update@{update}}
+\index{update@{update}!Crc8@{Crc8}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily static uint8\+\_\+t Crc8\+::update (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{a\+Checksum,  }\item[{const void $\ast$}]{a\+Buffer,  }\item[{size\+\_\+t}]{a\+Length }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Функция для расчета C\+R\+C8 для принимаемых сообщений 
+
+
+\begin{DoxyParams}{Аргументы}
+{\em a\+Checksum} & -\/ текущая контрольная сумма \\
+\hline
+{\em a\+Buffer} & -\/ указатель на буффер с данными \\
+\hline
+{\em a\+Length} & -\/ размер буффера \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Возвращает}
+Рассчитанный C\+R\+C8 
+\end{DoxyReturn}
+
+
+Объявления и описания членов класса находятся в файле\+:\begin{DoxyCompactItemize}
+\item 
+Lib/\mbox{\hyperlink{_crc8_8hpp}{Crc8.\+hpp}}\end{DoxyCompactItemize}

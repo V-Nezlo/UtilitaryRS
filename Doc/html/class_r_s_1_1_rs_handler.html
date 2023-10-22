@@ -1,0 +1,614 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta name="generator" content="Doxygen 1.8.17"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>UtilitaryRS: Шаблон класса RS::RsHandler&lt; Interface, Crc, ParserSize &gt;</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  <td id="projectalign" style="padding-left: 0.5em;">
+   <div id="projectname">UtilitaryRS
+   &#160;<span id="projectnumber">1.0</span>
+   </div>
+   <div id="projectbrief">Handy protocol for RS485</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Создано системой Doxygen 1.8.17 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+var searchBox = new SearchBox("searchBox", "search",false,'Поиск');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+$(function() {
+  initMenu('',true,false,'search.php','Поиск');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><b>RS</b></li><li class="navelem"><a class="el" href="class_r_s_1_1_rs_handler.html">RsHandler</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Открытые члены</a> &#124;
+<a href="#pro-methods">Защищенные члены</a> &#124;
+<a href="class_r_s_1_1_rs_handler-members.html">Полный список членов класса</a>  </div>
+  <div class="headertitle">
+<div class="title">Шаблон класса RS::RsHandler&lt; Interface, Crc, ParserSize &gt;<span class="mlabels"><span class="mlabel">abstract</span></span></div>  </div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
+Открытые члены</h2></td></tr>
+<tr class="memitem:a32b489e8eec82c932a2c0e7a33df5413"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_r_s_1_1_rs_handler.html#a32b489e8eec82c932a2c0e7a33df5413">RsHandler</a> (Interface &amp;aInterface, uint8_t aNodeUID)</td></tr>
+<tr class="memdesc:a32b489e8eec82c932a2c0e7a33df5413"><td class="mdescLeft">&#160;</td><td class="mdescRight">Конструктор класса <a class="el" href="class_r_s_1_1_rs_handler.html">RsHandler</a>.  <a href="class_r_s_1_1_rs_handler.html#a32b489e8eec82c932a2c0e7a33df5413">Подробнее...</a><br /></td></tr>
+<tr class="separator:a32b489e8eec82c932a2c0e7a33df5413"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab0933a026a5006f72f269259c5b79d17"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_r_s_1_1_rs_handler.html#ab0933a026a5006f72f269259c5b79d17">update</a> (uint8_t *aData, size_t aLength)</td></tr>
+<tr class="memdesc:ab0933a026a5006f72f269259c5b79d17"><td class="mdescLeft">&#160;</td><td class="mdescRight">Основная функция, прокидывающая получаемые байты в парсер и отправляющие в протокольный обработчик  <a href="class_r_s_1_1_rs_handler.html#ab0933a026a5006f72f269259c5b79d17">Подробнее...</a><br /></td></tr>
+<tr class="separator:ab0933a026a5006f72f269259c5b79d17"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
+Защищенные члены</h2></td></tr>
+<tr class="memitem:a7d2bcc9a80bd636838218c5834ea7d21"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_r_s_1_1_rs_handler.html#a7d2bcc9a80bd636838218c5834ea7d21">sendCommand</a> (uint8_t aReceiverUID, uint8_t aCommand, uint8_t aArgument)</td></tr>
+<tr class="memdesc:a7d2bcc9a80bd636838218c5834ea7d21"><td class="mdescLeft">&#160;</td><td class="mdescRight">Функция для отправки команды от текущей ноды  <a href="class_r_s_1_1_rs_handler.html#a7d2bcc9a80bd636838218c5834ea7d21">Подробнее...</a><br /></td></tr>
+<tr class="separator:a7d2bcc9a80bd636838218c5834ea7d21"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f6c1ef7ea4c9b7ff5060b5d0f96cfa8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_r_s_1_1_rs_handler.html#a5f6c1ef7ea4c9b7ff5060b5d0f96cfa8">sendRequest</a> (uint8_t aReceiverUID, uint8_t aRequest, uint8_t aDataSize)</td></tr>
+<tr class="memdesc:a5f6c1ef7ea4c9b7ff5060b5d0f96cfa8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Функция для отправки запроса на получение данных  <a href="class_r_s_1_1_rs_handler.html#a5f6c1ef7ea4c9b7ff5060b5d0f96cfa8">Подробнее...</a><br /></td></tr>
+<tr class="separator:a5f6c1ef7ea4c9b7ff5060b5d0f96cfa8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a15bf3bb58205a46b384d65b4de0c142b"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_r_s_1_1_rs_handler.html#a15bf3bb58205a46b384d65b4de0c142b">processRequest</a> (uint8_t aTransmitUID, uint8_t aRequest, uint8_t aRequestedDataSize)=0</td></tr>
+<tr class="memdesc:a15bf3bb58205a46b384d65b4de0c142b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Функция обработки запроса, реализуется на стороне клиента, внутри функции собираются и отправляются данные запрашиваемому Если нужно ответить на запрос то необходимо вызывать функцию sendAnswer внутри этой функции и вернуть true, иначе просто вернуть false, будет отправлен Ack с ошибкой запроса  <a href="class_r_s_1_1_rs_handler.html#a15bf3bb58205a46b384d65b4de0c142b">Подробнее...</a><br /></td></tr>
+<tr class="separator:a15bf3bb58205a46b384d65b4de0c142b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7bd8f234aa16a15ea8f29a6436220052"><td class="memItemLeft" align="right" valign="top">virtual uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_r_s_1_1_rs_handler.html#a7bd8f234aa16a15ea8f29a6436220052">handleCommand</a> (uint8_t aCommand, uint8_t aArgument)=0</td></tr>
+<tr class="memdesc:a7bd8f234aa16a15ea8f29a6436220052"><td class="mdescLeft">&#160;</td><td class="mdescRight">Функция обработки команд. возвращает статус, который затем автоматически отправляется как Code в Ack сообщении отправителю команды  <a href="class_r_s_1_1_rs_handler.html#a7bd8f234aa16a15ea8f29a6436220052">Подробнее...</a><br /></td></tr>
+<tr class="separator:a7bd8f234aa16a15ea8f29a6436220052"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac762953e0ed036081311aa883df38f1a"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_r_s_1_1_rs_handler.html#ac762953e0ed036081311aa883df38f1a">handleAck</a> (uint8_t aReturnCode)=0</td></tr>
+<tr class="memdesc:ac762953e0ed036081311aa883df38f1a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Функция обработки ответа, можно использовать как индикатор того что адресат вообще жив  <a href="class_r_s_1_1_rs_handler.html#ac762953e0ed036081311aa883df38f1a">Подробнее...</a><br /></td></tr>
+<tr class="separator:ac762953e0ed036081311aa883df38f1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a82d52fb1518e4fd15e9204f57907e18e"><td class="memItemLeft" align="right" valign="top">virtual uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_r_s_1_1_rs_handler.html#a82d52fb1518e4fd15e9204f57907e18e">handleAnswer</a> (uint8_t aRequest, const uint8_t *aData, uint8_t aLength)=0</td></tr>
+<tr class="memdesc:a82d52fb1518e4fd15e9204f57907e18e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Функция обработки ответа  <a href="class_r_s_1_1_rs_handler.html#a82d52fb1518e4fd15e9204f57907e18e">Подробнее...</a><br /></td></tr>
+<tr class="separator:a82d52fb1518e4fd15e9204f57907e18e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29ae134ad96c7a9b3e537bd971f33715"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_r_s_1_1_rs_handler.html#a29ae134ad96c7a9b3e537bd971f33715">sendAnswer</a> (uint8_t aReceiverUID, uint8_t aRequest, uint8_t aRequestedDataSize, void *aData, uint8_t aSize)</td></tr>
+<tr class="memdesc:a29ae134ad96c7a9b3e537bd971f33715"><td class="mdescLeft">&#160;</td><td class="mdescRight">Функция, которая отправляет ответ, собранный в функции processRequest.  <a href="class_r_s_1_1_rs_handler.html#a29ae134ad96c7a9b3e537bd971f33715">Подробнее...</a><br /></td></tr>
+<tr class="separator:a29ae134ad96c7a9b3e537bd971f33715"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">Конструктор(ы)</h2>
+<a id="a32b489e8eec82c932a2c0e7a33df5413"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a32b489e8eec82c932a2c0e7a33df5413">&#9670;&nbsp;</a></span>RsHandler()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class Interface , typename Crc , size_t ParserSize&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_r_s_1_1_rs_handler.html">RS::RsHandler</a>&lt; Interface, Crc, ParserSize &gt;::<a class="el" href="class_r_s_1_1_rs_handler.html">RsHandler</a> </td>
+          <td>(</td>
+          <td class="paramtype">Interface &amp;&#160;</td>
+          <td class="paramname"><em>aInterface</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>aNodeUID</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Конструктор класса <a class="el" href="class_r_s_1_1_rs_handler.html">RsHandler</a>. </p>
+<dl class="params"><dt>Аргументы</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">aInterface</td><td>- ссылка на экземпляр типа Interface, заданного шаблоном </td></tr>
+    <tr><td class="paramname">aNodeUID</td><td>- номер данной ноды (от 0 до 255) </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<h2 class="groupheader">Методы</h2>
+<a id="ac762953e0ed036081311aa883df38f1a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac762953e0ed036081311aa883df38f1a">&#9670;&nbsp;</a></span>handleAck()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class Interface , typename Crc , size_t ParserSize&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void <a class="el" href="class_r_s_1_1_rs_handler.html">RS::RsHandler</a>&lt; Interface, Crc, ParserSize &gt;::handleAck </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>aReturnCode</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Функция обработки ответа, можно использовать как индикатор того что адресат вообще жив </p>
+<dl class="params"><dt>Аргументы</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">aReturnCode</td><td>- код возврата, который пришел с Ack</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>Пример реализации: </p><div class="fragment"><div class="line"><span class="keywordflow">if</span> (aReturnCode == 0) {</div>
+<div class="line">    showError();</div>
+<div class="line">} <span class="keywordflow">else</span> <span class="keywordflow">if</span> (aReturnCode == 1) {</div>
+<div class="line">    showSuccess();</div>
+<div class="line">}</div>
+</div><!-- fragment --> 
+</div>
+</div>
+<a id="a82d52fb1518e4fd15e9204f57907e18e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a82d52fb1518e4fd15e9204f57907e18e">&#9670;&nbsp;</a></span>handleAnswer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class Interface , typename Crc , size_t ParserSize&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual uint8_t <a class="el" href="class_r_s_1_1_rs_handler.html">RS::RsHandler</a>&lt; Interface, Crc, ParserSize &gt;::handleAnswer </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>aRequest</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint8_t *&#160;</td>
+          <td class="paramname"><em>aData</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>aLength</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Функция обработки ответа </p>
+<dl class="params"><dt>Аргументы</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">aRequest</td><td>- номер запроса </td></tr>
+    <tr><td class="paramname">aData</td><td>- указатель на данные ответа </td></tr>
+    <tr><td class="paramname">aLength</td><td>- размер данных ответа </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Возвращает</dt><dd>статус обработки ответа</dd></dl>
+<p>Пример реализации: </p><div class="fragment"><div class="line"><span class="keywordflow">if</span> (aRequest == 1) {</div>
+<div class="line">    <span class="keywordtype">float</span> temperature = <span class="keyword">reinterpret_cast&lt;</span><span class="keywordtype">float</span> *<span class="keyword">&gt;</span>(aData);</div>
+<div class="line">    showTemperature(<span class="keywordtype">float</span>);</div>
+<div class="line">    <span class="keywordflow">return</span> 1; <span class="comment">// Ack вернется с успехом</span></div>
+<div class="line">} <span class="keywordflow">else</span> {</div>
+<div class="line">    <span class="keywordflow">return</span> 0; <span class="comment">// Ack вернется с ошибкой</span></div>
+<div class="line">}</div>
+</div><!-- fragment --> 
+</div>
+</div>
+<a id="a7bd8f234aa16a15ea8f29a6436220052"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7bd8f234aa16a15ea8f29a6436220052">&#9670;&nbsp;</a></span>handleCommand()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class Interface , typename Crc , size_t ParserSize&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual uint8_t <a class="el" href="class_r_s_1_1_rs_handler.html">RS::RsHandler</a>&lt; Interface, Crc, ParserSize &gt;::handleCommand </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>aCommand</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>aArgument</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Функция обработки команд. возвращает статус, который затем автоматически отправляется как Code в Ack сообщении отправителю команды </p>
+<dl class="params"><dt>Аргументы</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">aCommand</td><td>- номер команды </td></tr>
+    <tr><td class="paramname">aArgument</td><td>- аргумент команды </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Возвращает</dt><dd>статус выполнения команды</dd></dl>
+<p>Пример реализации: </p><div class="fragment"><div class="line"><span class="keywordflow">if</span> (aCommand == 1) {</div>
+<div class="line">    doDomething();</div>
+<div class="line">    <span class="keywordflow">return</span> ACK_SUCCESS; <span class="comment">// Клиентский энумератор для кодов возврата</span></div>
+<div class="line">} <span class="keywordflow">else</span> {</div>
+<div class="line">    <span class="keywordflow">return</span> 0;</div>
+<div class="line">}</div>
+</div><!-- fragment --> 
+</div>
+</div>
+<a id="a15bf3bb58205a46b384d65b4de0c142b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a15bf3bb58205a46b384d65b4de0c142b">&#9670;&nbsp;</a></span>processRequest()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class Interface , typename Crc , size_t ParserSize&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool <a class="el" href="class_r_s_1_1_rs_handler.html">RS::RsHandler</a>&lt; Interface, Crc, ParserSize &gt;::processRequest </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>aTransmitUID</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>aRequest</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>aRequestedDataSize</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Функция обработки запроса, реализуется на стороне клиента, внутри функции собираются и отправляются данные запрашиваемому Если нужно ответить на запрос то необходимо вызывать функцию sendAnswer внутри этой функции и вернуть true, иначе просто вернуть false, будет отправлен Ack с ошибкой запроса </p>
+<dl class="params"><dt>Аргументы</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">aTransmitUID</td><td>- UID получателя ответа на запрос </td></tr>
+    <tr><td class="paramname">aRequest</td><td>- номер запроса </td></tr>
+    <tr><td class="paramname">aRequestedDataSize</td><td>- размер отправляемых данных </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Возвращает</dt><dd>флаг, показывающий, будет ли обработан запрос</dd></dl>
+<p>Пример реализации: </p><div class="fragment"><div class="line"><span class="keywordflow">if</span> (aRequest == 2) {</div>
+<div class="line">    uint32_t data = 0xAABBCCDD;</div>
+<div class="line">    <span class="keywordflow">return</span> this-&gt;<a class="code" href="class_r_s_1_1_rs_handler.html#a29ae134ad96c7a9b3e537bd971f33715">sendAnswer</a>(aTransmitUID, aRequest, aRequestedDataSize, <span class="keyword">reinterpret_cast&lt;</span><span class="keywordtype">void</span> *<span class="keyword">&gt;</span>(&amp;data), <span class="keyword">sizeof</span>(data));</div>
+<div class="line">}</div>
+<div class="line"><span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+</div><!-- fragment --> 
+</div>
+</div>
+<a id="a29ae134ad96c7a9b3e537bd971f33715"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29ae134ad96c7a9b3e537bd971f33715">&#9670;&nbsp;</a></span>sendAnswer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class Interface , typename Crc , size_t ParserSize&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="class_r_s_1_1_rs_handler.html">RS::RsHandler</a>&lt; Interface, Crc, ParserSize &gt;::sendAnswer </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>aReceiverUID</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>aRequest</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>aRequestedDataSize</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>aData</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>aSize</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Функция, которая отправляет ответ, собранный в функции processRequest. </p>
+<dl class="params"><dt>Аргументы</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">aReceiverUID</td><td>- UID получателя ответа </td></tr>
+    <tr><td class="paramname">aRequest</td><td>- номер запроса </td></tr>
+    <tr><td class="paramname">aRequestedDataSize</td><td>- количество байт данных, которые были запрошены </td></tr>
+    <tr><td class="paramname">aData</td><td>- указатель на данные для отправки </td></tr>
+    <tr><td class="paramname">aSize</td><td>- размер данных для отправки </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Возвращает</dt><dd>в случае ошибки возвращает false, иначе - true </dd></dl>
+
+</div>
+</div>
+<a id="a7d2bcc9a80bd636838218c5834ea7d21"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d2bcc9a80bd636838218c5834ea7d21">&#9670;&nbsp;</a></span>sendCommand()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class Interface , typename Crc , size_t ParserSize&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="class_r_s_1_1_rs_handler.html">RS::RsHandler</a>&lt; Interface, Crc, ParserSize &gt;::sendCommand </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>aReceiverUID</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>aCommand</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>aArgument</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Функция для отправки команды от текущей ноды </p>
+<dl class="params"><dt>Аргументы</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">aReceiverUID</td><td>- UID получателя команды </td></tr>
+    <tr><td class="paramname">aCommand</td><td>- номер команды </td></tr>
+    <tr><td class="paramname">aArgument</td><td>- аргумент для команды (может быть незадействован) </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a5f6c1ef7ea4c9b7ff5060b5d0f96cfa8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f6c1ef7ea4c9b7ff5060b5d0f96cfa8">&#9670;&nbsp;</a></span>sendRequest()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class Interface , typename Crc , size_t ParserSize&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="class_r_s_1_1_rs_handler.html">RS::RsHandler</a>&lt; Interface, Crc, ParserSize &gt;::sendRequest </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>aReceiverUID</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>aRequest</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>aDataSize</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Функция для отправки запроса на получение данных </p>
+<dl class="params"><dt>Аргументы</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">aReceiverUID</td><td>- UID получателя запроса </td></tr>
+    <tr><td class="paramname">aRequest</td><td>- номер запроса </td></tr>
+    <tr><td class="paramname">aDataSize</td><td>- размер данных, которые данная нода будет ожидать в ответе </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ab0933a026a5006f72f269259c5b79d17"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab0933a026a5006f72f269259c5b79d17">&#9670;&nbsp;</a></span>update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class Interface , typename Crc , size_t ParserSize&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="class_r_s_1_1_rs_handler.html">RS::RsHandler</a>&lt; Interface, Crc, ParserSize &gt;::update </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t *&#160;</td>
+          <td class="paramname"><em>aData</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>aLength</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Основная функция, прокидывающая получаемые байты в парсер и отправляющие в протокольный обработчик </p>
+<dl class="params"><dt>Аргументы</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">aData</td><td>- указатель на валидные данные </td></tr>
+    <tr><td class="paramname">aLength</td><td>- размер валидных данных </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<hr/>Объявления и описания членов класса находятся в файле:<ul>
+<li>Lib/<a class="el" href="_rs_handler_8hpp_source.html">RsHandler.hpp</a></li>
+</ul>
+</div><!-- contents -->
+<div class="ttc" id="aclass_r_s_1_1_rs_handler_html_a29ae134ad96c7a9b3e537bd971f33715"><div class="ttname"><a href="class_r_s_1_1_rs_handler.html#a29ae134ad96c7a9b3e537bd971f33715">RS::RsHandler::sendAnswer</a></div><div class="ttdeci">bool sendAnswer(uint8_t aReceiverUID, uint8_t aRequest, uint8_t aRequestedDataSize, void *aData, uint8_t aSize)</div><div class="ttdoc">Функция, которая отправляет ответ, собранный в функции processRequest.</div><div class="ttdef"><b>Definition:</b> RsHandler.hpp:179</div></div>
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Создано системой &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.8.17
+</small></address>
+</body>
+</html>

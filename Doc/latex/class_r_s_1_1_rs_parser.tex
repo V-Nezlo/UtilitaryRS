@@ -1,0 +1,122 @@
+\hypertarget{class_r_s_1_1_rs_parser}{}\doxysection{Шаблон класса RS\+::Rs\+Parser$<$ Buffer\+Size, C\+RC $>$}
+\label{class_r_s_1_1_rs_parser}\index{RS::RsParser$<$ BufferSize, CRC $>$@{RS::RsParser$<$ BufferSize, CRC $>$}}
+\doxysubsection*{Открытые типы}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_r_s_1_1_rs_parser_ae3ae4dd6af6eee2654d210f0a8024c64}\label{class_r_s_1_1_rs_parser_ae3ae4dd6af6eee2654d210f0a8024c64}} 
+enum {\bfseries State} \{ \newline
+{\bfseries Idle}, 
+{\bfseries Header}, 
+{\bfseries Command}, 
+{\bfseries Request}, 
+\newline
+{\bfseries Answer}, 
+{\bfseries Ack}, 
+{\bfseries Crc}, 
+{\bfseries Done}
+ \}
+\end{DoxyCompactItemize}
+\doxysubsection*{Открытые члены}
+\begin{DoxyCompactItemize}
+\item 
+size\+\_\+t \mbox{\hyperlink{class_r_s_1_1_rs_parser_a9fe9b4dd1e0a4a643153a12f12e49603}{update}} (const uint8\+\_\+t $\ast$a\+Buffer, size\+\_\+t a\+Length)
+\begin{DoxyCompactList}\small\item\em Основная функция парсера \end{DoxyCompactList}\item 
+size\+\_\+t \mbox{\hyperlink{class_r_s_1_1_rs_parser_a48b7f42822645d1460680eb0b43e6ba6}{create}} (void $\ast$a\+Buffer, const void $\ast$a\+Data, size\+\_\+t a\+Length)
+\begin{DoxyCompactList}\small\item\em Создает сообщение протокола Utilitary\+RS из сообщения \end{DoxyCompactList}\item 
+State \mbox{\hyperlink{class_r_s_1_1_rs_parser_ab24a1bdc620c5b447ec13985863be014}{state}} () const
+\item 
+const uint8\+\_\+t $\ast$ \mbox{\hyperlink{class_r_s_1_1_rs_parser_ae67257f5b5920ce3d7a278a6daeb4545}{data}} () const
+\item 
+size\+\_\+t \mbox{\hyperlink{class_r_s_1_1_rs_parser_a8593f17fd390af879b3bf6b4d1e4b166}{length}} () const
+\item 
+\mbox{\Hypertarget{class_r_s_1_1_rs_parser_a5e4e5374a82422c14308a8c9654a2ca0}\label{class_r_s_1_1_rs_parser_a5e4e5374a82422c14308a8c9654a2ca0}} 
+void \mbox{\hyperlink{class_r_s_1_1_rs_parser_a5e4e5374a82422c14308a8c9654a2ca0}{reset}} ()
+\begin{DoxyCompactList}\small\item\em Сброс парсера \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Статические открытые данные}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_r_s_1_1_rs_parser_a947470adcd72982ac0e016adaf127f84}\label{class_r_s_1_1_rs_parser_a947470adcd72982ac0e016adaf127f84}} 
+static constexpr uint8\+\_\+t {\bfseries k\+Init\+Checksum} \{0x00\}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Методы}
+\mbox{\Hypertarget{class_r_s_1_1_rs_parser_a48b7f42822645d1460680eb0b43e6ba6}\label{class_r_s_1_1_rs_parser_a48b7f42822645d1460680eb0b43e6ba6}} 
+\index{RS::RsParser$<$ BufferSize, CRC $>$@{RS::RsParser$<$ BufferSize, CRC $>$}!create@{create}}
+\index{create@{create}!RS::RsParser$<$ BufferSize, CRC $>$@{RS::RsParser$<$ BufferSize, CRC $>$}}
+\doxysubsubsection{\texorpdfstring{create()}{create()}}
+{\footnotesize\ttfamily template$<$size\+\_\+t Buffer\+Size, typename C\+RC $>$ \\
+size\+\_\+t \mbox{\hyperlink{class_r_s_1_1_rs_parser}{R\+S\+::\+Rs\+Parser}}$<$ Buffer\+Size, C\+RC $>$\+::create (\begin{DoxyParamCaption}\item[{void $\ast$}]{a\+Buffer,  }\item[{const void $\ast$}]{a\+Data,  }\item[{size\+\_\+t}]{a\+Length }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Создает сообщение протокола Utilitary\+RS из сообщения 
+
+
+\begin{DoxyParams}{Аргументы}
+{\em a\+Buffer} & -\/ указатель на сырой буффер, внутри которого будет создано сообщение \\
+\hline
+{\em a\+Data} & -\/ указатель на сообщение \\
+\hline
+{\em a\+Length} & -\/ длина сообщения \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Возвращает}
+возвращает конечную длину сообщения Utilitary\+RS 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_r_s_1_1_rs_parser_ae67257f5b5920ce3d7a278a6daeb4545}\label{class_r_s_1_1_rs_parser_ae67257f5b5920ce3d7a278a6daeb4545}} 
+\index{RS::RsParser$<$ BufferSize, CRC $>$@{RS::RsParser$<$ BufferSize, CRC $>$}!data@{data}}
+\index{data@{data}!RS::RsParser$<$ BufferSize, CRC $>$@{RS::RsParser$<$ BufferSize, CRC $>$}}
+\doxysubsubsection{\texorpdfstring{data()}{data()}}
+{\footnotesize\ttfamily template$<$size\+\_\+t Buffer\+Size, typename C\+RC $>$ \\
+const uint8\+\_\+t$\ast$ \mbox{\hyperlink{class_r_s_1_1_rs_parser}{R\+S\+::\+Rs\+Parser}}$<$ Buffer\+Size, C\+RC $>$\+::data (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxyReturn}{Возвращает}
+Возвращает указатель на сырые данные парсера 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_r_s_1_1_rs_parser_a8593f17fd390af879b3bf6b4d1e4b166}\label{class_r_s_1_1_rs_parser_a8593f17fd390af879b3bf6b4d1e4b166}} 
+\index{RS::RsParser$<$ BufferSize, CRC $>$@{RS::RsParser$<$ BufferSize, CRC $>$}!length@{length}}
+\index{length@{length}!RS::RsParser$<$ BufferSize, CRC $>$@{RS::RsParser$<$ BufferSize, CRC $>$}}
+\doxysubsubsection{\texorpdfstring{length()}{length()}}
+{\footnotesize\ttfamily template$<$size\+\_\+t Buffer\+Size, typename C\+RC $>$ \\
+size\+\_\+t \mbox{\hyperlink{class_r_s_1_1_rs_parser}{R\+S\+::\+Rs\+Parser}}$<$ Buffer\+Size, C\+RC $>$\+::length (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxyReturn}{Возвращает}
+Возвращает текущую позицию парсера 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_r_s_1_1_rs_parser_ab24a1bdc620c5b447ec13985863be014}\label{class_r_s_1_1_rs_parser_ab24a1bdc620c5b447ec13985863be014}} 
+\index{RS::RsParser$<$ BufferSize, CRC $>$@{RS::RsParser$<$ BufferSize, CRC $>$}!state@{state}}
+\index{state@{state}!RS::RsParser$<$ BufferSize, CRC $>$@{RS::RsParser$<$ BufferSize, CRC $>$}}
+\doxysubsubsection{\texorpdfstring{state()}{state()}}
+{\footnotesize\ttfamily template$<$size\+\_\+t Buffer\+Size, typename C\+RC $>$ \\
+State \mbox{\hyperlink{class_r_s_1_1_rs_parser}{R\+S\+::\+Rs\+Parser}}$<$ Buffer\+Size, C\+RC $>$\+::state (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxyReturn}{Возвращает}
+Возвращает текущий статус парсера 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_r_s_1_1_rs_parser_a9fe9b4dd1e0a4a643153a12f12e49603}\label{class_r_s_1_1_rs_parser_a9fe9b4dd1e0a4a643153a12f12e49603}} 
+\index{RS::RsParser$<$ BufferSize, CRC $>$@{RS::RsParser$<$ BufferSize, CRC $>$}!update@{update}}
+\index{update@{update}!RS::RsParser$<$ BufferSize, CRC $>$@{RS::RsParser$<$ BufferSize, CRC $>$}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily template$<$size\+\_\+t Buffer\+Size, typename C\+RC $>$ \\
+size\+\_\+t \mbox{\hyperlink{class_r_s_1_1_rs_parser}{R\+S\+::\+Rs\+Parser}}$<$ Buffer\+Size, C\+RC $>$\+::update (\begin{DoxyParamCaption}\item[{const uint8\+\_\+t $\ast$}]{a\+Buffer,  }\item[{size\+\_\+t}]{a\+Length }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Основная функция парсера 
+
+
+\begin{DoxyParams}{Аргументы}
+{\em a\+Buffer} & -\/ указатель на данные, которые нужно отпарсить \\
+\hline
+{\em a\+Length} & -\/ длина пришедших данных для парсинга \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Возвращает}
+возвращает количество отпаршенных байт 
+\end{DoxyReturn}
+
+
+Объявления и описания членов класса находятся в файле\+:\begin{DoxyCompactItemize}
+\item 
+Lib/\mbox{\hyperlink{_rs_parser_8hpp}{Rs\+Parser.\+hpp}}\end{DoxyCompactItemize}

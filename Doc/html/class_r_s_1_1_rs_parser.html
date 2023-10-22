@@ -1,0 +1,321 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta name="generator" content="Doxygen 1.8.17"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>UtilitaryRS: Шаблон класса RS::RsParser&lt; BufferSize, CRC &gt;</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  <td id="projectalign" style="padding-left: 0.5em;">
+   <div id="projectname">UtilitaryRS
+   &#160;<span id="projectnumber">1.0</span>
+   </div>
+   <div id="projectbrief">Handy protocol for RS485</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Создано системой Doxygen 1.8.17 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+var searchBox = new SearchBox("searchBox", "search",false,'Поиск');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+$(function() {
+  initMenu('',true,false,'search.php','Поиск');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><b>RS</b></li><li class="navelem"><a class="el" href="class_r_s_1_1_rs_parser.html">RsParser</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">Классы</a> &#124;
+<a href="#pub-types">Открытые типы</a> &#124;
+<a href="#pub-methods">Открытые члены</a> &#124;
+<a href="#pub-static-attribs">Статические открытые данные</a> &#124;
+<a href="class_r_s_1_1_rs_parser-members.html">Полный список членов класса</a>  </div>
+  <div class="headertitle">
+<div class="title">Шаблон класса RS::RsParser&lt; BufferSize, CRC &gt;</div>  </div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
+Открытые типы</h2></td></tr>
+<tr class="memitem:ae3ae4dd6af6eee2654d210f0a8024c64"><td class="memItemLeft" align="right" valign="top"><a id="ae3ae4dd6af6eee2654d210f0a8024c64"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>State</b> { <br />
+&#160;&#160;<b>Idle</b>, 
+<b>Header</b>, 
+<b>Command</b>, 
+<b>Request</b>, 
+<br />
+&#160;&#160;<b>Answer</b>, 
+<b>Ack</b>, 
+<b>Crc</b>, 
+<b>Done</b>
+<br />
+ }</td></tr>
+<tr class="separator:ae3ae4dd6af6eee2654d210f0a8024c64"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
+Открытые члены</h2></td></tr>
+<tr class="memitem:a9fe9b4dd1e0a4a643153a12f12e49603"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_r_s_1_1_rs_parser.html#a9fe9b4dd1e0a4a643153a12f12e49603">update</a> (const uint8_t *aBuffer, size_t aLength)</td></tr>
+<tr class="memdesc:a9fe9b4dd1e0a4a643153a12f12e49603"><td class="mdescLeft">&#160;</td><td class="mdescRight">Основная функция парсера  <a href="class_r_s_1_1_rs_parser.html#a9fe9b4dd1e0a4a643153a12f12e49603">Подробнее...</a><br /></td></tr>
+<tr class="separator:a9fe9b4dd1e0a4a643153a12f12e49603"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a48b7f42822645d1460680eb0b43e6ba6"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_r_s_1_1_rs_parser.html#a48b7f42822645d1460680eb0b43e6ba6">create</a> (void *aBuffer, const void *aData, size_t aLength)</td></tr>
+<tr class="memdesc:a48b7f42822645d1460680eb0b43e6ba6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Создает сообщение протокола UtilitaryRS из сообщения  <a href="class_r_s_1_1_rs_parser.html#a48b7f42822645d1460680eb0b43e6ba6">Подробнее...</a><br /></td></tr>
+<tr class="separator:a48b7f42822645d1460680eb0b43e6ba6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab24a1bdc620c5b447ec13985863be014"><td class="memItemLeft" align="right" valign="top">State&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_r_s_1_1_rs_parser.html#ab24a1bdc620c5b447ec13985863be014">state</a> () const</td></tr>
+<tr class="separator:ab24a1bdc620c5b447ec13985863be014"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae67257f5b5920ce3d7a278a6daeb4545"><td class="memItemLeft" align="right" valign="top">const uint8_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_r_s_1_1_rs_parser.html#ae67257f5b5920ce3d7a278a6daeb4545">data</a> () const</td></tr>
+<tr class="separator:ae67257f5b5920ce3d7a278a6daeb4545"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8593f17fd390af879b3bf6b4d1e4b166"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_r_s_1_1_rs_parser.html#a8593f17fd390af879b3bf6b4d1e4b166">length</a> () const</td></tr>
+<tr class="separator:a8593f17fd390af879b3bf6b4d1e4b166"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e4e5374a82422c14308a8c9654a2ca0"><td class="memItemLeft" align="right" valign="top"><a id="a5e4e5374a82422c14308a8c9654a2ca0"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_r_s_1_1_rs_parser.html#a5e4e5374a82422c14308a8c9654a2ca0">reset</a> ()</td></tr>
+<tr class="memdesc:a5e4e5374a82422c14308a8c9654a2ca0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Сброс парсера <br /></td></tr>
+<tr class="separator:a5e4e5374a82422c14308a8c9654a2ca0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-attribs"></a>
+Статические открытые данные</h2></td></tr>
+<tr class="memitem:a947470adcd72982ac0e016adaf127f84"><td class="memItemLeft" align="right" valign="top"><a id="a947470adcd72982ac0e016adaf127f84"></a>
+static constexpr uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>kInitChecksum</b> {0x00}</td></tr>
+<tr class="separator:a947470adcd72982ac0e016adaf127f84"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">Методы</h2>
+<a id="a48b7f42822645d1460680eb0b43e6ba6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a48b7f42822645d1460680eb0b43e6ba6">&#9670;&nbsp;</a></span>create()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;size_t BufferSize, typename CRC &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t <a class="el" href="class_r_s_1_1_rs_parser.html">RS::RsParser</a>&lt; BufferSize, CRC &gt;::create </td>
+          <td>(</td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>aBuffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const void *&#160;</td>
+          <td class="paramname"><em>aData</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>aLength</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Создает сообщение протокола UtilitaryRS из сообщения </p>
+<dl class="params"><dt>Аргументы</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">aBuffer</td><td>- указатель на сырой буффер, внутри которого будет создано сообщение </td></tr>
+    <tr><td class="paramname">aData</td><td>- указатель на сообщение </td></tr>
+    <tr><td class="paramname">aLength</td><td>- длина сообщения </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Возвращает</dt><dd>возвращает конечную длину сообщения UtilitaryRS </dd></dl>
+
+</div>
+</div>
+<a id="ae67257f5b5920ce3d7a278a6daeb4545"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae67257f5b5920ce3d7a278a6daeb4545">&#9670;&nbsp;</a></span>data()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;size_t BufferSize, typename CRC &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t* <a class="el" href="class_r_s_1_1_rs_parser.html">RS::RsParser</a>&lt; BufferSize, CRC &gt;::data </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Возвращает</dt><dd>Возвращает указатель на сырые данные парсера </dd></dl>
+
+</div>
+</div>
+<a id="a8593f17fd390af879b3bf6b4d1e4b166"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8593f17fd390af879b3bf6b4d1e4b166">&#9670;&nbsp;</a></span>length()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;size_t BufferSize, typename CRC &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t <a class="el" href="class_r_s_1_1_rs_parser.html">RS::RsParser</a>&lt; BufferSize, CRC &gt;::length </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Возвращает</dt><dd>Возвращает текущую позицию парсера </dd></dl>
+
+</div>
+</div>
+<a id="ab24a1bdc620c5b447ec13985863be014"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab24a1bdc620c5b447ec13985863be014">&#9670;&nbsp;</a></span>state()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;size_t BufferSize, typename CRC &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">State <a class="el" href="class_r_s_1_1_rs_parser.html">RS::RsParser</a>&lt; BufferSize, CRC &gt;::state </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Возвращает</dt><dd>Возвращает текущий статус парсера </dd></dl>
+
+</div>
+</div>
+<a id="a9fe9b4dd1e0a4a643153a12f12e49603"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9fe9b4dd1e0a4a643153a12f12e49603">&#9670;&nbsp;</a></span>update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;size_t BufferSize, typename CRC &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t <a class="el" href="class_r_s_1_1_rs_parser.html">RS::RsParser</a>&lt; BufferSize, CRC &gt;::update </td>
+          <td>(</td>
+          <td class="paramtype">const uint8_t *&#160;</td>
+          <td class="paramname"><em>aBuffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>aLength</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Основная функция парсера </p>
+<dl class="params"><dt>Аргументы</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">aBuffer</td><td>- указатель на данные, которые нужно отпарсить </td></tr>
+    <tr><td class="paramname">aLength</td><td>- длина пришедших данных для парсинга </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Возвращает</dt><dd>возвращает количество отпаршенных байт </dd></dl>
+
+</div>
+</div>
+<hr/>Объявления и описания членов класса находятся в файле:<ul>
+<li>Lib/<a class="el" href="_rs_parser_8hpp_source.html">RsParser.hpp</a></li>
+</ul>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Создано системой &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.8.17
+</small></address>
+</body>
+</html>

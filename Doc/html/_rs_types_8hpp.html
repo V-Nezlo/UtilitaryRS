@@ -1,0 +1,183 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta name="generator" content="Doxygen 1.8.17"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>UtilitaryRS: Файл Lib/RsTypes.hpp</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  <td id="projectalign" style="padding-left: 0.5em;">
+   <div id="projectname">UtilitaryRS
+   &#160;<span id="projectnumber">1.0</span>
+   </div>
+   <div id="projectbrief">Handy protocol for RS485</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Создано системой Doxygen 1.8.17 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+var searchBox = new SearchBox("searchBox", "search",false,'Поиск');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+$(function() {
+  initMenu('',true,false,'search.php','Поиск');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_8f3de2ae926fecfe6abd5379fd2b6eb1.html">Lib</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">Классы</a> &#124;
+<a href="#enum-members">Перечисления</a> &#124;
+<a href="#func-members">Функции</a> &#124;
+<a href="#var-members">Переменные</a>  </div>
+  <div class="headertitle">
+<div class="title">Файл RsTypes.hpp</div>  </div>
+</div><!--header-->
+<div class="contents">
+
+<p>Файл, описывающий сообщения внутри протокола UtilitaryRS.  
+<a href="#details">Подробнее...</a></p>
+<div class="textblock"><code>#include &lt;cstdint&gt;</code><br />
+</div><div class="textblock"><div class="dynheader">
+Граф включаемых заголовочных файлов для RsTypes.hpp:</div>
+<div class="dyncontent">
+<div class="center"><img src="_rs_types_8hpp__incl.png" border="0" usemap="#_lib_2_rs_types_8hpp" alt=""/></div>
+<!-- MAP 0 -->
+</div>
+</div><div class="textblock"><div class="dynheader">
+Граф файлов, в которые включается этот файл:</div>
+<div class="dyncontent">
+<div class="center"><img src="_rs_types_8hpp__dep__incl.png" border="0" usemap="#_lib_2_rs_types_8hppdep" alt=""/></div>
+<!-- MAP 1 -->
+</div>
+</div>
+<p><a href="_rs_types_8hpp_source.html">См. исходные тексты.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
+Классы</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_r_s_1_1_header.html">RS::Header</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Заголовок сообщения, содержит UID отправителя, UID получателя и тип сообщения  <a href="struct_r_s_1_1_header.html#details">Подробнее...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_r_s_1_1_packet.html">RS::Packet&lt; T &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_r_s_1_1_command_payload.html">RS::CommandPayload</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Полезная нагрузка командного сообщения, содержит номер команды и аргумент  <a href="struct_r_s_1_1_command_payload.html#details">Подробнее...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_r_s_1_1_request_payload.html">RS::RequestPayload</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Полезная нагрузка сообщения запроса данных, содержит номер запроса и количество запрашиваемых байт  <a href="struct_r_s_1_1_request_payload.html#details">Подробнее...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_r_s_1_1_answer_payload.html">RS::AnswerPayload</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Полезная нагрузка сообщения ответа на запрос, содержит номер запроса, размер данных запроса Сразу после последнего поля dataSize следует сам запрос размером dataSize.  <a href="struct_r_s_1_1_answer_payload.html#details">Подробнее...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_r_s_1_1_ack_payload.html">RS::AckPayload</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Полезная нагрузка Ack сообщения, содержит код возврата  <a href="struct_r_s_1_1_ack_payload.html#details">Подробнее...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
+Перечисления</h2></td></tr>
+<tr class="memitem:a1e6ff4cc493c0e1015dc71c4bcbc168b"><td class="memItemLeft" align="right" valign="top"><a id="a1e6ff4cc493c0e1015dc71c4bcbc168b"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_rs_types_8hpp.html#a1e6ff4cc493c0e1015dc71c4bcbc168b">RS::MessageType</a> : uint8_t { <b>Command</b> = 0, 
+<b>Request</b>, 
+<b>Answer</b>, 
+<b>Ack</b>
+ }</td></tr>
+<tr class="memdesc:a1e6ff4cc493c0e1015dc71c4bcbc168b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Энумератор типов сообщений - сообщения имеют следующие типы: Команда, Запрос данных, Ответ на запрос данных, подверждение приема сообщения <br /></td></tr>
+<tr class="separator:a1e6ff4cc493c0e1015dc71c4bcbc168b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Функции</h2></td></tr>
+<tr class="memitem:a4bd8e743397b3fee27a2459cb1be7f4a"><td class="memItemLeft" align="right" valign="top"><a id="a4bd8e743397b3fee27a2459cb1be7f4a"></a>
+struct <a class="el" href="struct_r_s_1_1_header.html">RS::Header</a>&#160;</td><td class="memItemRight" valign="bottom"><b>RS::__attribute__</b> ((packed))</td></tr>
+<tr class="separator:a4bd8e743397b3fee27a2459cb1be7f4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
+Переменные</h2></td></tr>
+<tr class="memitem:a4361d63a01ad0b61c4f146c7e72dab0b"><td class="memItemLeft" align="right" valign="top"><a id="a4361d63a01ad0b61c4f146c7e72dab0b"></a>
+uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>receiverUID</b></td></tr>
+<tr class="separator:a4361d63a01ad0b61c4f146c7e72dab0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac852f0233be6c24df8f62c201e1db1c"><td class="memItemLeft" align="right" valign="top"><a id="aac852f0233be6c24df8f62c201e1db1c"></a>
+uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>transmitUID</b></td></tr>
+<tr class="separator:aac852f0233be6c24df8f62c201e1db1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb32627aa5b0e2dbad3ccd88aab07c05"><td class="memItemLeft" align="right" valign="top"><a id="adb32627aa5b0e2dbad3ccd88aab07c05"></a>
+MessageType&#160;</td><td class="memItemRight" valign="bottom"><b>messageType</b></td></tr>
+<tr class="separator:adb32627aa5b0e2dbad3ccd88aab07c05"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb7bc06bed6f6408d719334fc41698c7"><td class="memItemLeft" align="right" valign="top"><a id="acb7bc06bed6f6408d719334fc41698c7"></a>
+uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>reserved</b></td></tr>
+<tr class="separator:acb7bc06bed6f6408d719334fc41698c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb77170554cd381d06bba4eeeca2cd21"><td class="memItemLeft" align="right" valign="top"><a id="acb77170554cd381d06bba4eeeca2cd21"></a>
+T&#160;</td><td class="memItemRight" valign="bottom"><b>payload</b></td></tr>
+<tr class="separator:acb77170554cd381d06bba4eeeca2cd21"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a5aaa930940857f68f245eeb89506b5"><td class="memItemLeft" align="right" valign="top"><a id="a1a5aaa930940857f68f245eeb89506b5"></a>
+uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>command</b></td></tr>
+<tr class="separator:a1a5aaa930940857f68f245eeb89506b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a638e4503e0ae6ce655b7ad2e17e8f0ad"><td class="memItemLeft" align="right" valign="top"><a id="a638e4503e0ae6ce655b7ad2e17e8f0ad"></a>
+uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>value</b></td></tr>
+<tr class="separator:a638e4503e0ae6ce655b7ad2e17e8f0ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b3fd0df70d658055a7acf59d2783863"><td class="memItemLeft" align="right" valign="top"><a id="a4b3fd0df70d658055a7acf59d2783863"></a>
+uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>request</b></td></tr>
+<tr class="separator:a4b3fd0df70d658055a7acf59d2783863"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a62ffb442ed9a7fde117789ac2bed198e"><td class="memItemLeft" align="right" valign="top"><a id="a62ffb442ed9a7fde117789ac2bed198e"></a>
+uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>answerDataSize</b></td></tr>
+<tr class="separator:a62ffb442ed9a7fde117789ac2bed198e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af13e629a2f79d14821c7b9246ef99e9f"><td class="memItemLeft" align="right" valign="top"><a id="af13e629a2f79d14821c7b9246ef99e9f"></a>
+uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>dataSize</b></td></tr>
+<tr class="separator:af13e629a2f79d14821c7b9246ef99e9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a966576744a473fafb7687f8e5649941f"><td class="memItemLeft" align="right" valign="top"><a id="a966576744a473fafb7687f8e5649941f"></a>
+uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>code</b></td></tr>
+<tr class="separator:a966576744a473fafb7687f8e5649941f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">Подробное описание</h2>
+<div class="textblock"><p>Файл, описывающий сообщения внутри протокола UtilitaryRS. </p>
+<dl class="section author"><dt>Автор</dt><dd>V-Nezlo (<a href="#" onclick="location.href='mai'+'lto:'+'vll'+'ad'+'imi'+'rk'+'a@g'+'ma'+'il.'+'co'+'m'; return false;">vllad<span style="display: none;">.nosp@m.</span>imir<span style="display: none;">.nosp@m.</span>ka@gm<span style="display: none;">.nosp@m.</span>ail.<span style="display: none;">.nosp@m.</span>com</a>) </dd></dl>
+<dl class="section date"><dt>Дата</dt><dd>20.10.2023 </dd></dl>
+<dl class="section version"><dt>Версия</dt><dd>1.0 </dd></dl>
+</div></div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Создано системой &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.8.17
+</small></address>
+</body>
+</html>

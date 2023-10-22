@@ -1,0 +1,93 @@
+\hypertarget{_rs_types_8hpp}{}\doxysection{Файл Lib/\+Rs\+Types.hpp}
+\label{_rs_types_8hpp}\index{Lib/RsTypes.hpp@{Lib/RsTypes.hpp}}
+
+
+Файл, описывающий сообщения внутри протокола Utilitary\+RS.  
+
+
+{\ttfamily \#include $<$cstdint$>$}\newline
+Граф включаемых заголовочных файлов для Rs\+Types.\+hpp\+:
+% FIG 0
+Граф файлов, в которые включается этот файл\+:
+% FIG 1
+\doxysubsection*{Классы}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{struct_r_s_1_1_header}{R\+S\+::\+Header}}
+\begin{DoxyCompactList}\small\item\em Заголовок сообщения, содержит U\+ID отправителя, U\+ID получателя и тип сообщения \end{DoxyCompactList}\item 
+struct \mbox{\hyperlink{struct_r_s_1_1_packet}{R\+S\+::\+Packet$<$ T $>$}}
+\item 
+struct \mbox{\hyperlink{struct_r_s_1_1_command_payload}{R\+S\+::\+Command\+Payload}}
+\begin{DoxyCompactList}\small\item\em Полезная нагрузка командного сообщения, содержит номер команды и аргумент \end{DoxyCompactList}\item 
+struct \mbox{\hyperlink{struct_r_s_1_1_request_payload}{R\+S\+::\+Request\+Payload}}
+\begin{DoxyCompactList}\small\item\em Полезная нагрузка сообщения запроса данных, содержит номер запроса и количество запрашиваемых байт \end{DoxyCompactList}\item 
+struct \mbox{\hyperlink{struct_r_s_1_1_answer_payload}{R\+S\+::\+Answer\+Payload}}
+\begin{DoxyCompactList}\small\item\em Полезная нагрузка сообщения ответа на запрос, содержит номер запроса, размер данных запроса Сразу после последнего поля data\+Size следует сам запрос размером data\+Size. \end{DoxyCompactList}\item 
+struct \mbox{\hyperlink{struct_r_s_1_1_ack_payload}{R\+S\+::\+Ack\+Payload}}
+\begin{DoxyCompactList}\small\item\em Полезная нагрузка Ack сообщения, содержит код возврата \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Перечисления}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{_rs_types_8hpp_a1e6ff4cc493c0e1015dc71c4bcbc168b}\label{_rs_types_8hpp_a1e6ff4cc493c0e1015dc71c4bcbc168b}} 
+enum \mbox{\hyperlink{_rs_types_8hpp_a1e6ff4cc493c0e1015dc71c4bcbc168b}{R\+S\+::\+Message\+Type}} \+: uint8\+\_\+t \{ {\bfseries Command} = 0, 
+{\bfseries Request}, 
+{\bfseries Answer}, 
+{\bfseries Ack}
+ \}
+\begin{DoxyCompactList}\small\item\em Энумератор типов сообщений -\/ сообщения имеют следующие типы\+: Команда, Запрос данных, Ответ на запрос данных, подверждение приема сообщения \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Функции}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{_rs_types_8hpp_a4bd8e743397b3fee27a2459cb1be7f4a}\label{_rs_types_8hpp_a4bd8e743397b3fee27a2459cb1be7f4a}} 
+struct \mbox{\hyperlink{struct_r_s_1_1_header}{R\+S\+::\+Header}} {\bfseries R\+S\+::\+\_\+\+\_\+attribute\+\_\+\+\_\+} ((packed))
+\end{DoxyCompactItemize}
+\doxysubsection*{Переменные}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{_rs_types_8hpp_a4361d63a01ad0b61c4f146c7e72dab0b}\label{_rs_types_8hpp_a4361d63a01ad0b61c4f146c7e72dab0b}} 
+uint8\+\_\+t {\bfseries receiver\+U\+ID}
+\item 
+\mbox{\Hypertarget{_rs_types_8hpp_aac852f0233be6c24df8f62c201e1db1c}\label{_rs_types_8hpp_aac852f0233be6c24df8f62c201e1db1c}} 
+uint8\+\_\+t {\bfseries transmit\+U\+ID}
+\item 
+\mbox{\Hypertarget{_rs_types_8hpp_adb32627aa5b0e2dbad3ccd88aab07c05}\label{_rs_types_8hpp_adb32627aa5b0e2dbad3ccd88aab07c05}} 
+Message\+Type {\bfseries message\+Type}
+\item 
+\mbox{\Hypertarget{_rs_types_8hpp_acb7bc06bed6f6408d719334fc41698c7}\label{_rs_types_8hpp_acb7bc06bed6f6408d719334fc41698c7}} 
+uint8\+\_\+t {\bfseries reserved}
+\item 
+\mbox{\Hypertarget{_rs_types_8hpp_acb77170554cd381d06bba4eeeca2cd21}\label{_rs_types_8hpp_acb77170554cd381d06bba4eeeca2cd21}} 
+T {\bfseries payload}
+\item 
+\mbox{\Hypertarget{_rs_types_8hpp_a1a5aaa930940857f68f245eeb89506b5}\label{_rs_types_8hpp_a1a5aaa930940857f68f245eeb89506b5}} 
+uint8\+\_\+t {\bfseries command}
+\item 
+\mbox{\Hypertarget{_rs_types_8hpp_a638e4503e0ae6ce655b7ad2e17e8f0ad}\label{_rs_types_8hpp_a638e4503e0ae6ce655b7ad2e17e8f0ad}} 
+uint8\+\_\+t {\bfseries value}
+\item 
+\mbox{\Hypertarget{_rs_types_8hpp_a4b3fd0df70d658055a7acf59d2783863}\label{_rs_types_8hpp_a4b3fd0df70d658055a7acf59d2783863}} 
+uint8\+\_\+t {\bfseries request}
+\item 
+\mbox{\Hypertarget{_rs_types_8hpp_a62ffb442ed9a7fde117789ac2bed198e}\label{_rs_types_8hpp_a62ffb442ed9a7fde117789ac2bed198e}} 
+uint8\+\_\+t {\bfseries answer\+Data\+Size}
+\item 
+\mbox{\Hypertarget{_rs_types_8hpp_af13e629a2f79d14821c7b9246ef99e9f}\label{_rs_types_8hpp_af13e629a2f79d14821c7b9246ef99e9f}} 
+uint8\+\_\+t {\bfseries data\+Size}
+\item 
+\mbox{\Hypertarget{_rs_types_8hpp_a966576744a473fafb7687f8e5649941f}\label{_rs_types_8hpp_a966576744a473fafb7687f8e5649941f}} 
+uint8\+\_\+t {\bfseries code}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Подробное описание}
+Файл, описывающий сообщения внутри протокола Utilitary\+RS. 
+
+\begin{DoxyAuthor}{Автор}
+V-\/\+Nezlo (\href{mailto:vlladimirka@gmail.com}{\texttt{ vlladimirka@gmail.\+com}}) 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Дата}
+20.\+10.\+2023 
+\end{DoxyDate}
+\begin{DoxyVersion}{Версия}
+1.\+0 
+\end{DoxyVersion}
