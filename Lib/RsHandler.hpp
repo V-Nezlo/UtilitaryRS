@@ -235,23 +235,23 @@ private:
 		if (header->receiverUID == nodeUID) {
 			switch (header->messageType) {
 				case MessageType::Ack: {
-					auto ackMsg = reinterpret_cast<const AckMessage *>(aMessage);
+					const auto ackMsg = reinterpret_cast<const AckMessage *>(aMessage);
 					handleAck(ackMsg->payload.code);
 				} break;
 				case MessageType::Answer: {
-					auto answerMsg = reinterpret_cast<const AnwMessage *>(aMessage);
+					const auto answerMsg = reinterpret_cast<const AnwMessage *>(aMessage);
 					uint8_t returnCode = handleAnswer(
 						answerMsg->payload.request, &aMessage[sizeof(AnwMessage)], answerMsg->payload.dataSize);
 					sendAck(answerMsg->transmitUID, returnCode);
 				} break;
 				case MessageType::Command: {
-					auto cmdMsg = reinterpret_cast<const ComMessage *>(aMessage);
+					const auto cmdMsg = reinterpret_cast<const ComMessage *>(aMessage);
 					uint8_t returnCode = handleCommand(cmdMsg->payload.command, cmdMsg->payload.value);
 					sendAck(cmdMsg->transmitUID, returnCode);
 				} break;
 				case MessageType::Request: {
-					auto reqMsg = reinterpret_cast<const ReqMessage *>(aMessage);
-					bool isRequestProcessed = processRequest(reqMsg->transmitUID, reqMsg->payload.request, reqMsg->payload.answerDataSize);
+					const auto reqMsg = reinterpret_cast<const ReqMessage *>(aMessage);
+					const auto isRequestProcessed = processRequest(reqMsg->transmitUID, reqMsg->payload.request, reqMsg->payload.answerDataSize);
 					if (!isRequestProcessed) {
 						sendAck(reqMsg->transmitUID, 0);
 					}

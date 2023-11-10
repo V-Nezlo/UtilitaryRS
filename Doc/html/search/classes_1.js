@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['commandpayload_31',['CommandPayload',['../struct_r_s_1_1_command_payload.html',1,'RS']]],
-  ['crc8_32',['Crc8',['../class_crc8.html',1,'']]]
+  ['bufferedmessage_0',['BufferedMessage',['../struct_r_s_1_1_rs_parser_1_1_buffered_message.html',1,'RS::RsParser']]]
 ];

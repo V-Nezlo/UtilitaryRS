@@ -35,7 +35,10 @@ RS485. В проекте не используются элементы библ
 
 Сборка проекта:
 ```sh
-cmake --build build
+mkdir build
+cd build
+cmake -DCMAKE_BUILD_TYPE=Release ../
+make
 ```
 
 Запуск тестов - из каталога build:

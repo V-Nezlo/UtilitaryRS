@@ -1,9 +1,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ru">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=9"/>
-<meta name="generator" content="Doxygen 1.8.17"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>UtilitaryRS: Шаблон класса RS::RsParser&lt; BufferSize, CRC &gt;</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
@@ -19,10 +19,9 @@
 <div id="titlearea">
 <table cellspacing="0" cellpadding="0">
  <tbody>
- <tr style="height: 56px;">
-  <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">UtilitaryRS
-   &#160;<span id="projectnumber">1.0</span>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">UtilitaryRS<span id="projectnumber">&#160;1.0</span>
    </div>
    <div id="projectbrief">Handy protocol for RS485</div>
   </td>
@@ -31,21 +30,22 @@
 </table>
 </div>
 <!-- end header part -->
-<!-- Создано системой Doxygen 1.8.17 -->
+<!-- Создано системой Doxygen 1.9.8 -->
 <script type="text/javascript">
-/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
-var searchBox = new SearchBox("searchBox", "search",false,'Поиск');
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
 /* @license-end */
 </script>
 <script type="text/javascript" src="menudata.js"></script>
 <script type="text/javascript" src="menu.js"></script>
 <script type="text/javascript">
-/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
 $(function() {
   initMenu('',true,false,'search.php','Поиск');
   $(document).ready(function() { init_search(); });
 });
-/* @license-end */</script>
+/* @license-end */
+</script>
 <div id="main-nav"></div>
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
@@ -56,9 +56,16 @@ $(function() {
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
-<iframe src="javascript:void(0)" frameborder="0" 
-        name="MSearchResults" id="MSearchResults">
-</iframe>
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Загрузка...</div>
+<div class="SRStatus" id="Searching">Поиск...</div>
+<div class="SRStatus" id="NoMatches">Не найдено</div>
+</div>
+</div>
+</div>
 </div>
 
 <div id="nav-path" class="navpath">
@@ -72,56 +79,102 @@ $(function() {
 <a href="#pub-types">Открытые типы</a> &#124;
 <a href="#pub-methods">Открытые члены</a> &#124;
 <a href="#pub-static-attribs">Статические открытые данные</a> &#124;
+<a href="#pri-methods">Закрытые члены</a> &#124;
+<a href="#pri-attribs">Закрытые данные</a> &#124;
+<a href="#pri-static-attribs">Закрытые статические данные</a> &#124;
 <a href="class_r_s_1_1_rs_parser-members.html">Полный список членов класса</a>  </div>
-  <div class="headertitle">
-<div class="title">Шаблон класса RS::RsParser&lt; BufferSize, CRC &gt;</div>  </div>
+  <div class="headertitle"><div class="title">Шаблон класса RS::RsParser&lt; BufferSize, CRC &gt;</div></div>
 </div><!--header-->
 <div class="contents">
+<div class="dynheader">
+Граф связей класса RS::RsParser&lt; BufferSize, CRC &gt;:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_r_s_1_1_rs_parser__coll__graph.png" border="0" usemap="#a_r_s_1_1_rs_parser_3_01_buffer_size_00_01_c_r_c_01_4_coll__map" alt="Collaboration graph"/></div>
+<map name="a_r_s_1_1_rs_parser_3_01_buffer_size_00_01_c_r_c_01_4_coll__map" id="a_r_s_1_1_rs_parser_3_01_buffer_size_00_01_c_r_c_01_4_coll__map">
+<area shape="rect" title=" " alt="" coords="5,108,187,148"/>
+<area shape="rect" href="struct_r_s_1_1_rs_parser_1_1_buffered_message.html" title=" " alt="" coords="5,5,187,45"/>
+<area shape="poly" title=" " alt="" coords="99,59,99,108,93,108,93,59"/>
+</map>
+<center><span class="legend">[<a href="graph_legend.html">см. легенду</a>]</span></center></div>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+Классы</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_r_s_1_1_rs_parser_1_1_buffered_message.html">BufferedMessage</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
 Открытые типы</h2></td></tr>
-<tr class="memitem:ae3ae4dd6af6eee2654d210f0a8024c64"><td class="memItemLeft" align="right" valign="top"><a id="ae3ae4dd6af6eee2654d210f0a8024c64"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>State</b> { <br />
-&#160;&#160;<b>Idle</b>, 
-<b>Header</b>, 
-<b>Command</b>, 
-<b>Request</b>, 
-<br />
-&#160;&#160;<b>Answer</b>, 
-<b>Ack</b>, 
-<b>Crc</b>, 
-<b>Done</b>
+<tr class="memitem:ae3ae4dd6af6eee2654d210f0a8024c64" id="r_ae3ae4dd6af6eee2654d210f0a8024c64"><td class="memItemLeft" align="right" valign="top"><a id="ae3ae4dd6af6eee2654d210f0a8024c64" name="ae3ae4dd6af6eee2654d210f0a8024c64"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>State</b> { <br />
+&#160;&#160;<b>Idle</b>
+, <b>Header</b>
+, <b>Command</b>
+, <b>Request</b>
+, <br />
+&#160;&#160;<b>Answer</b>
+, <b>Ack</b>
+, <b>Probe</b>
+, <b>Crc</b>
+, <br />
+&#160;&#160;<b>Done</b>
 <br />
  }</td></tr>
 <tr class="separator:ae3ae4dd6af6eee2654d210f0a8024c64"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Открытые члены</h2></td></tr>
-<tr class="memitem:a9fe9b4dd1e0a4a643153a12f12e49603"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_r_s_1_1_rs_parser.html#a9fe9b4dd1e0a4a643153a12f12e49603">update</a> (const uint8_t *aBuffer, size_t aLength)</td></tr>
-<tr class="memdesc:a9fe9b4dd1e0a4a643153a12f12e49603"><td class="mdescLeft">&#160;</td><td class="mdescRight">Основная функция парсера  <a href="class_r_s_1_1_rs_parser.html#a9fe9b4dd1e0a4a643153a12f12e49603">Подробнее...</a><br /></td></tr>
+<tr class="memitem:a9fe9b4dd1e0a4a643153a12f12e49603" id="r_a9fe9b4dd1e0a4a643153a12f12e49603"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_r_s_1_1_rs_parser.html#a9fe9b4dd1e0a4a643153a12f12e49603">update</a> (const uint8_t *aBuffer, size_t aLength)</td></tr>
+<tr class="memdesc:a9fe9b4dd1e0a4a643153a12f12e49603"><td class="mdescLeft">&#160;</td><td class="mdescRight">Основная функция парсера  <br /></td></tr>
 <tr class="separator:a9fe9b4dd1e0a4a643153a12f12e49603"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a48b7f42822645d1460680eb0b43e6ba6"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_r_s_1_1_rs_parser.html#a48b7f42822645d1460680eb0b43e6ba6">create</a> (void *aBuffer, const void *aData, size_t aLength)</td></tr>
-<tr class="memdesc:a48b7f42822645d1460680eb0b43e6ba6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Создает сообщение протокола UtilitaryRS из сообщения  <a href="class_r_s_1_1_rs_parser.html#a48b7f42822645d1460680eb0b43e6ba6">Подробнее...</a><br /></td></tr>
+<tr class="memitem:a48b7f42822645d1460680eb0b43e6ba6" id="r_a48b7f42822645d1460680eb0b43e6ba6"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_r_s_1_1_rs_parser.html#a48b7f42822645d1460680eb0b43e6ba6">create</a> (void *aBuffer, const void *aData, size_t aLength)</td></tr>
+<tr class="memdesc:a48b7f42822645d1460680eb0b43e6ba6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Создает сообщение протокола UtilitaryRS из сообщения  <br /></td></tr>
 <tr class="separator:a48b7f42822645d1460680eb0b43e6ba6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab24a1bdc620c5b447ec13985863be014"><td class="memItemLeft" align="right" valign="top">State&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_r_s_1_1_rs_parser.html#ab24a1bdc620c5b447ec13985863be014">state</a> () const</td></tr>
+<tr class="memitem:ab24a1bdc620c5b447ec13985863be014" id="r_ab24a1bdc620c5b447ec13985863be014"><td class="memItemLeft" align="right" valign="top">State&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_r_s_1_1_rs_parser.html#ab24a1bdc620c5b447ec13985863be014">state</a> () const</td></tr>
 <tr class="separator:ab24a1bdc620c5b447ec13985863be014"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae67257f5b5920ce3d7a278a6daeb4545"><td class="memItemLeft" align="right" valign="top">const uint8_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_r_s_1_1_rs_parser.html#ae67257f5b5920ce3d7a278a6daeb4545">data</a> () const</td></tr>
-<tr class="separator:ae67257f5b5920ce3d7a278a6daeb4545"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8593f17fd390af879b3bf6b4d1e4b166"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_r_s_1_1_rs_parser.html#a8593f17fd390af879b3bf6b4d1e4b166">length</a> () const</td></tr>
+<tr class="memitem:adae9dcecf96bc5d9831841b932463ca3" id="r_adae9dcecf96bc5d9831841b932463ca3"><td class="memItemLeft" align="right" valign="top">const uint8_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_r_s_1_1_rs_parser.html#adae9dcecf96bc5d9831841b932463ca3">data</a> () const</td></tr>
+<tr class="separator:adae9dcecf96bc5d9831841b932463ca3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8593f17fd390af879b3bf6b4d1e4b166" id="r_a8593f17fd390af879b3bf6b4d1e4b166"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_r_s_1_1_rs_parser.html#a8593f17fd390af879b3bf6b4d1e4b166">length</a> () const</td></tr>
 <tr class="separator:a8593f17fd390af879b3bf6b4d1e4b166"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5e4e5374a82422c14308a8c9654a2ca0"><td class="memItemLeft" align="right" valign="top"><a id="a5e4e5374a82422c14308a8c9654a2ca0"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_r_s_1_1_rs_parser.html#a5e4e5374a82422c14308a8c9654a2ca0">reset</a> ()</td></tr>
+<tr class="memitem:a5e4e5374a82422c14308a8c9654a2ca0" id="r_a5e4e5374a82422c14308a8c9654a2ca0"><td class="memItemLeft" align="right" valign="top"><a id="a5e4e5374a82422c14308a8c9654a2ca0" name="a5e4e5374a82422c14308a8c9654a2ca0"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>reset</b> ()</td></tr>
 <tr class="memdesc:a5e4e5374a82422c14308a8c9654a2ca0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Сброс парсера <br /></td></tr>
 <tr class="separator:a5e4e5374a82422c14308a8c9654a2ca0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-attribs"></a>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
 Статические открытые данные</h2></td></tr>
-<tr class="memitem:a947470adcd72982ac0e016adaf127f84"><td class="memItemLeft" align="right" valign="top"><a id="a947470adcd72982ac0e016adaf127f84"></a>
+<tr class="memitem:a947470adcd72982ac0e016adaf127f84" id="r_a947470adcd72982ac0e016adaf127f84"><td class="memItemLeft" align="right" valign="top"><a id="a947470adcd72982ac0e016adaf127f84" name="a947470adcd72982ac0e016adaf127f84"></a>
 static constexpr uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>kInitChecksum</b> {0x00}</td></tr>
 <tr class="separator:a947470adcd72982ac0e016adaf127f84"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-methods" name="pri-methods"></a>
+Закрытые члены</h2></td></tr>
+<tr class="memitem:aaade4327b1b0414b24049c2fad051524" id="r_aaade4327b1b0414b24049c2fad051524"><td class="memItemLeft" align="right" valign="top"><a id="aaade4327b1b0414b24049c2fad051524" name="aaade4327b1b0414b24049c2fad051524"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>isReady</b> () const</td></tr>
+<tr class="separator:aaade4327b1b0414b24049c2fad051524"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
+Закрытые данные</h2></td></tr>
+<tr class="memitem:a9d1a56eb23ba09faab715f4b04aec643" id="r_a9d1a56eb23ba09faab715f4b04aec643"><td class="memItemLeft" align="right" valign="top"><a id="a9d1a56eb23ba09faab715f4b04aec643" name="a9d1a56eb23ba09faab715f4b04aec643"></a>
+size_t&#160;</td><td class="memItemRight" valign="bottom"><b>position</b></td></tr>
+<tr class="separator:a9d1a56eb23ba09faab715f4b04aec643"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a13c7f32bdf0a3bfd2498be69bc3907f4" id="r_a13c7f32bdf0a3bfd2498be69bc3907f4"><td class="memItemLeft" align="right" valign="top"><a id="a13c7f32bdf0a3bfd2498be69bc3907f4" name="a13c7f32bdf0a3bfd2498be69bc3907f4"></a>
+State&#160;</td><td class="memItemRight" valign="bottom"><b>parserState</b></td></tr>
+<tr class="separator:a13c7f32bdf0a3bfd2498be69bc3907f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71a1f58c65b4fa0c6fd6db4d541046c6" id="r_a71a1f58c65b4fa0c6fd6db4d541046c6"><td class="memItemLeft" align="right" valign="top"><a id="a71a1f58c65b4fa0c6fd6db4d541046c6" name="a71a1f58c65b4fa0c6fd6db4d541046c6"></a>
+uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>buffer</b> [BufferSize]</td></tr>
+<tr class="separator:a71a1f58c65b4fa0c6fd6db4d541046c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a10c1b8a5a5d381167594f1222d9632a9" id="r_a10c1b8a5a5d381167594f1222d9632a9"><td class="memItemLeft" align="right" valign="top"><a id="a10c1b8a5a5d381167594f1222d9632a9" name="a10c1b8a5a5d381167594f1222d9632a9"></a>
+<a class="el" href="struct_r_s_1_1_rs_parser_1_1_buffered_message.html">BufferedMessage</a>&#160;</td><td class="memItemRight" valign="bottom"><b>message</b></td></tr>
+<tr class="separator:a10c1b8a5a5d381167594f1222d9632a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-static-attribs" name="pri-static-attribs"></a>
+Закрытые статические данные</h2></td></tr>
+<tr class="memitem:a0026e64a36a50d8848a123a625da4c57" id="r_a0026e64a36a50d8848a123a625da4c57"><td class="memItemLeft" align="right" valign="top"><a id="a0026e64a36a50d8848a123a625da4c57" name="a0026e64a36a50d8848a123a625da4c57"></a>
+static constexpr char&#160;</td><td class="memItemRight" valign="bottom"><b>kPreambl</b> {'R'}</td></tr>
+<tr class="separator:a0026e64a36a50d8848a123a625da4c57"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Методы</h2>
-<a id="a48b7f42822645d1460680eb0b43e6ba6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a48b7f42822645d1460680eb0b43e6ba6">&#9670;&nbsp;</a></span>create()</h2>
+<a id="a48b7f42822645d1460680eb0b43e6ba6" name="a48b7f42822645d1460680eb0b43e6ba6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a48b7f42822645d1460680eb0b43e6ba6">&#9670;&#160;</a></span>create()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -175,8 +228,8 @@ template&lt;size_t BufferSize, typename CRC &gt; </div>
 
 </div>
 </div>
-<a id="ae67257f5b5920ce3d7a278a6daeb4545"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae67257f5b5920ce3d7a278a6daeb4545">&#9670;&nbsp;</a></span>data()</h2>
+<a id="adae9dcecf96bc5d9831841b932463ca3" name="adae9dcecf96bc5d9831841b932463ca3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adae9dcecf96bc5d9831841b932463ca3">&#9670;&#160;</a></span>data()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -187,7 +240,7 @@ template&lt;size_t BufferSize, typename CRC &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const uint8_t* <a class="el" href="class_r_s_1_1_rs_parser.html">RS::RsParser</a>&lt; BufferSize, CRC &gt;::data </td>
+          <td class="memname">const uint8_t * <a class="el" href="class_r_s_1_1_rs_parser.html">RS::RsParser</a>&lt; BufferSize, CRC &gt;::data </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -203,8 +256,8 @@ template&lt;size_t BufferSize, typename CRC &gt; </div>
 
 </div>
 </div>
-<a id="a8593f17fd390af879b3bf6b4d1e4b166"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8593f17fd390af879b3bf6b4d1e4b166">&#9670;&nbsp;</a></span>length()</h2>
+<a id="a8593f17fd390af879b3bf6b4d1e4b166" name="a8593f17fd390af879b3bf6b4d1e4b166"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8593f17fd390af879b3bf6b4d1e4b166">&#9670;&#160;</a></span>length()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -231,8 +284,8 @@ template&lt;size_t BufferSize, typename CRC &gt; </div>
 
 </div>
 </div>
-<a id="ab24a1bdc620c5b447ec13985863be014"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab24a1bdc620c5b447ec13985863be014">&#9670;&nbsp;</a></span>state()</h2>
+<a id="ab24a1bdc620c5b447ec13985863be014" name="ab24a1bdc620c5b447ec13985863be014"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab24a1bdc620c5b447ec13985863be014">&#9670;&#160;</a></span>state()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -259,8 +312,8 @@ template&lt;size_t BufferSize, typename CRC &gt; </div>
 
 </div>
 </div>
-<a id="a9fe9b4dd1e0a4a643153a12f12e49603"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9fe9b4dd1e0a4a643153a12f12e49603">&#9670;&nbsp;</a></span>update()</h2>
+<a id="a9fe9b4dd1e0a4a643153a12f12e49603" name="a9fe9b4dd1e0a4a643153a12f12e49603"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9fe9b4dd1e0a4a643153a12f12e49603">&#9670;&#160;</a></span>update()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -313,9 +366,7 @@ template&lt;size_t BufferSize, typename CRC &gt; </div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Создано системой &#160;<a href="http://www.doxygen.org/index.html">
-<img class="footer" src="doxygen.png" alt="doxygen"/>
-</a> 1.8.17
+Создано системой&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8
 </small></address>
 </body>
 </html>

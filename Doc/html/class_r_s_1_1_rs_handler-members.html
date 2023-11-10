@@ -1,9 +1,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ru">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=9"/>
-<meta name="generator" content="Doxygen 1.8.17"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>UtilitaryRS: Cписок членов класса</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
@@ -19,10 +19,9 @@
 <div id="titlearea">
 <table cellspacing="0" cellpadding="0">
  <tbody>
- <tr style="height: 56px;">
-  <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">UtilitaryRS
-   &#160;<span id="projectnumber">1.0</span>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">UtilitaryRS<span id="projectnumber">&#160;1.0</span>
    </div>
    <div id="projectbrief">Handy protocol for RS485</div>
   </td>
@@ -31,21 +30,22 @@
 </table>
 </div>
 <!-- end header part -->
-<!-- Создано системой Doxygen 1.8.17 -->
+<!-- Создано системой Doxygen 1.9.8 -->
 <script type="text/javascript">
-/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
-var searchBox = new SearchBox("searchBox", "search",false,'Поиск');
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
 /* @license-end */
 </script>
 <script type="text/javascript" src="menudata.js"></script>
 <script type="text/javascript" src="menu.js"></script>
 <script type="text/javascript">
-/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
 $(function() {
   initMenu('',true,false,'search.php','Поиск');
   $(document).ready(function() { init_search(); });
 });
-/* @license-end */</script>
+/* @license-end */
+</script>
 <div id="main-nav"></div>
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
@@ -56,9 +56,16 @@ $(function() {
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
-<iframe src="javascript:void(0)" frameborder="0" 
-        name="MSearchResults" id="MSearchResults">
-</iframe>
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Загрузка...</div>
+<div class="SRStatus" id="Searching">Поиск...</div>
+<div class="SRStatus" id="NoMatches">Не найдено</div>
+</div>
+</div>
+</div>
 </div>
 
 <div id="nav-path" class="navpath">
@@ -67,28 +74,36 @@ $(function() {
 </div>
 </div><!-- top -->
 <div class="header">
-  <div class="headertitle">
-<div class="title">RS::RsHandler&lt; Interface, Crc, ParserSize &gt; Cписок членов класса</div>  </div>
+  <div class="headertitle"><div class="title">RS::RsHandler&lt; Interface, Crc, ParserSize &gt; Cписок членов класса</div></div>
 </div><!--header-->
 <div class="contents">
 
 <p>Полный список членов класса <a class="el" href="class_r_s_1_1_rs_handler.html">RS::RsHandler&lt; Interface, Crc, ParserSize &gt;</a>, включая наследуемые из базового класса</p>
 <table class="directory">
-  <tr class="even"><td class="entry"><a class="el" href="class_r_s_1_1_rs_handler.html#ac762953e0ed036081311aa883df38f1a">handleAck</a>(uint8_t aReturnCode)=0</td><td class="entry"><a class="el" href="class_r_s_1_1_rs_handler.html">RS::RsHandler&lt; Interface, Crc, ParserSize &gt;</a></td><td class="entry"><span class="mlabel">protected</span><span class="mlabel">pure virtual</span></td></tr>
-  <tr><td class="entry"><a class="el" href="class_r_s_1_1_rs_handler.html#a82d52fb1518e4fd15e9204f57907e18e">handleAnswer</a>(uint8_t aRequest, const uint8_t *aData, uint8_t aLength)=0</td><td class="entry"><a class="el" href="class_r_s_1_1_rs_handler.html">RS::RsHandler&lt; Interface, Crc, ParserSize &gt;</a></td><td class="entry"><span class="mlabel">protected</span><span class="mlabel">pure virtual</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="class_r_s_1_1_rs_handler.html#a7bd8f234aa16a15ea8f29a6436220052">handleCommand</a>(uint8_t aCommand, uint8_t aArgument)=0</td><td class="entry"><a class="el" href="class_r_s_1_1_rs_handler.html">RS::RsHandler&lt; Interface, Crc, ParserSize &gt;</a></td><td class="entry"><span class="mlabel">protected</span><span class="mlabel">pure virtual</span></td></tr>
-  <tr><td class="entry"><a class="el" href="class_r_s_1_1_rs_handler.html#a15bf3bb58205a46b384d65b4de0c142b">processRequest</a>(uint8_t aTransmitUID, uint8_t aRequest, uint8_t aRequestedDataSize)=0</td><td class="entry"><a class="el" href="class_r_s_1_1_rs_handler.html">RS::RsHandler&lt; Interface, Crc, ParserSize &gt;</a></td><td class="entry"><span class="mlabel">protected</span><span class="mlabel">pure virtual</span></td></tr>
+  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>AckMessage</b> typedef (определено в <a class="el" href="class_r_s_1_1_rs_handler.html">RS::RsHandler&lt; Interface, Crc, ParserSize &gt;</a>)</td><td class="entry"><a class="el" href="class_r_s_1_1_rs_handler.html">RS::RsHandler&lt; Interface, Crc, ParserSize &gt;</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr bgcolor="#f0f0f0" class="odd"><td class="entry"><b>AnwMessage</b> typedef (определено в <a class="el" href="class_r_s_1_1_rs_handler.html">RS::RsHandler&lt; Interface, Crc, ParserSize &gt;</a>)</td><td class="entry"><a class="el" href="class_r_s_1_1_rs_handler.html">RS::RsHandler&lt; Interface, Crc, ParserSize &gt;</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>ComMessage</b> typedef (определено в <a class="el" href="class_r_s_1_1_rs_handler.html">RS::RsHandler&lt; Interface, Crc, ParserSize &gt;</a>)</td><td class="entry"><a class="el" href="class_r_s_1_1_rs_handler.html">RS::RsHandler&lt; Interface, Crc, ParserSize &gt;</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="class_r_s_1_1_rs_handler.html#ac762953e0ed036081311aa883df38f1a">handleAck</a>(uint8_t aReturnCode)=0</td><td class="entry"><a class="el" href="class_r_s_1_1_rs_handler.html">RS::RsHandler&lt; Interface, Crc, ParserSize &gt;</a></td><td class="entry"><span class="mlabel">protected</span><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_r_s_1_1_rs_handler.html#a82d52fb1518e4fd15e9204f57907e18e">handleAnswer</a>(uint8_t aRequest, const uint8_t *aData, uint8_t aLength)=0</td><td class="entry"><a class="el" href="class_r_s_1_1_rs_handler.html">RS::RsHandler&lt; Interface, Crc, ParserSize &gt;</a></td><td class="entry"><span class="mlabel">protected</span><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="class_r_s_1_1_rs_handler.html#a7bd8f234aa16a15ea8f29a6436220052">handleCommand</a>(uint8_t aCommand, uint8_t aArgument)=0</td><td class="entry"><a class="el" href="class_r_s_1_1_rs_handler.html">RS::RsHandler&lt; Interface, Crc, ParserSize &gt;</a></td><td class="entry"><span class="mlabel">protected</span><span class="mlabel">pure virtual</span></td></tr>
+  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>interface</b> (определено в <a class="el" href="class_r_s_1_1_rs_handler.html">RS::RsHandler&lt; Interface, Crc, ParserSize &gt;</a>)</td><td class="entry"><a class="el" href="class_r_s_1_1_rs_handler.html">RS::RsHandler&lt; Interface, Crc, ParserSize &gt;</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr bgcolor="#f0f0f0" class="odd"><td class="entry"><b>messageBuffer</b> (определено в <a class="el" href="class_r_s_1_1_rs_handler.html">RS::RsHandler&lt; Interface, Crc, ParserSize &gt;</a>)</td><td class="entry"><a class="el" href="class_r_s_1_1_rs_handler.html">RS::RsHandler&lt; Interface, Crc, ParserSize &gt;</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>nodeUID</b> (определено в <a class="el" href="class_r_s_1_1_rs_handler.html">RS::RsHandler&lt; Interface, Crc, ParserSize &gt;</a>)</td><td class="entry"><a class="el" href="class_r_s_1_1_rs_handler.html">RS::RsHandler&lt; Interface, Crc, ParserSize &gt;</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr bgcolor="#f0f0f0" class="odd"><td class="entry"><b>Parser</b> typedef (определено в <a class="el" href="class_r_s_1_1_rs_handler.html">RS::RsHandler&lt; Interface, Crc, ParserSize &gt;</a>)</td><td class="entry"><a class="el" href="class_r_s_1_1_rs_handler.html">RS::RsHandler&lt; Interface, Crc, ParserSize &gt;</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>parser</b> (определено в <a class="el" href="class_r_s_1_1_rs_handler.html">RS::RsHandler&lt; Interface, Crc, ParserSize &gt;</a>)</td><td class="entry"><a class="el" href="class_r_s_1_1_rs_handler.html">RS::RsHandler&lt; Interface, Crc, ParserSize &gt;</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="class_r_s_1_1_rs_handler.html#ac4335ae24f6799d7e94de5295f72367e">process</a>(const uint8_t *aMessage, size_t aLength)</td><td class="entry"><a class="el" href="class_r_s_1_1_rs_handler.html">RS::RsHandler&lt; Interface, Crc, ParserSize &gt;</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_r_s_1_1_rs_handler.html#a15bf3bb58205a46b384d65b4de0c142b">processRequest</a>(uint8_t aTransmitUID, uint8_t aRequest, uint8_t aRequestedDataSize)=0</td><td class="entry"><a class="el" href="class_r_s_1_1_rs_handler.html">RS::RsHandler&lt; Interface, Crc, ParserSize &gt;</a></td><td class="entry"><span class="mlabel">protected</span><span class="mlabel">pure virtual</span></td></tr>
+  <tr bgcolor="#f0f0f0" class="odd"><td class="entry"><b>ReqMessage</b> typedef (определено в <a class="el" href="class_r_s_1_1_rs_handler.html">RS::RsHandler&lt; Interface, Crc, ParserSize &gt;</a>)</td><td class="entry"><a class="el" href="class_r_s_1_1_rs_handler.html">RS::RsHandler&lt; Interface, Crc, ParserSize &gt;</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="class_r_s_1_1_rs_handler.html#a32b489e8eec82c932a2c0e7a33df5413">RsHandler</a>(Interface &amp;aInterface, uint8_t aNodeUID)</td><td class="entry"><a class="el" href="class_r_s_1_1_rs_handler.html">RS::RsHandler&lt; Interface, Crc, ParserSize &gt;</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr><td class="entry"><a class="el" href="class_r_s_1_1_rs_handler.html#a29ae134ad96c7a9b3e537bd971f33715">sendAnswer</a>(uint8_t aReceiverUID, uint8_t aRequest, uint8_t aRequestedDataSize, void *aData, uint8_t aSize)</td><td class="entry"><a class="el" href="class_r_s_1_1_rs_handler.html">RS::RsHandler&lt; Interface, Crc, ParserSize &gt;</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">protected</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="class_r_s_1_1_rs_handler.html#a7d2bcc9a80bd636838218c5834ea7d21">sendCommand</a>(uint8_t aReceiverUID, uint8_t aCommand, uint8_t aArgument)</td><td class="entry"><a class="el" href="class_r_s_1_1_rs_handler.html">RS::RsHandler&lt; Interface, Crc, ParserSize &gt;</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">protected</span></td></tr>
-  <tr><td class="entry"><a class="el" href="class_r_s_1_1_rs_handler.html#a5f6c1ef7ea4c9b7ff5060b5d0f96cfa8">sendRequest</a>(uint8_t aReceiverUID, uint8_t aRequest, uint8_t aDataSize)</td><td class="entry"><a class="el" href="class_r_s_1_1_rs_handler.html">RS::RsHandler&lt; Interface, Crc, ParserSize &gt;</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">protected</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="class_r_s_1_1_rs_handler.html#ab0933a026a5006f72f269259c5b79d17">update</a>(uint8_t *aData, size_t aLength)</td><td class="entry"><a class="el" href="class_r_s_1_1_rs_handler.html">RS::RsHandler&lt; Interface, Crc, ParserSize &gt;</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="class_r_s_1_1_rs_handler.html#a841e710aabdc96257cb1eda5a8e74728">sendAck</a>(uint8_t aTransmitterUID, uint8_t aReturnCode)</td><td class="entry"><a class="el" href="class_r_s_1_1_rs_handler.html">RS::RsHandler&lt; Interface, Crc, ParserSize &gt;</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_r_s_1_1_rs_handler.html#a29ae134ad96c7a9b3e537bd971f33715">sendAnswer</a>(uint8_t aReceiverUID, uint8_t aRequest, uint8_t aRequestedDataSize, void *aData, uint8_t aSize)</td><td class="entry"><a class="el" href="class_r_s_1_1_rs_handler.html">RS::RsHandler&lt; Interface, Crc, ParserSize &gt;</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">protected</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="class_r_s_1_1_rs_handler.html#a7d2bcc9a80bd636838218c5834ea7d21">sendCommand</a>(uint8_t aReceiverUID, uint8_t aCommand, uint8_t aArgument)</td><td class="entry"><a class="el" href="class_r_s_1_1_rs_handler.html">RS::RsHandler&lt; Interface, Crc, ParserSize &gt;</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">protected</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_r_s_1_1_rs_handler.html#a5f6c1ef7ea4c9b7ff5060b5d0f96cfa8">sendRequest</a>(uint8_t aReceiverUID, uint8_t aRequest, uint8_t aDataSize)</td><td class="entry"><a class="el" href="class_r_s_1_1_rs_handler.html">RS::RsHandler&lt; Interface, Crc, ParserSize &gt;</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">protected</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="class_r_s_1_1_rs_handler.html#ab0933a026a5006f72f269259c5b79d17">update</a>(uint8_t *aData, size_t aLength)</td><td class="entry"><a class="el" href="class_r_s_1_1_rs_handler.html">RS::RsHandler&lt; Interface, Crc, ParserSize &gt;</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
 </table></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Создано системой &#160;<a href="http://www.doxygen.org/index.html">
-<img class="footer" src="doxygen.png" alt="doxygen"/>
-</a> 1.8.17
+Создано системой&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8
 </small></address>
 </body>
 </html>

@@ -68,7 +68,7 @@ public:
 
 		if (aRequest == 2) {
 			uint32_t data = 0xAABBCCDD;
-			return BaseType::sendAnswer(aTransmitUID, aRequest, aRequestedDataSize, reinterpret_cast<void *>(&data), sizeof(data));
+			return BaseType::sendAnswer(aTransmitUID, aRequest, aRequestedDataSize, &data, sizeof(data));
 		}
 		isError = true;
 		return false;

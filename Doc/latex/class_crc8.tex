@@ -1,24 +1,39 @@
-\hypertarget{class_crc8}{}\doxysection{Класс Crc8}
-\label{class_crc8}\index{Crc8@{Crc8}}
-\doxysubsection*{Открытые статические члены}
+\doxysection{Класс Crc8}
+\hypertarget{class_crc8}{}\label{class_crc8}\index{Crc8@{Crc8}}
+\doxysubsubsection*{Открытые статические члены}
 \begin{DoxyCompactItemize}
 \item 
-static uint8\+\_\+t \mbox{\hyperlink{class_crc8_abad336904c239ef4eb58ae536147f41b}{calculate}} (const void $\ast$a\+Data, size\+\_\+t a\+Length)
-\begin{DoxyCompactList}\small\item\em Рассчитывает C\+R\+C8 для буфера \end{DoxyCompactList}\item 
-static uint8\+\_\+t \mbox{\hyperlink{class_crc8_a3e531638c451272663a282bfcbb6634c}{update}} (uint8\+\_\+t a\+Checksum, const void $\ast$a\+Buffer, size\+\_\+t a\+Length)
-\begin{DoxyCompactList}\small\item\em Функция для расчета C\+R\+C8 для принимаемых сообщений \end{DoxyCompactList}\end{DoxyCompactItemize}
+static uint8\+\_\+t \mbox{\hyperlink{class_crc8_abad336904c239ef4eb58ae536147f41b}{calculate}} (const void \texorpdfstring{$\ast$}{*}a\+Data, size\+\_\+t a\+Length)
+\begin{DoxyCompactList}\small\item\em Рассчитывает CRC8 для буфера \end{DoxyCompactList}\item 
+static uint8\+\_\+t \mbox{\hyperlink{class_crc8_a3e531638c451272663a282bfcbb6634c}{update}} (uint8\+\_\+t a\+Checksum, const void \texorpdfstring{$\ast$}{*}a\+Buffer, size\+\_\+t a\+Length)
+\begin{DoxyCompactList}\small\item\em Функция для расчета CRC8 для принимаемых сообщений \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Закрытые члены}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_crc8_af279a81c0a7bf048ca15f2d37b43aa15}\label{class_crc8_af279a81c0a7bf048ca15f2d37b43aa15} 
+{\bfseries Crc8} (const \mbox{\hyperlink{class_crc8}{Crc8}} \&)=delete
+\item 
+\Hypertarget{class_crc8_aa4cb5b56abf7da6b38a5ffc4d52e744d}\label{class_crc8_aa4cb5b56abf7da6b38a5ffc4d52e744d} 
+\mbox{\hyperlink{class_crc8}{Crc8}} {\bfseries operator=} (const \mbox{\hyperlink{class_crc8}{Crc8}} \&)=delete
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Закрытые статические данные}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_crc8_af4b47adef47524868b9124eb71fda057}\label{class_crc8_af4b47adef47524868b9124eb71fda057} 
+static constexpr uint8\+\_\+t {\bfseries table} \mbox{[}$\,$\mbox{]}
+\end{DoxyCompactItemize}
 
 
 \doxysubsection{Методы}
-\mbox{\Hypertarget{class_crc8_abad336904c239ef4eb58ae536147f41b}\label{class_crc8_abad336904c239ef4eb58ae536147f41b}} 
+\Hypertarget{class_crc8_abad336904c239ef4eb58ae536147f41b}\label{class_crc8_abad336904c239ef4eb58ae536147f41b} 
 \index{Crc8@{Crc8}!calculate@{calculate}}
 \index{calculate@{calculate}!Crc8@{Crc8}}
 \doxysubsubsection{\texorpdfstring{calculate()}{calculate()}}
-{\footnotesize\ttfamily static uint8\+\_\+t Crc8\+::calculate (\begin{DoxyParamCaption}\item[{const void $\ast$}]{a\+Data,  }\item[{size\+\_\+t}]{a\+Length }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+{\footnotesize\ttfamily static uint8\+\_\+t Crc8\+::calculate (\begin{DoxyParamCaption}\item[{const void \texorpdfstring{$\ast$}{*}}]{a\+Data,  }\item[{size\+\_\+t}]{a\+Length }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
 
 
 
-Рассчитывает C\+R\+C8 для буфера 
+Рассчитывает CRC8 для буфера 
 
 
 \begin{DoxyParams}{Аргументы}
@@ -28,17 +43,17 @@ static uint8\+\_\+t \mbox{\hyperlink{class_crc8_a3e531638c451272663a282bfcbb6634
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Возвращает}
-Рассчитанный C\+R\+C8 
+Рассчитанный CRC8 
 \end{DoxyReturn}
-\mbox{\Hypertarget{class_crc8_a3e531638c451272663a282bfcbb6634c}\label{class_crc8_a3e531638c451272663a282bfcbb6634c}} 
+\Hypertarget{class_crc8_a3e531638c451272663a282bfcbb6634c}\label{class_crc8_a3e531638c451272663a282bfcbb6634c} 
 \index{Crc8@{Crc8}!update@{update}}
 \index{update@{update}!Crc8@{Crc8}}
 \doxysubsubsection{\texorpdfstring{update()}{update()}}
-{\footnotesize\ttfamily static uint8\+\_\+t Crc8\+::update (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{a\+Checksum,  }\item[{const void $\ast$}]{a\+Buffer,  }\item[{size\+\_\+t}]{a\+Length }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+{\footnotesize\ttfamily static uint8\+\_\+t Crc8\+::update (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{a\+Checksum,  }\item[{const void \texorpdfstring{$\ast$}{*}}]{a\+Buffer,  }\item[{size\+\_\+t}]{a\+Length }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
 
 
 
-Функция для расчета C\+R\+C8 для принимаемых сообщений 
+Функция для расчета CRC8 для принимаемых сообщений 
 
 
 \begin{DoxyParams}{Аргументы}
@@ -50,7 +65,7 @@ static uint8\+\_\+t \mbox{\hyperlink{class_crc8_a3e531638c451272663a282bfcbb6634
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Возвращает}
-Рассчитанный C\+R\+C8 
+Рассчитанный CRC8 
 \end{DoxyReturn}
 
 

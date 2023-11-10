@@ -1,7 +1,7 @@
 #ifndef MOCKTIME_HPP
 #define MOCKTIME_HPP
 
-#include <cstdint>
+#include <stdint.h>
 
 class MockTime {
 public:

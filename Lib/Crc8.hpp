@@ -10,8 +10,8 @@
 #ifndef LIB_CRC8_HPP
 #define LIB_CRC8_HPP
 
-#include <cstddef>
-#include <cstdint>
+#include <stddef.h>
+#include <stdint.h>
 
 class Crc8 {
 	Crc8() = delete;
@@ -99,5 +99,7 @@ public:
 		return aChecksum;
 	}
 };
+
+constexpr uint8_t Crc8::table[];
 
 #endif // LIB_CRC8_HPP

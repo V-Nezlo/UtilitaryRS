@@ -9,7 +9,7 @@
 #ifndef LIB_RSTYPES_HPP_
 #define LIB_RSTYPES_HPP_
 
-#include <cstdint>
+#include <stdint.h>
 
 namespace RS {
 

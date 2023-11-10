@@ -1,0 +1,17 @@
+<map id="Lib/RsHandler.hpp" name="Lib/RsHandler.hpp">
+<area shape="rect" id="Node000001" title="Класс, описывающий поведение протокола RsHandler." alt="" coords="78,5,207,31"/>
+<area shape="rect" id="Node000002" href="$_rs_parser_8hpp.html" title="Класс, описывающий парсер протокола UtilitaryRS." alt="" coords="92,79,193,104"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="145,31,145,65,140,65,140,31"/>
+<area shape="rect" id="Node000003" href="$_rs_types_8hpp.html" title="Файл, описывающий сообщения внутри протокола UtilitaryRS." alt="" coords="5,152,104,177"/>
+<area shape="poly" id="edge7_Node000001_Node000003" title=" " alt="" coords="128,33,104,53,82,80,69,110,61,139,56,138,64,108,78,77,101,50,125,29"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="218,79,265,104"/>
+<area shape="poly" id="edge8_Node000001_Node000007" title=" " alt="" coords="160,29,216,68,213,73,157,33"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="130,106,81,145,78,141,127,102"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="65,225,130,251"/>
+<area shape="poly" id="edge5_Node000002_Node000004" title=" " alt="" coords="142,105,108,213,103,211,136,104"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="179,152,248,177"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="156,102,194,140,190,144,152,106"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="273,152,338,177"/>
+<area shape="poly" id="edge6_Node000002_Node000006" title=" " alt="" coords="170,102,267,144,265,149,168,106"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="64,176,86,212,81,215,59,179"/>
+</map>

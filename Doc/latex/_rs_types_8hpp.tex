@@ -1,80 +1,98 @@
-\hypertarget{_rs_types_8hpp}{}\doxysection{Файл Lib/\+Rs\+Types.hpp}
-\label{_rs_types_8hpp}\index{Lib/RsTypes.hpp@{Lib/RsTypes.hpp}}
+\doxysection{Файл Lib/\+Rs\+Types.hpp}
+\hypertarget{_rs_types_8hpp}{}\label{_rs_types_8hpp}\index{Lib/RsTypes.hpp@{Lib/RsTypes.hpp}}
 
 
 Файл, описывающий сообщения внутри протокола Utilitary\+RS.  
 
 
-{\ttfamily \#include $<$cstdint$>$}\newline
-Граф включаемых заголовочных файлов для Rs\+Types.\+hpp\+:
-% FIG 0
-Граф файлов, в которые включается этот файл\+:
-% FIG 1
-\doxysubsection*{Классы}
+{\ttfamily \#include $<$stdint.\+h$>$}\newline
+Граф включаемых заголовочных файлов для Rs\+Types.\+hpp\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=170pt]{_rs_types_8hpp__incl}
+\end{center}
+\end{figure}
+Граф файлов, в которые включается этот файл\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=212pt]{_rs_types_8hpp__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Классы}
 \begin{DoxyCompactItemize}
 \item 
-struct \mbox{\hyperlink{struct_r_s_1_1_header}{R\+S\+::\+Header}}
-\begin{DoxyCompactList}\small\item\em Заголовок сообщения, содержит U\+ID отправителя, U\+ID получателя и тип сообщения \end{DoxyCompactList}\item 
-struct \mbox{\hyperlink{struct_r_s_1_1_packet}{R\+S\+::\+Packet$<$ T $>$}}
+struct \mbox{\hyperlink{struct_r_s_1_1_header}{RS\+::\+Header}}
+\begin{DoxyCompactList}\small\item\em Заголовок сообщения, содержит UID отправителя, UID получателя и тип сообщения \end{DoxyCompactList}\item 
+struct \mbox{\hyperlink{struct_r_s_1_1_packet}{RS\+::\+Packet$<$ T $>$}}
 \item 
-struct \mbox{\hyperlink{struct_r_s_1_1_command_payload}{R\+S\+::\+Command\+Payload}}
+struct \mbox{\hyperlink{struct_r_s_1_1_command_payload}{RS\+::\+Command\+Payload}}
 \begin{DoxyCompactList}\small\item\em Полезная нагрузка командного сообщения, содержит номер команды и аргумент \end{DoxyCompactList}\item 
-struct \mbox{\hyperlink{struct_r_s_1_1_request_payload}{R\+S\+::\+Request\+Payload}}
+struct \mbox{\hyperlink{struct_r_s_1_1_request_payload}{RS\+::\+Request\+Payload}}
 \begin{DoxyCompactList}\small\item\em Полезная нагрузка сообщения запроса данных, содержит номер запроса и количество запрашиваемых байт \end{DoxyCompactList}\item 
-struct \mbox{\hyperlink{struct_r_s_1_1_answer_payload}{R\+S\+::\+Answer\+Payload}}
+struct \mbox{\hyperlink{struct_r_s_1_1_answer_payload}{RS\+::\+Answer\+Payload}}
 \begin{DoxyCompactList}\small\item\em Полезная нагрузка сообщения ответа на запрос, содержит номер запроса, размер данных запроса Сразу после последнего поля data\+Size следует сам запрос размером data\+Size. \end{DoxyCompactList}\item 
-struct \mbox{\hyperlink{struct_r_s_1_1_ack_payload}{R\+S\+::\+Ack\+Payload}}
-\begin{DoxyCompactList}\small\item\em Полезная нагрузка Ack сообщения, содержит код возврата \end{DoxyCompactList}\end{DoxyCompactItemize}
-\doxysubsection*{Перечисления}
+struct \mbox{\hyperlink{struct_r_s_1_1_ack_payload}{RS\+::\+Ack\+Payload}}
+\begin{DoxyCompactList}\small\item\em Полезная нагрузка Ack сообщения, содержит код возврата \end{DoxyCompactList}\item 
+struct \mbox{\hyperlink{struct_r_s_1_1_probe_payload}{RS\+::\+Probe\+Payload}}
+\begin{DoxyCompactList}\small\item\em Полезная нагрузка сообщения Probe, не содержит ничего (пока) \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Перечисления}
 \begin{DoxyCompactItemize}
 \item 
-\mbox{\Hypertarget{_rs_types_8hpp_a1e6ff4cc493c0e1015dc71c4bcbc168b}\label{_rs_types_8hpp_a1e6ff4cc493c0e1015dc71c4bcbc168b}} 
-enum \mbox{\hyperlink{_rs_types_8hpp_a1e6ff4cc493c0e1015dc71c4bcbc168b}{R\+S\+::\+Message\+Type}} \+: uint8\+\_\+t \{ {\bfseries Command} = 0, 
-{\bfseries Request}, 
-{\bfseries Answer}, 
-{\bfseries Ack}
+\Hypertarget{_rs_types_8hpp_a1e6ff4cc493c0e1015dc71c4bcbc168b}\label{_rs_types_8hpp_a1e6ff4cc493c0e1015dc71c4bcbc168b} 
+enum class \mbox{\hyperlink{_rs_types_8hpp_a1e6ff4cc493c0e1015dc71c4bcbc168b}{RS\+::\+Message\+Type}} \+: uint8\+\_\+t \{ \newline
+{\bfseries Command} = 0
+, {\bfseries Request}
+, {\bfseries Answer}
+, {\bfseries Ack}
+, \newline
+{\bfseries Probe}
  \}
 \begin{DoxyCompactList}\small\item\em Энумератор типов сообщений -\/ сообщения имеют следующие типы\+: Команда, Запрос данных, Ответ на запрос данных, подверждение приема сообщения \end{DoxyCompactList}\end{DoxyCompactItemize}
-\doxysubsection*{Функции}
+\doxysubsubsection*{Функции}
 \begin{DoxyCompactItemize}
 \item 
-\mbox{\Hypertarget{_rs_types_8hpp_a4bd8e743397b3fee27a2459cb1be7f4a}\label{_rs_types_8hpp_a4bd8e743397b3fee27a2459cb1be7f4a}} 
-struct \mbox{\hyperlink{struct_r_s_1_1_header}{R\+S\+::\+Header}} {\bfseries R\+S\+::\+\_\+\+\_\+attribute\+\_\+\+\_\+} ((packed))
+\Hypertarget{_rs_types_8hpp_a657f868d9dbd5ff36f88d27cb1641c0a}\label{_rs_types_8hpp_a657f868d9dbd5ff36f88d27cb1641c0a} 
+struct \mbox{\hyperlink{struct_r_s_1_1_header}{RS\+::\+Header}} {\bfseries RS\+::\+\_\+\+\_\+attribute\+\_\+\+\_\+} ((packed))
+\item 
+\Hypertarget{_rs_types_8hpp_adc173679765a5c4e31194ae9ab822e2a}\label{_rs_types_8hpp_adc173679765a5c4e31194ae9ab822e2a} 
+{\footnotesize template$<$class T $>$ }\\\mbox{\hyperlink{struct_r_s_1_1_packet}{RS\+::\+Packet}} \mbox{\hyperlink{struct_r_s_1_1_header}{Header}} {\bfseries RS\+::\+\_\+\+\_\+attribute\+\_\+\+\_\+} ((packed))
 \end{DoxyCompactItemize}
-\doxysubsection*{Переменные}
+\doxysubsubsection*{Переменные}
 \begin{DoxyCompactItemize}
 \item 
-\mbox{\Hypertarget{_rs_types_8hpp_a4361d63a01ad0b61c4f146c7e72dab0b}\label{_rs_types_8hpp_a4361d63a01ad0b61c4f146c7e72dab0b}} 
-uint8\+\_\+t {\bfseries receiver\+U\+ID}
+\Hypertarget{_rs_types_8hpp_a4361d63a01ad0b61c4f146c7e72dab0b}\label{_rs_types_8hpp_a4361d63a01ad0b61c4f146c7e72dab0b} 
+uint8\+\_\+t {\bfseries receiver\+UID}
 \item 
-\mbox{\Hypertarget{_rs_types_8hpp_aac852f0233be6c24df8f62c201e1db1c}\label{_rs_types_8hpp_aac852f0233be6c24df8f62c201e1db1c}} 
-uint8\+\_\+t {\bfseries transmit\+U\+ID}
+\Hypertarget{_rs_types_8hpp_aac852f0233be6c24df8f62c201e1db1c}\label{_rs_types_8hpp_aac852f0233be6c24df8f62c201e1db1c} 
+uint8\+\_\+t {\bfseries transmit\+UID}
 \item 
-\mbox{\Hypertarget{_rs_types_8hpp_adb32627aa5b0e2dbad3ccd88aab07c05}\label{_rs_types_8hpp_adb32627aa5b0e2dbad3ccd88aab07c05}} 
+\Hypertarget{_rs_types_8hpp_adb32627aa5b0e2dbad3ccd88aab07c05}\label{_rs_types_8hpp_adb32627aa5b0e2dbad3ccd88aab07c05} 
 Message\+Type {\bfseries message\+Type}
 \item 
-\mbox{\Hypertarget{_rs_types_8hpp_acb7bc06bed6f6408d719334fc41698c7}\label{_rs_types_8hpp_acb7bc06bed6f6408d719334fc41698c7}} 
+\Hypertarget{_rs_types_8hpp_acb7bc06bed6f6408d719334fc41698c7}\label{_rs_types_8hpp_acb7bc06bed6f6408d719334fc41698c7} 
 uint8\+\_\+t {\bfseries reserved}
 \item 
-\mbox{\Hypertarget{_rs_types_8hpp_acb77170554cd381d06bba4eeeca2cd21}\label{_rs_types_8hpp_acb77170554cd381d06bba4eeeca2cd21}} 
+\Hypertarget{_rs_types_8hpp_acb77170554cd381d06bba4eeeca2cd21}\label{_rs_types_8hpp_acb77170554cd381d06bba4eeeca2cd21} 
 T {\bfseries payload}
 \item 
-\mbox{\Hypertarget{_rs_types_8hpp_a1a5aaa930940857f68f245eeb89506b5}\label{_rs_types_8hpp_a1a5aaa930940857f68f245eeb89506b5}} 
+\Hypertarget{_rs_types_8hpp_a1a5aaa930940857f68f245eeb89506b5}\label{_rs_types_8hpp_a1a5aaa930940857f68f245eeb89506b5} 
 uint8\+\_\+t {\bfseries command}
 \item 
-\mbox{\Hypertarget{_rs_types_8hpp_a638e4503e0ae6ce655b7ad2e17e8f0ad}\label{_rs_types_8hpp_a638e4503e0ae6ce655b7ad2e17e8f0ad}} 
+\Hypertarget{_rs_types_8hpp_a638e4503e0ae6ce655b7ad2e17e8f0ad}\label{_rs_types_8hpp_a638e4503e0ae6ce655b7ad2e17e8f0ad} 
 uint8\+\_\+t {\bfseries value}
 \item 
-\mbox{\Hypertarget{_rs_types_8hpp_a4b3fd0df70d658055a7acf59d2783863}\label{_rs_types_8hpp_a4b3fd0df70d658055a7acf59d2783863}} 
+\Hypertarget{_rs_types_8hpp_a4b3fd0df70d658055a7acf59d2783863}\label{_rs_types_8hpp_a4b3fd0df70d658055a7acf59d2783863} 
 uint8\+\_\+t {\bfseries request}
 \item 
-\mbox{\Hypertarget{_rs_types_8hpp_a62ffb442ed9a7fde117789ac2bed198e}\label{_rs_types_8hpp_a62ffb442ed9a7fde117789ac2bed198e}} 
+\Hypertarget{_rs_types_8hpp_a62ffb442ed9a7fde117789ac2bed198e}\label{_rs_types_8hpp_a62ffb442ed9a7fde117789ac2bed198e} 
 uint8\+\_\+t {\bfseries answer\+Data\+Size}
 \item 
-\mbox{\Hypertarget{_rs_types_8hpp_af13e629a2f79d14821c7b9246ef99e9f}\label{_rs_types_8hpp_af13e629a2f79d14821c7b9246ef99e9f}} 
+\Hypertarget{_rs_types_8hpp_af13e629a2f79d14821c7b9246ef99e9f}\label{_rs_types_8hpp_af13e629a2f79d14821c7b9246ef99e9f} 
 uint8\+\_\+t {\bfseries data\+Size}
 \item 
-\mbox{\Hypertarget{_rs_types_8hpp_a966576744a473fafb7687f8e5649941f}\label{_rs_types_8hpp_a966576744a473fafb7687f8e5649941f}} 
+\Hypertarget{_rs_types_8hpp_a966576744a473fafb7687f8e5649941f}\label{_rs_types_8hpp_a966576744a473fafb7687f8e5649941f} 
 uint8\+\_\+t {\bfseries code}
 \end{DoxyCompactItemize}
 
