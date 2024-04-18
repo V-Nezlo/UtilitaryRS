@@ -76,7 +76,6 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Открытые члены</a> &#124;
-<a href="#pro-methods">Защищенные члены</a> &#124;
 <a href="#pri-types">Закрытые типы</a> &#124;
 <a href="#pri-methods">Закрытые члены</a> &#124;
 <a href="#pri-attribs">Закрытые данные</a> &#124;
@@ -105,9 +104,6 @@ $(function() {
 <tr class="memitem:ab0933a026a5006f72f269259c5b79d17" id="r_ab0933a026a5006f72f269259c5b79d17"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_r_s_1_1_rs_handler.html#ab0933a026a5006f72f269259c5b79d17">update</a> (uint8_t *aData, size_t aLength)</td></tr>
 <tr class="memdesc:ab0933a026a5006f72f269259c5b79d17"><td class="mdescLeft">&#160;</td><td class="mdescRight">Основная функция, прокидывающая получаемые байты в парсер и отправляющие в протокольный обработчик  <br /></td></tr>
 <tr class="separator:ab0933a026a5006f72f269259c5b79d17"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
-Защищенные члены</h2></td></tr>
 <tr class="memitem:a7d2bcc9a80bd636838218c5834ea7d21" id="r_a7d2bcc9a80bd636838218c5834ea7d21"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_r_s_1_1_rs_handler.html#a7d2bcc9a80bd636838218c5834ea7d21">sendCommand</a> (uint8_t aReceiverUID, uint8_t aCommand, uint8_t aArgument)</td></tr>
 <tr class="memdesc:a7d2bcc9a80bd636838218c5834ea7d21"><td class="mdescLeft">&#160;</td><td class="mdescRight">Функция для отправки команды от текущей ноды  <br /></td></tr>
 <tr class="separator:a7d2bcc9a80bd636838218c5834ea7d21"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -120,9 +116,9 @@ $(function() {
 <tr class="memitem:a7bd8f234aa16a15ea8f29a6436220052" id="r_a7bd8f234aa16a15ea8f29a6436220052"><td class="memItemLeft" align="right" valign="top">virtual uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_r_s_1_1_rs_handler.html#a7bd8f234aa16a15ea8f29a6436220052">handleCommand</a> (uint8_t aCommand, uint8_t aArgument)=0</td></tr>
 <tr class="memdesc:a7bd8f234aa16a15ea8f29a6436220052"><td class="mdescLeft">&#160;</td><td class="mdescRight">Функция обработки команд. возвращает статус, который затем автоматически отправляется как Code в Ack сообщении отправителю команды  <br /></td></tr>
 <tr class="separator:a7bd8f234aa16a15ea8f29a6436220052"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac762953e0ed036081311aa883df38f1a" id="r_ac762953e0ed036081311aa883df38f1a"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_r_s_1_1_rs_handler.html#ac762953e0ed036081311aa883df38f1a">handleAck</a> (uint8_t aReturnCode)=0</td></tr>
-<tr class="memdesc:ac762953e0ed036081311aa883df38f1a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Функция обработки ответа, можно использовать как индикатор того что адресат вообще жив  <br /></td></tr>
-<tr class="separator:ac762953e0ed036081311aa883df38f1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8de147108eddb67ad7bf6006156bcff6" id="r_a8de147108eddb67ad7bf6006156bcff6"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_r_s_1_1_rs_handler.html#a8de147108eddb67ad7bf6006156bcff6">handleAck</a> (uint8_t aTranceiverUID, uint8_t aReturnCode)=0</td></tr>
+<tr class="memdesc:a8de147108eddb67ad7bf6006156bcff6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Функция обработки ответа, можно использовать как индикатор того что адресат вообще жив  <br /></td></tr>
+<tr class="separator:a8de147108eddb67ad7bf6006156bcff6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a82d52fb1518e4fd15e9204f57907e18e" id="r_a82d52fb1518e4fd15e9204f57907e18e"><td class="memItemLeft" align="right" valign="top">virtual uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_r_s_1_1_rs_handler.html#a82d52fb1518e4fd15e9204f57907e18e">handleAnswer</a> (uint8_t aRequest, const uint8_t *aData, uint8_t aLength)=0</td></tr>
 <tr class="memdesc:a82d52fb1518e4fd15e9204f57907e18e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Функция обработки ответа  <br /></td></tr>
 <tr class="separator:a82d52fb1518e4fd15e9204f57907e18e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -221,8 +217,8 @@ template&lt;class Interface , typename Crc , size_t ParserSize&gt; </div>
 </div>
 </div>
 <h2 class="groupheader">Методы</h2>
-<a id="ac762953e0ed036081311aa883df38f1a" name="ac762953e0ed036081311aa883df38f1a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac762953e0ed036081311aa883df38f1a">&#9670;&#160;</a></span>handleAck()</h2>
+<a id="a8de147108eddb67ad7bf6006156bcff6" name="a8de147108eddb67ad7bf6006156bcff6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8de147108eddb67ad7bf6006156bcff6">&#9670;&#160;</a></span>handleAck()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -236,13 +232,23 @@ template&lt;class Interface , typename Crc , size_t ParserSize&gt; </div>
           <td class="memname">virtual void <a class="el" href="class_r_s_1_1_rs_handler.html">RS::RsHandler</a>&lt; Interface, Crc, ParserSize &gt;::handleAck </td>
           <td>(</td>
           <td class="paramtype">uint8_t&#160;</td>
-          <td class="paramname"><em>aReturnCode</em></td><td>)</td>
+          <td class="paramname"><em>aTranceiverUID</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>aReturnCode</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span><span class="mlabel">pure virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -250,6 +256,7 @@ template&lt;class Interface , typename Crc , size_t ParserSize&gt; </div>
 <p>Функция обработки ответа, можно использовать как индикатор того что адресат вообще жив </p>
 <dl class="params"><dt>Аргументы</dt><dd>
   <table class="params">
+    <tr><td class="paramname">aTranceiverUID</td><td>- отправитель Ack </td></tr>
     <tr><td class="paramname">aReturnCode</td><td>- код возврата, который пришел с Ack</td></tr>
   </table>
   </dd>
@@ -299,7 +306,7 @@ template&lt;class Interface , typename Crc , size_t ParserSize&gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span><span class="mlabel">pure virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -355,7 +362,7 @@ template&lt;class Interface , typename Crc , size_t ParserSize&gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span><span class="mlabel">pure virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -462,7 +469,7 @@ template&lt;class Interface , typename Crc , size_t ParserSize&gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span><span class="mlabel">pure virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -581,7 +588,7 @@ template&lt;class Interface , typename Crc , size_t ParserSize&gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">protected</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -638,7 +645,7 @@ template&lt;class Interface , typename Crc , size_t ParserSize&gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">protected</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -692,7 +699,7 @@ template&lt;class Interface , typename Crc , size_t ParserSize&gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">protected</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">

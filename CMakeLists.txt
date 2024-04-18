@@ -6,6 +6,8 @@ enable_testing()
 
 add_executable(UtilitaryRS main.cpp)
 
+add_definitions(-DRSLIB_TESTING)
+
 include_directories("Lib")
 add_subdirectory(Lib)
 

@@ -40,38 +40,37 @@
 \DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ \}}
 \DoxyCodeLine{00056\ \ \ \ \ \}}
 \DoxyCodeLine{00057\ }
-\DoxyCodeLine{00058\ \textcolor{keyword}{protected}:}
-\DoxyCodeLine{00065\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_r_s_1_1_rs_handler_a7d2bcc9a80bd636838218c5834ea7d21}{sendCommand}}(uint8\_t\ aReceiverUID,\ uint8\_t\ aCommand,\ uint8\_t\ aArgument)}
-\DoxyCodeLine{00066\ \ \ \ \ \{}
-\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{struct_r_s_1_1_packet}{ComMessage}}\ message;}
-\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ message.messageType\ =\ MessageType::Command;}
-\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ message.receiverUID\ =\ aReceiverUID;}
-\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ message.transmitUID\ =\ nodeUID;}
-\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ message.payload.command\ =\ aCommand;}
-\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ message.payload.value\ =\ aArgument;}
-\DoxyCodeLine{00073\ }
-\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ length\ =\ parser.\mbox{\hyperlink{class_r_s_1_1_rs_parser_a48b7f42822645d1460680eb0b43e6ba6}{create}}(messageBuffer,\ message,\ \textcolor{keyword}{sizeof}(message));}
-\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ interface.write(messageBuffer,\ length);}
-\DoxyCodeLine{00076\ \ \ \ \ \}}
-\DoxyCodeLine{00077\ }
-\DoxyCodeLine{00084\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_r_s_1_1_rs_handler_a5f6c1ef7ea4c9b7ff5060b5d0f96cfa8}{sendRequest}}(uint8\_t\ aReceiverUID,\ uint8\_t\ aRequest,\ uint8\_t\ aDataSize)}
-\DoxyCodeLine{00085\ \ \ \ \ \{}
-\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{struct_r_s_1_1_packet}{ReqMessage}}\ message;}
-\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ message.messageType\ =\ MessageType::Request;}
-\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ message.receiverUID\ =\ aReceiverUID;}
-\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ message.transmitUID\ =\ nodeUID;}
-\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ message.payload.request\ =\ aRequest;}
-\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ message.payload.answerDataSize\ =\ aDataSize;}
-\DoxyCodeLine{00092\ }
-\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ length\ =\ parser.\mbox{\hyperlink{class_r_s_1_1_rs_parser_a48b7f42822645d1460680eb0b43e6ba6}{create}}(messageBuffer,\ message,\ \textcolor{keyword}{sizeof}(message));}
-\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ interface.write(messageBuffer,\ length);}
-\DoxyCodeLine{00095\ \ \ \ \ \}}
-\DoxyCodeLine{00096\ }
-\DoxyCodeLine{00115\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_r_s_1_1_rs_handler_a15bf3bb58205a46b384d65b4de0c142b}{processRequest}}(uint8\_t\ aTransmitUID,\ uint8\_t\ aRequest,\ uint8\_t\ aRequestedDataSize)\ =\ 0;}
-\DoxyCodeLine{00116\ }
-\DoxyCodeLine{00134\ \ \ \ \ \textcolor{keyword}{virtual}\ uint8\_t\ \mbox{\hyperlink{class_r_s_1_1_rs_handler_a7bd8f234aa16a15ea8f29a6436220052}{handleCommand}}(uint8\_t\ aCommand,\ uint8\_t\ aArgument)\ =\ 0;}
-\DoxyCodeLine{00135\ }
-\DoxyCodeLine{00149\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_r_s_1_1_rs_handler_ac762953e0ed036081311aa883df38f1a}{handleAck}}(uint8\_t\ aReturnCode)\ =\ 0;}
+\DoxyCodeLine{00064\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_r_s_1_1_rs_handler_a7d2bcc9a80bd636838218c5834ea7d21}{sendCommand}}(uint8\_t\ aReceiverUID,\ uint8\_t\ aCommand,\ uint8\_t\ aArgument)}
+\DoxyCodeLine{00065\ \ \ \ \ \{}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{struct_r_s_1_1_packet}{ComMessage}}\ message;}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ message.messageType\ =\ MessageType::Command;}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ message.receiverUID\ =\ aReceiverUID;}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ message.transmitUID\ =\ nodeUID;}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ message.payload.command\ =\ aCommand;}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ message.payload.value\ =\ aArgument;}
+\DoxyCodeLine{00072\ }
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ length\ =\ parser.\mbox{\hyperlink{class_r_s_1_1_rs_parser_a48b7f42822645d1460680eb0b43e6ba6}{create}}(messageBuffer,\ \&message,\ \textcolor{keyword}{sizeof}(message));}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ interface.write(messageBuffer,\ length);}
+\DoxyCodeLine{00075\ \ \ \ \ \}}
+\DoxyCodeLine{00076\ }
+\DoxyCodeLine{00083\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_r_s_1_1_rs_handler_a5f6c1ef7ea4c9b7ff5060b5d0f96cfa8}{sendRequest}}(uint8\_t\ aReceiverUID,\ uint8\_t\ aRequest,\ uint8\_t\ aDataSize)}
+\DoxyCodeLine{00084\ \ \ \ \ \{}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{struct_r_s_1_1_packet}{ReqMessage}}\ message;}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ message.messageType\ =\ MessageType::Request;}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ message.receiverUID\ =\ aReceiverUID;}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ message.transmitUID\ =\ nodeUID;}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ message.payload.request\ =\ aRequest;}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ message.payload.answerDataSize\ =\ aDataSize;}
+\DoxyCodeLine{00091\ }
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ length\ =\ parser.\mbox{\hyperlink{class_r_s_1_1_rs_parser_a48b7f42822645d1460680eb0b43e6ba6}{create}}(messageBuffer,\ \&message,\ \textcolor{keyword}{sizeof}(message));}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ interface.write(messageBuffer,\ length);}
+\DoxyCodeLine{00094\ \ \ \ \ \}}
+\DoxyCodeLine{00095\ }
+\DoxyCodeLine{00114\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_r_s_1_1_rs_handler_a15bf3bb58205a46b384d65b4de0c142b}{processRequest}}(uint8\_t\ aTransmitUID,\ uint8\_t\ aRequest,\ uint8\_t\ aRequestedDataSize)\ =\ 0;}
+\DoxyCodeLine{00115\ }
+\DoxyCodeLine{00133\ \ \ \ \ \textcolor{keyword}{virtual}\ uint8\_t\ \mbox{\hyperlink{class_r_s_1_1_rs_handler_a7bd8f234aa16a15ea8f29a6436220052}{handleCommand}}(uint8\_t\ aCommand,\ uint8\_t\ aArgument)\ =\ 0;}
+\DoxyCodeLine{00134\ }
+\DoxyCodeLine{00149\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_r_s_1_1_rs_handler_a8de147108eddb67ad7bf6006156bcff6}{handleAck}}(uint8\_t\ aTranceiverUID,\ uint8\_t\ aReturnCode)\ =\ 0;}
 \DoxyCodeLine{00150\ }
 \DoxyCodeLine{00169\ \ \ \ \ \textcolor{keyword}{virtual}\ uint8\_t\ \mbox{\hyperlink{class_r_s_1_1_rs_handler_a82d52fb1518e4fd15e9204f57907e18e}{handleAnswer}}(uint8\_t\ aRequest,\ \textcolor{keyword}{const}\ uint8\_t\ *aData,\ uint8\_t\ aLength)\ =\ 0;}
 \DoxyCodeLine{00170\ }
@@ -122,7 +121,7 @@
 \DoxyCodeLine{00236\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{switch}\ (header-\/>messageType)\ \{}
 \DoxyCodeLine{00237\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ MessageType::Ack:\ \{}
 \DoxyCodeLine{00238\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ ackMsg\ =\ \textcolor{keyword}{reinterpret\_cast<}\textcolor{keyword}{const\ }\mbox{\hyperlink{struct_r_s_1_1_packet}{AckMessage}}\ *\textcolor{keyword}{>}(aMessage);}
-\DoxyCodeLine{00239\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_r_s_1_1_rs_handler_ac762953e0ed036081311aa883df38f1a}{handleAck}}(ackMsg-\/>payload.code);}
+\DoxyCodeLine{00239\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_r_s_1_1_rs_handler_a8de147108eddb67ad7bf6006156bcff6}{handleAck}}(header-\/>transmitUID,\ ackMsg-\/>payload.code);}
 \DoxyCodeLine{00240\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{break};}
 \DoxyCodeLine{00241\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ MessageType::Answer:\ \{}
 \DoxyCodeLine{00242\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ answerMsg\ =\ \textcolor{keyword}{reinterpret\_cast<}\textcolor{keyword}{const\ }\mbox{\hyperlink{struct_r_s_1_1_packet}{AnwMessage}}\ *\textcolor{keyword}{>}(aMessage);}

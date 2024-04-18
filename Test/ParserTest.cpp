@@ -1,3 +1,5 @@
+#ifdef RSLIB_TESTING
+
 #include "RsHandler.hpp"
 #include "RsTypes.hpp"
 #include <Crc8.hpp>
@@ -158,3 +160,5 @@ int main()
 
 	return !success;
 }
+
+#endif

@@ -1,3 +1,5 @@
+#ifdef RSLIB_TESTING
+
 #include "Mocks/MockSerial.hpp"
 #include "RsHandler.hpp"
 #include <Crc8.hpp>
@@ -27,7 +29,7 @@ public:
 		return 1;
 	}
 
-	void handleAck(uint8_t aReturnCode) override
+	void handleAck(uint8_t aTranceiverUID, uint8_t aReturnCode) override
 	{
 		std::cout << "ACKNOWLEDGE RECEIVED" << std::endl;
 		isAckHandled = true;
@@ -95,7 +97,15 @@ int main()
 	uint8_t probeBuffer[] = {0x52, 0xff, 0x01, 0x04, 0x06, 0x00, 0x72};
 	handler.update(probeBuffer, sizeof(probeBuffer));
 
+	// Просто вызовы функций для покрытия, пока без тестов
+	handler.sendCommand(1, 1, 1);
+	handler.sendRequest(1, 1, 1);
+	uint8_t answer = 64;
+	handler.sendAnswer(1, 1, 1, &answer, 1);
+
 	bool allMessagesHandled = (isAckHandled && isAnswerHandled && isRequestHandled && isCmdHandled) ? true : false;
 
 	return isError || !allMessagesHandled;
 }
+
+#endif

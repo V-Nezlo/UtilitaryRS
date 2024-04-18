@@ -1,4 +1,4 @@
-#ifndef MOCKTIME_HPP
+#if not defined MOCKTIME_HPP and defined RSLIB_TESTING
 #define MOCKTIME_HPP
 
 #include <stdint.h>

@@ -1,4 +1,4 @@
-#ifndef MOCKSERIAL_HPP
+#if not defined MOCKSERIAL_HPP and defined RSLIB_TESTING
 #define MOCKSERIAL_HPP
 
 #include <iostream>
