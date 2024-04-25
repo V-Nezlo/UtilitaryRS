@@ -125,6 +125,9 @@ $(function() {
 <tr class="memitem:a29ae134ad96c7a9b3e537bd971f33715" id="r_a29ae134ad96c7a9b3e537bd971f33715"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_r_s_1_1_rs_handler.html#a29ae134ad96c7a9b3e537bd971f33715">sendAnswer</a> (uint8_t aReceiverUID, uint8_t aRequest, uint8_t aRequestedDataSize, void *aData, uint8_t aSize)</td></tr>
 <tr class="memdesc:a29ae134ad96c7a9b3e537bd971f33715"><td class="mdescLeft">&#160;</td><td class="mdescRight">Функция, которая отправляет ответ, собранный в функции processRequest. Вызывать через базовый класс  <br /></td></tr>
 <tr class="separator:a29ae134ad96c7a9b3e537bd971f33715"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96d43e9c852f36f53e85a1690aaeffc4" id="r_a96d43e9c852f36f53e85a1690aaeffc4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_r_s_1_1_rs_handler.html#a96d43e9c852f36f53e85a1690aaeffc4">sendProbe</a> (uint8_t aReceiverUID)</td></tr>
+<tr class="memdesc:a96d43e9c852f36f53e85a1690aaeffc4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Функция отправки Probe сообщения, целевая нода должна ответить, иначе она not present.  <br /></td></tr>
+<tr class="separator:a96d43e9c852f36f53e85a1690aaeffc4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-types" name="pri-types"></a>
 Закрытые типы</h2></td></tr>
@@ -143,6 +146,9 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>AnwMessage</b> = <a 
 <tr class="memitem:a7e0d683ddf7a50876c723aa2abbc52a2" id="r_a7e0d683ddf7a50876c723aa2abbc52a2"><td class="memItemLeft" align="right" valign="top"><a id="a7e0d683ddf7a50876c723aa2abbc52a2" name="a7e0d683ddf7a50876c723aa2abbc52a2"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>AckMessage</b> = <a class="el" href="struct_r_s_1_1_packet.html">Packet</a>&lt; <a class="el" href="struct_r_s_1_1_ack_payload.html">AckPayload</a> &gt;</td></tr>
 <tr class="separator:a7e0d683ddf7a50876c723aa2abbc52a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae86f151d32508c0f8ef6d618f65e20cf" id="r_ae86f151d32508c0f8ef6d618f65e20cf"><td class="memItemLeft" align="right" valign="top"><a id="ae86f151d32508c0f8ef6d618f65e20cf" name="ae86f151d32508c0f8ef6d618f65e20cf"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>ProbeMessage</b> = <a class="el" href="struct_r_s_1_1_packet.html">Packet</a>&lt; <a class="el" href="struct_r_s_1_1_probe_payload.html">ProbePayload</a> &gt;</td></tr>
+<tr class="separator:ae86f151d32508c0f8ef6d618f65e20cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-methods" name="pri-methods"></a>
 Закрытые члены</h2></td></tr>
@@ -656,6 +662,42 @@ template&lt;class Interface , typename Crc , size_t ParserSize&gt; </div>
     <tr><td class="paramname">aReceiverUID</td><td>- UID получателя команды </td></tr>
     <tr><td class="paramname">aCommand</td><td>- номер команды </td></tr>
     <tr><td class="paramname">aArgument</td><td>- аргумент для команды (может быть незадействован) </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a96d43e9c852f36f53e85a1690aaeffc4" name="a96d43e9c852f36f53e85a1690aaeffc4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a96d43e9c852f36f53e85a1690aaeffc4">&#9670;&#160;</a></span>sendProbe()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class Interface , typename Crc , size_t ParserSize&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="class_r_s_1_1_rs_handler.html">RS::RsHandler</a>&lt; Interface, Crc, ParserSize &gt;::sendProbe </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>aReceiverUID</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Функция отправки Probe сообщения, целевая нода должна ответить, иначе она not present. </p>
+<dl class="params"><dt>Аргументы</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">aReceiverUID</td><td>UID получателя ответа </td></tr>
   </table>
   </dd>
 </dl>

@@ -24,6 +24,7 @@ class RsHandler {
 	using ComMessage = Packet<CommandPayload>;
 	using AnwMessage = Packet<AnswerPayload>;
 	using AckMessage = Packet<AckPayload>;
+	using ProbeMessage = Packet<ProbePayload>;
 
 public:
 	///
@@ -196,6 +197,22 @@ public:
 		size_t length = parser.create(messageBuffer, &message, sizeof(AnwMessage) + aSize);
 		interface.write(messageBuffer, length);
 		return true;
+	}
+
+	///
+	/// \brief Функция отправки Probe сообщения, целевая нода должна ответить, иначе она not present
+	/// \param aReceiverUID UID получателя ответа
+	///
+	void sendProbe(uint8_t aReceiverUID)
+	{
+		ProbeMessage message;
+		message.messageType = MessageType::Probe;
+		message.receiverUID = aReceiverUID;
+		message.transmitUID = nodeUID;
+		message.payload.reserved = 0xFF;
+
+		size_t length = parser.create(messageBuffer, &message, sizeof(message));
+		interface.write(messageBuffer, length);
 	}
 
 private:

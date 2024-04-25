@@ -29,7 +29,9 @@ virtual void \mbox{\hyperlink{class_r_s_1_1_rs_handler_a8de147108eddb67ad7bf6006
 virtual uint8\+\_\+t \mbox{\hyperlink{class_r_s_1_1_rs_handler_a82d52fb1518e4fd15e9204f57907e18e}{handle\+Answer}} (uint8\+\_\+t a\+Request, const uint8\+\_\+t \texorpdfstring{$\ast$}{*}a\+Data, uint8\+\_\+t a\+Length)=0
 \begin{DoxyCompactList}\small\item\em Функция обработки ответа \end{DoxyCompactList}\item 
 bool \mbox{\hyperlink{class_r_s_1_1_rs_handler_a29ae134ad96c7a9b3e537bd971f33715}{send\+Answer}} (uint8\+\_\+t a\+Receiver\+UID, uint8\+\_\+t a\+Request, uint8\+\_\+t a\+Requested\+Data\+Size, void \texorpdfstring{$\ast$}{*}a\+Data, uint8\+\_\+t a\+Size)
-\begin{DoxyCompactList}\small\item\em Функция, которая отправляет ответ, собранный в функции process\+Request. Вызывать через базовый класс \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{DoxyCompactList}\small\item\em Функция, которая отправляет ответ, собранный в функции process\+Request. Вызывать через базовый класс \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_r_s_1_1_rs_handler_a96d43e9c852f36f53e85a1690aaeffc4}{send\+Probe}} (uint8\+\_\+t a\+Receiver\+UID)
+\begin{DoxyCompactList}\small\item\em Функция отправки Probe сообщения, целевая нода должна ответить, иначе она not present. \end{DoxyCompactList}\end{DoxyCompactItemize}
 \doxysubsubsection*{Закрытые типы}
 \begin{DoxyCompactItemize}
 \item 
@@ -47,6 +49,9 @@ using {\bfseries Anw\+Message} = \mbox{\hyperlink{struct_r_s_1_1_packet}{Packet}
 \item 
 \Hypertarget{class_r_s_1_1_rs_handler_a7e0d683ddf7a50876c723aa2abbc52a2}\label{class_r_s_1_1_rs_handler_a7e0d683ddf7a50876c723aa2abbc52a2} 
 using {\bfseries Ack\+Message} = \mbox{\hyperlink{struct_r_s_1_1_packet}{Packet}}$<$ \mbox{\hyperlink{struct_r_s_1_1_ack_payload}{Ack\+Payload}} $>$
+\item 
+\Hypertarget{class_r_s_1_1_rs_handler_ae86f151d32508c0f8ef6d618f65e20cf}\label{class_r_s_1_1_rs_handler_ae86f151d32508c0f8ef6d618f65e20cf} 
+using {\bfseries Probe\+Message} = \mbox{\hyperlink{struct_r_s_1_1_packet}{Packet}}$<$ \mbox{\hyperlink{struct_r_s_1_1_probe_payload}{Probe\+Payload}} $>$
 \end{DoxyCompactItemize}
 \doxysubsubsection*{Закрытые члены}
 \begin{DoxyCompactItemize}
@@ -299,6 +304,22 @@ void \mbox{\hyperlink{class_r_s_1_1_rs_handler}{RS\+::\+Rs\+Handler}}$<$ Interfa
 {\em a\+Command} & -\/ номер команды \\
 \hline
 {\em a\+Argument} & -\/ аргумент для команды (может быть незадействован) \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_r_s_1_1_rs_handler_a96d43e9c852f36f53e85a1690aaeffc4}\label{class_r_s_1_1_rs_handler_a96d43e9c852f36f53e85a1690aaeffc4} 
+\index{RS::RsHandler$<$ Interface, Crc, ParserSize $>$@{RS::RsHandler$<$ Interface, Crc, ParserSize $>$}!sendProbe@{sendProbe}}
+\index{sendProbe@{sendProbe}!RS::RsHandler$<$ Interface, Crc, ParserSize $>$@{RS::RsHandler$<$ Interface, Crc, ParserSize $>$}}
+\doxysubsubsection{\texorpdfstring{sendProbe()}{sendProbe()}}
+{\footnotesize\ttfamily template$<$class Interface , typename Crc , size\+\_\+t Parser\+Size$>$ \\
+void \mbox{\hyperlink{class_r_s_1_1_rs_handler}{RS\+::\+Rs\+Handler}}$<$ Interface, Crc, Parser\+Size $>$\+::send\+Probe (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{a\+Receiver\+UID }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Функция отправки Probe сообщения, целевая нода должна ответить, иначе она not present. 
+
+
+\begin{DoxyParams}{Аргументы}
+{\em a\+Receiver\+UID} & UID получателя ответа \\
 \hline
 \end{DoxyParams}
 \Hypertarget{class_r_s_1_1_rs_handler_a5f6c1ef7ea4c9b7ff5060b5d0f96cfa8}\label{class_r_s_1_1_rs_handler_a5f6c1ef7ea4c9b7ff5060b5d0f96cfa8} 
