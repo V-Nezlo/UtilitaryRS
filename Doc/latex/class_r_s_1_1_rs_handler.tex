@@ -26,7 +26,7 @@ virtual uint8\+\_\+t \mbox{\hyperlink{class_r_s_1_1_rs_handler_a7bd8f234aa16a15e
 \begin{DoxyCompactList}\small\item\em Функция обработки команд. возвращает статус, который затем автоматически отправляется как Code в Ack сообщении отправителю команды \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{class_r_s_1_1_rs_handler_a8de147108eddb67ad7bf6006156bcff6}{handle\+Ack}} (uint8\+\_\+t a\+Tranceiver\+UID, uint8\+\_\+t a\+Return\+Code)=0
 \begin{DoxyCompactList}\small\item\em Функция обработки ответа, можно использовать как индикатор того что адресат вообще жив \end{DoxyCompactList}\item 
-virtual uint8\+\_\+t \mbox{\hyperlink{class_r_s_1_1_rs_handler_a82d52fb1518e4fd15e9204f57907e18e}{handle\+Answer}} (uint8\+\_\+t a\+Request, const uint8\+\_\+t \texorpdfstring{$\ast$}{*}a\+Data, uint8\+\_\+t a\+Length)=0
+virtual uint8\+\_\+t \mbox{\hyperlink{class_r_s_1_1_rs_handler_a4866d7614fb6590e38e18b491a0b8d54}{handle\+Answer}} (uint8\+\_\+t a\+Tranceiver\+UID, uint8\+\_\+t a\+Request, const uint8\+\_\+t \texorpdfstring{$\ast$}{*}a\+Data, uint8\+\_\+t a\+Length)=0
 \begin{DoxyCompactList}\small\item\em Функция обработки ответа \end{DoxyCompactList}\item 
 bool \mbox{\hyperlink{class_r_s_1_1_rs_handler_a29ae134ad96c7a9b3e537bd971f33715}{send\+Answer}} (uint8\+\_\+t a\+Receiver\+UID, uint8\+\_\+t a\+Request, uint8\+\_\+t a\+Requested\+Data\+Size, void \texorpdfstring{$\ast$}{*}a\+Data, uint8\+\_\+t a\+Size)
 \begin{DoxyCompactList}\small\item\em Функция, которая отправляет ответ, собранный в функции process\+Request. Вызывать через базовый класс \end{DoxyCompactList}\item 
@@ -126,12 +126,12 @@ virtual void \mbox{\hyperlink{class_r_s_1_1_rs_handler}{RS\+::\+Rs\+Handler}}$<$
 \DoxyCodeLine{\}}
 
 \end{DoxyCode}
- \Hypertarget{class_r_s_1_1_rs_handler_a82d52fb1518e4fd15e9204f57907e18e}\label{class_r_s_1_1_rs_handler_a82d52fb1518e4fd15e9204f57907e18e} 
+ \Hypertarget{class_r_s_1_1_rs_handler_a4866d7614fb6590e38e18b491a0b8d54}\label{class_r_s_1_1_rs_handler_a4866d7614fb6590e38e18b491a0b8d54} 
 \index{RS::RsHandler$<$ Interface, Crc, ParserSize $>$@{RS::RsHandler$<$ Interface, Crc, ParserSize $>$}!handleAnswer@{handleAnswer}}
 \index{handleAnswer@{handleAnswer}!RS::RsHandler$<$ Interface, Crc, ParserSize $>$@{RS::RsHandler$<$ Interface, Crc, ParserSize $>$}}
 \doxysubsubsection{\texorpdfstring{handleAnswer()}{handleAnswer()}}
 {\footnotesize\ttfamily template$<$class Interface , typename Crc , size\+\_\+t Parser\+Size$>$ \\
-virtual uint8\+\_\+t \mbox{\hyperlink{class_r_s_1_1_rs_handler}{RS\+::\+Rs\+Handler}}$<$ Interface, Crc, Parser\+Size $>$\+::handle\+Answer (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{a\+Request,  }\item[{const uint8\+\_\+t \texorpdfstring{$\ast$}{*}}]{a\+Data,  }\item[{uint8\+\_\+t}]{a\+Length }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+virtual uint8\+\_\+t \mbox{\hyperlink{class_r_s_1_1_rs_handler}{RS\+::\+Rs\+Handler}}$<$ Interface, Crc, Parser\+Size $>$\+::handle\+Answer (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{a\+Tranceiver\+UID,  }\item[{uint8\+\_\+t}]{a\+Request,  }\item[{const uint8\+\_\+t \texorpdfstring{$\ast$}{*}}]{a\+Data,  }\item[{uint8\+\_\+t}]{a\+Length }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
 
 
 
@@ -139,6 +139,8 @@ virtual uint8\+\_\+t \mbox{\hyperlink{class_r_s_1_1_rs_handler}{RS\+::\+Rs\+Hand
 
 
 \begin{DoxyParams}{Аргументы}
+{\em a\+Tranceiver\+UID} & -\/ UID отправителя \\
+\hline
 {\em a\+Request} & -\/ номер запроса \\
 \hline
 {\em a\+Data} & -\/ указатель на данные ответа \\

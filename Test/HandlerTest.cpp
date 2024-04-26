@@ -35,7 +35,7 @@ public:
 		isAckHandled = true;
 	}
 
-	uint8_t handleAnswer(uint8_t aRequest, const uint8_t *aData, uint8_t aLength) override
+	uint8_t handleAnswer(uint8_t aTranceiver, uint8_t aRequest, const uint8_t *aData, uint8_t aLength) override
 	{
 		uint8_t buffer[4] __attribute__((aligned(8)));
 		isAnswerHandled = true;

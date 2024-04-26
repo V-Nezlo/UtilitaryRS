@@ -151,6 +151,7 @@ public:
 
 	///
 	/// \brief Функция обработки ответа
+	/// \param aTranceiverUID - UID отправителя
 	/// \param aRequest - номер запроса
 	/// \param aData - указатель на данные ответа
 	/// \param aLength - размер данных ответа
@@ -167,7 +168,7 @@ public:
 	/// }
 	/// \endcode
 	///
-	virtual uint8_t handleAnswer(uint8_t aRequest, const uint8_t *aData, uint8_t aLength) = 0;
+	virtual uint8_t handleAnswer(uint8_t aTranceiverUID, uint8_t aRequest, const uint8_t *aData, uint8_t aLength) = 0;
 
 	///
 	/// \brief Функция, которая отправляет ответ, собранный в функции processRequest. Вызывать через базовый класс
@@ -257,7 +258,7 @@ private:
 				} break;
 				case MessageType::Answer: {
 					const auto answerMsg = reinterpret_cast<const AnwMessage *>(aMessage);
-					uint8_t returnCode = handleAnswer(
+					uint8_t returnCode = handleAnswer(header->transmitUID,
 						answerMsg->payload.request, &aMessage[sizeof(AnwMessage)], answerMsg->payload.dataSize);
 					sendAck(answerMsg->transmitUID, returnCode);
 				} break;
