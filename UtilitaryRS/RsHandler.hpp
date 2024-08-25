@@ -13,7 +13,6 @@
 
 #include "RsParser.hpp"
 #include "RsTypes.hpp"
-#include <new>
 
 namespace RS {
 
@@ -185,13 +184,16 @@ public:
 			return false;
 		}
 
-		uint8_t message[255];
-		auto ptr = new (message) AnwMessage{};
-		ptr->transmitUID = nodeUID;
-		ptr->receiverUID = aReceiverUID;
-		ptr->messageType = MessageType::Answer;
-		ptr->payload.dataSize = aSize;
-		ptr->payload.request = aRequest;
+		uint8_t message[128];
+
+		AnwMessage header;
+		header.transmitUID = nodeUID;
+		header.receiverUID = aReceiverUID;
+		header.messageType = MessageType::Answer;
+		header.payload.dataSize = aSize;
+		header.payload.request = aRequest;
+		// Add answer header
+		memcpy(message, &header, sizeof(header));
 		// Add answer payload through memcpy
 		memcpy(&message[sizeof(AnwMessage)], aData, aSize);
 

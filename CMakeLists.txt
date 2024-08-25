@@ -8,8 +8,8 @@ add_executable(UtilitaryRS main.cpp)
 
 add_definitions(-DRSLIB_TESTING)
 
-include_directories("Lib")
-add_subdirectory(Lib)
+include_directories("UtilitaryRS")
+add_subdirectory(UtilitaryRS)
 
 include_directories("Test")
 add_subdirectory(Test)
