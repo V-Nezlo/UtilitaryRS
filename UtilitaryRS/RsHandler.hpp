@@ -135,6 +135,7 @@ public:
 	///
 	/// \brief Функция обработки ответа, можно использовать как индикатор того что адресат вообще жив
 	/// \param aTranceiverUID - отправитель Ack
+	/// \param aMessageType - тип сообщения,на который сформирован Ack
 	/// \param aReturnCode - код возврата, который пришел с Ack
 	///
 	/// Пример реализации:
@@ -146,7 +147,7 @@ public:
 	/// }
 	/// \endcode
 	///
-	virtual void handleAck(uint8_t aTranceiverUID, uint8_t aReturnCode) = 0;
+	virtual void handleAck(uint8_t aTranceiverUID, MessageType aMessageType, uint8_t aReturnCode) = 0;
 
 	///
 	/// \brief Функция обработки ответа
@@ -227,15 +228,17 @@ private:
 	///
 	/// \brief Функция отправки ответа
 	/// \param aTransmitterUID - получатель ответа (отправитель команд\запросов)
+	/// \param aType - тип сообщения, на который отправляется Ack
 	/// \param aReturnCode - код возврата
 	///
-	void sendAck(uint8_t aTransmitterUID, uint8_t aReturnCode)
+	void sendAck(uint8_t aTransmitterUID, MessageType aType, uint8_t aReturnCode)
 	{
 		AckMessage message;
 		message.messageType = MessageType::Ack;
 		message.receiverUID = aTransmitterUID;
 		message.transmitUID = nodeUID;
-		message.payload.code = aReturnCode;
+		message.payload.returnCode = aReturnCode;
+		message.messageType = aType;
 
 		size_t length = parser.create(messageBuffer, &message, sizeof(message));
 		interface.write(messageBuffer, length);
@@ -256,28 +259,28 @@ private:
 			switch (header->messageType) {
 				case MessageType::Ack: {
 					const auto ackMsg = reinterpret_cast<const AckMessage *>(aMessage);
-						handleAck(header->transmitUID, ackMsg->payload.code);
+						handleAck(header->transmitUID, ackMsg->payload.messageType, ackMsg->payload.returnCode);
 				} break;
 				case MessageType::Answer: {
 					const auto answerMsg = reinterpret_cast<const AnwMessage *>(aMessage);
 					uint8_t returnCode = handleAnswer(header->transmitUID,
 						answerMsg->payload.request, &aMessage[sizeof(AnwMessage)], answerMsg->payload.dataSize);
-					sendAck(answerMsg->transmitUID, returnCode);
+					sendAck(answerMsg->transmitUID, header->messageType, returnCode);
 				} break;
 				case MessageType::Command: {
 					const auto cmdMsg = reinterpret_cast<const ComMessage *>(aMessage);
 					uint8_t returnCode = handleCommand(cmdMsg->payload.command, cmdMsg->payload.value);
-					sendAck(cmdMsg->transmitUID, returnCode);
+					sendAck(cmdMsg->transmitUID, header->messageType, returnCode);
 				} break;
 				case MessageType::Request: {
 					const auto reqMsg = reinterpret_cast<const ReqMessage *>(aMessage);
 					const auto isRequestProcessed = processRequest(reqMsg->transmitUID, reqMsg->payload.request, reqMsg->payload.answerDataSize);
 					if (!isRequestProcessed) {
-						sendAck(reqMsg->transmitUID, 0);
+						sendAck(reqMsg->transmitUID, header->messageType, 0);
 					}
 				} break;
 				case MessageType::Probe: {
-					sendAck(header->transmitUID, 1);
+					sendAck(header->transmitUID, header->messageType, 1);
 				} break;
 			}
 		}

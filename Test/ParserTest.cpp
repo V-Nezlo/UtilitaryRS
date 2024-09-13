@@ -110,7 +110,8 @@ bool createAndParseAckMessage()
 	message.receiverUID = 0xFF;
 	message.transmitUID = 0x01;
 	message.messageType = RS::MessageType::Ack;
-	message.payload.code = 0;
+	message.payload.returnCode = 0;
+	message.payload.messageType = RS::MessageType::Answer;
 
 	size_t length = parser.create(buffer, &message, sizeof(message));
 	parser.update(buffer, length);
