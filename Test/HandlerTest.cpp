@@ -29,7 +29,7 @@ public:
 		return 1;
 	}
 
-	void handleAck(uint8_t aTranceiverUID, RS::MessageType aType, uint8_t aReturnCode) override
+	void handleAck(uint8_t aTranceiverUID, uint8_t aReturnCode) override
 	{
 		std::cout << "ACKNOWLEDGE RECEIVED" << std::endl;
 		isAckHandled = true;
@@ -85,7 +85,7 @@ int main()
 	uint8_t commandBuffer[] = {0x52, 0xff, 0xab, 0x00, 0x05, 0x06, 0x07, 0x08, 0x05e};
 	handler.update(commandBuffer, sizeof(commandBuffer));
 
-	uint8_t ackBuffer[] = {0x52, 0xff, 0x01, 0x03, 0x00, 0x02, 0x00, 0x82};
+	uint8_t ackBuffer[] = {0x52, 0xff, 0x01, 0x03, 0x06, 0x00, 0x08};
 	handler.update(ackBuffer, sizeof(ackBuffer));
 
 	uint8_t answerBuffer[] = {0x52, 0xff, 0x01, 0x02, 0x06, 0x07, 0x10, 0x04, 0x08, 0x09, 0x0a, 0x0b, 0xa7};

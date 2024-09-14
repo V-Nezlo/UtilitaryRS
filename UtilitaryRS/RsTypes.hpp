@@ -61,11 +61,10 @@ struct AnswerPayload {
 } __attribute__((packed));
 
 ///
-/// \brief Полезная нагрузка Ack сообщения, содержит код возврата и тип сообщения
+/// \brief Полезная нагрузка Ack сообщения, содержит код возврата
 ///
 struct AckPayload {
-	MessageType messageType;
-	uint8_t returnCode;
+	uint8_t code;
 } __attribute__((packed));
 
 ///
