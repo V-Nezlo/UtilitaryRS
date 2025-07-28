@@ -29,7 +29,7 @@ public:
 	enum class State { Idle, Header, Command, Request, Answer, Ack, Probe, Crc, Done };
 	static constexpr uint8_t kInitChecksum{0x00};
 
-	RsParser() : position{0}, parserState{State::Idle}, buffer{}, message{}
+	RsParser() : position{0}, parserState{State::Idle}, buffer{}, message{0, 0}
 	{ }
 
 	///
@@ -88,8 +88,6 @@ public:
 						}
 					}
 					break;
-
-					break;
 				case State::Command:
 					static constexpr size_t kCommandSize = sizeof(CommandPayload) + sizeof(Header);
 					if (position < kCommandSize) {
@@ -123,7 +121,7 @@ public:
 							&& position == 7) {
 							message.answerSize = value;
 						}
-					} else {
+					} else if (position <= BufferSize) {
 						if (position < message.answerSize + kAnswerSize) {
 							buffer[position] = value;
 							++position;
@@ -133,6 +131,9 @@ public:
 								break;
 							}
 						}
+					} else {
+						reset();
+						return i;
 					}
 					break;
 

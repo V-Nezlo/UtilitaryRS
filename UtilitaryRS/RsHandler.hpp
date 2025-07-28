@@ -43,13 +43,11 @@ public:
 	void update(uint8_t *aData, size_t aLength)
 	{
 		size_t left = aLength;
-		size_t parsed = 0;
 
 		while (left) {
 			left -= parser.update(static_cast<uint8_t *>(aData) + (aLength - left), left);
 
 			if (parser.state() == Parser::State::Done) {
-				++parsed;
 				process(parser.data(), parser.length());
 			}
 		}
@@ -184,7 +182,7 @@ public:
 			return false;
 		}
 
-		uint8_t message[128];
+		uint8_t message[255 + sizeof(AnwMessage)];
 
 		AnwMessage header;
 		header.transmitUID = nodeUID;
@@ -250,6 +248,10 @@ private:
 	///
 	void process(const uint8_t *aMessage, size_t aLength)
 	{
+		if (aLength < sizeof(Header)) {
+			return;
+		}
+
 		const auto *header = reinterpret_cast<const Header *>(aMessage);
 
 		if (header->receiverUID == nodeUID) {
