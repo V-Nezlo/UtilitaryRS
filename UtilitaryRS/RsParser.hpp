@@ -4,7 +4,6 @@
 \author V-Nezlo (vlladimirka@gmail.com)
 \date 20.10.2023
 \version 1.0
-
 */
 
 #include "RsTypes.hpp"
@@ -21,22 +20,29 @@ namespace RS {
 template<size_t BufferSize, typename CRC>
 class RsParser {
 	struct BufferedMessage {
-		uint8_t type;
-		size_t answerSize;
+		uint8_t type{0};
+		size_t answerSize{0};
 	};
+
+	static constexpr size_t kAnswerSize = sizeof(AnswerPayload) + sizeof(Header);
+	static constexpr size_t kCommandSize = sizeof(CommandPayload) + sizeof(Header);
+	static constexpr size_t kRequestSize = sizeof(RequestPayload) + sizeof(Header);
+	static constexpr size_t kAckSize = sizeof(AckPayload) + sizeof(Header);
+	static constexpr size_t kProbeSize = sizeof(ProbePayload) + sizeof(Header);
+	static constexpr size_t kMaxAnswerPayload = BufferSize - kAnswerSize - 1;
 
 public:
 	enum class State { Idle, Header, Command, Request, Answer, Ack, Probe, Crc, Done };
 	static constexpr uint8_t kInitChecksum{0x00};
 
-	RsParser() : position{0}, parserState{State::Idle}, buffer{}, message{}
+	RsParser() : position{0}, parserState{State::Idle}, buffer{}, message{0, 0}
 	{ }
 
 	///
 	/// \brief Основная функция парсера
 	/// \param aBuffer - указатель на данные, которые нужно отпарсить
 	/// \param aLength - длина пришедших данных для парсинга
-	/// \return возвращает количество отпаршенных байт
+	/// \return возвращает количество отпарcенных байт
 	///
 	size_t update(const uint8_t *aBuffer, size_t aLength)
 	{
@@ -84,14 +90,18 @@ public:
 								case MessageType::Probe:
 									parserState = State::Probe;
 									break;
+								default:
+									reset();
+									parserState = State::Idle;
+									break;
 							}
 						}
+					} else {
+						reset();
+						return i;
 					}
 					break;
-
-					break;
 				case State::Command:
-					static constexpr size_t kCommandSize = sizeof(CommandPayload) + sizeof(Header);
 					if (position < kCommandSize) {
 						buffer[position] = value;
 						++position;
@@ -99,10 +109,12 @@ public:
 						if (position == kCommandSize) {
 							parserState = State::Crc;
 						}
+					} else {
+						reset();
+						return i;
 					}
 					break;
 				case State::Request:
-					static constexpr size_t kRequestSize = sizeof(RequestPayload) + sizeof(Header);
 					if (position < kRequestSize) {
 						buffer[position] = value;
 
@@ -111,17 +123,23 @@ public:
 						if (position == kRequestSize) {
 							parserState = State::Crc;
 						}
+					} else {
+						reset();
+						return i;
 					}
 					break;
 				case State::Answer:
-					static constexpr size_t kAnswerSize = sizeof(AnswerPayload) + sizeof(Header);
 					if (position < kAnswerSize) {
 						buffer[position] = value;
 						++position;
 
-						if (message.type == static_cast<uint8_t>(MessageType::Answer)
-							&& position == 7) {
+						if (position == kAnswerSize) {
 							message.answerSize = value;
+
+							if (message.answerSize > kMaxAnswerPayload) {
+								reset();
+								return i;
+							}
 						}
 					} else {
 						if (position < message.answerSize + kAnswerSize) {
@@ -137,7 +155,6 @@ public:
 					break;
 
 				case State::Ack:
-					static constexpr size_t kAckSize = sizeof(AckPayload) + sizeof(Header);
 					if (position < kAckSize) {
 						buffer[position] = value;
 						++position;
@@ -145,11 +162,13 @@ public:
 						if (position == kAckSize) {
 							parserState = State::Crc;
 						}
+					} else {
+						reset();
+						return i;
 					}
 					break;
 
 				case State::Probe:
-					static constexpr size_t kProbeSize = sizeof(ProbePayload) + sizeof(Header);
 					if (position < kProbeSize) {
 						buffer[position] = value;
 						++position;
@@ -157,6 +176,9 @@ public:
 						if (position == kProbeSize) {
 							parserState = State::Crc;
 						}
+					} else {
+						reset();
+						return i;
 					}
 					break;
 
@@ -171,6 +193,10 @@ public:
 				} break;
 
 				case State::Done:
+					break;
+
+				default:
+					reset();
 					break;
 			}
 		}
@@ -226,6 +252,7 @@ public:
 	{
 		position = 0;
 		parserState = State::Idle;
+		message = {};
 	}
 
 private:
