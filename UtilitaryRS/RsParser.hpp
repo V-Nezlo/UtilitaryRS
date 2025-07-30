@@ -199,6 +199,11 @@ public:
 					reset();
 					break;
 			}
+
+			if (position >= BufferSize) {
+				reset();
+				return i;
+			}
 		}
 		return aLength;
 	}

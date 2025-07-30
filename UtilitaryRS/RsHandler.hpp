@@ -45,10 +45,17 @@ public:
 		size_t left = aLength;
 
 		while (left) {
-			left -= parser.update(static_cast<uint8_t *>(aData) + (aLength - left), left);
+			size_t parsed =  parser.update(static_cast<uint8_t *>(aData) + (aLength - left), left);
 
+			if (parsed == 0) {
+				parser.reset();
+				break;
+			}
+
+			left -= parsed;
 			if (parser.state() == Parser::State::Done) {
 				process(parser.data(), parser.length());
+				parser.reset();
 			}
 		}
 	}
