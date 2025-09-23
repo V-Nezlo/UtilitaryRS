@@ -1,4 +1,4 @@
-#if not defined MOCKSERIAL_HPP and defined RSLIB_TESTING
+#if not defined MOCKSERIAL_HPP
 #define MOCKSERIAL_HPP
 
 #include <iostream>
@@ -45,6 +45,11 @@ public:
 	size_t size()
 	{
 		return vector.size();
+	}
+
+	void clear()
+	{
+		vector.clear();
 	}
 
 private:
