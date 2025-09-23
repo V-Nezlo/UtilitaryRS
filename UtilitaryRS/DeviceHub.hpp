@@ -41,6 +41,7 @@ class DeviceHub : public RsHandler<Interface, Crc8, ParserSize> {
 	using Base = RsHandler<Interface, Crc8, ParserSize>;
 
 	static constexpr size_t kTimeoutErrorForLost{20};
+	static constexpr auto kHealthTimeout{std::chrono::milliseconds{1000}};
 
 	struct PendingTrans {
 		uint8_t messageNumber; // Номер сообщения, который был отправлен
@@ -78,6 +79,7 @@ class DeviceHub : public RsHandler<Interface, Crc8, ParserSize> {
 
 		std::chrono::milliseconds nextCall{std::chrono::milliseconds{0}};
 		std::chrono::milliseconds lastAck{std::chrono::milliseconds{0}};
+		std::chrono::milliseconds lastHealthReq{std::chrono::milliseconds{0}};
 
 		std::queue<std::pair<uint8_t, uint8_t>> commandQueue;
 		std::queue<std::pair<std::uint8_t, uint8_t>> requestQueue;
@@ -315,6 +317,7 @@ private:
 							if (observer)
 								observer->onRequestErrorEv(dev->name, aReturnCode);
 							break;
+
 						default:
 							// Странный ACK, обработать как ошибку
 							break;
@@ -377,12 +380,12 @@ private:
 			return;
 		}
 
-		if (dev->pending.has_value() && dev->pending.value().messageNumber == aMessageNumber && dev->pending.value().msgType == MessageType::HealthReq) {
-
-			if (observer) observer->deviceHealthReceivedEv(dev->name, aHealth, aFlags);
+		if (dev->pending.has_value() && dev->pending.value().messageNumber == aMessageNumber
+			&& dev->pending.value().msgType == MessageType::HealthReq) {
+			if (observer)
+				observer->deviceHealthReceivedEv(dev->name, aHealth, aFlags);
 			dev->pending.reset();
 		}
-
 	}
 
 	void cmdToDeviceImpl(std::string &aDeviceName, uint8_t aCommand, uint8_t aValue)
@@ -445,6 +448,18 @@ private:
 		updateDevicePending(dev, Base::fileWriteFinalize(devUid, aFileNum, aChunkNumber, aCrc), MessageType::FileWriteFinalize);
 	}
 
+	void deviceHealthReqImpl(std::string &aDeviceName)
+	{
+		uint8_t devUid = getUIDFromName(aDeviceName);
+
+		if (devUid == kReservedUID) {
+			return;
+		}
+
+		DeviceWrapper &dev = hub[devUid];
+		updateDevicePending(dev, Base::sendHealthRequest(devUid), MessageType::HealthReq);
+	}
+
 	uint8_t getUIDFromName(const std::string &aName)
 	{
 		auto it = nameToUid.find(aName);
@@ -490,10 +505,15 @@ private:
 								telem = &pos;
 							}
 						}
-
 						if (telem != nullptr) {
 							deviceRequestImpl(aDevice.name, telem->req, telem->reqSize);
 						}
+						// Потом посмотрим, не пора ли спросить флаги и health
+					} else if (aTime - aDevice.lastHealthReq >= kHealthTimeout) {
+						aDevice.lastHealthReq = aTime;
+						deviceHealthReqImpl(aDevice.name);
+					} else {
+						// Делать нечего
 					}
 				} break;
 				case DeviceState::FileTransfer: {
@@ -548,7 +568,7 @@ private:
 												aDevice.fileTransContext.totalSize - aDevice.fileTransContext.sentOffset);
 
 											const uint8_t *ptr = static_cast<const uint8_t *>(aDevice.fileTransContext.data)
-																 + aDevice.fileTransContext.sentOffset;
+												+ aDevice.fileTransContext.sentOffset;
 											sendChunkImpl(aDevice.name, aDevice.fileTransContext.file, ptr, nextChunk);
 										}
 									} else {
