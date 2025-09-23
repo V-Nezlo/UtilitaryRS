@@ -175,11 +175,18 @@ public:
 		lastDeviceRegistered = aName;
 		deviceVersion = aVersion;
 	}
+
 	RS::Result fileWriteResultEv(const std::string &aName, RS::Result aReturn) override
 	{
 		lastFileName = aName;
 		lastFileResult = aReturn;
 		return aReturn;
+	}
+
+
+	void deviceHealthReceivedEv(const std::string &aName, RS::Health aHealth, uint16_t aFlags) override
+	{
+		return;
 	}
 
 	// тестовые поля
@@ -202,6 +209,7 @@ public:
 	RS::Result lastFileResult{RS::Result::Error};
 
 	bool anwerCorrected;
+
 };
 
 int main()
