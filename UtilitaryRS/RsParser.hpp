@@ -2,11 +2,12 @@
 \file
 \brief Класс, описывающий парсер протокола UtilitaryRS
 \author V-Nezlo (vlladimirka@gmail.com)
-\date 20.10.2023
-\version 1.0
+\date 16.09.2025
+\version 2.0
 */
 
 #include "RsTypes.hpp"
+#include "RsHelpers.hpp"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -20,22 +21,15 @@ namespace RS {
 template<size_t BufferSize, typename CRC>
 class RsParser {
 	struct BufferedMessage {
-		uint8_t type{0};
-		size_t answerSize{0};
+		MessageType type;
+		size_t chunkSize;
 	};
 
-	static constexpr size_t kAnswerSize = sizeof(AnswerPayload) + sizeof(Header);
-	static constexpr size_t kCommandSize = sizeof(CommandPayload) + sizeof(Header);
-	static constexpr size_t kRequestSize = sizeof(RequestPayload) + sizeof(Header);
-	static constexpr size_t kAckSize = sizeof(AckPayload) + sizeof(Header);
-	static constexpr size_t kProbeSize = sizeof(ProbePayload) + sizeof(Header);
-	static constexpr size_t kMaxAnswerPayload = BufferSize - kAnswerSize - 1;
-
 public:
-	enum class State { Idle, Header, Command, Request, Answer, Ack, Probe, Crc, Done };
+	enum class State { Idle, Header, ConstPayload, VolatilePayload, Crc, Done };
 	static constexpr uint8_t kInitChecksum{0x00};
 
-	RsParser() : position{0}, parserState{State::Idle}, buffer{}, message{0, 0}
+	RsParser() : position{0}, parserState{State::Idle}, buffer{}, message{}
 	{ }
 
 	///
@@ -69,118 +63,77 @@ public:
 						++position;
 
 						if (position == offsetof(Header, messageType) + 1) {
-							message.type = value;
+							message.type = static_cast<MessageType>(value);
 						}
 
 						if (position == sizeof(Header)) {
-							const auto header = reinterpret_cast<Header *>(buffer);
-							switch (header->messageType) {
-								case MessageType::Command:
-									parserState = State::Command;
-									break;
-								case MessageType::Request:
-									parserState = State::Request;
-									break;
-								case MessageType::Answer:
-									parserState = State::Answer;
-									break;
-								case MessageType::Ack:
-									parserState = State::Ack;
-									break;
-								case MessageType::Probe:
-									parserState = State::Probe;
-									break;
-								default:
-									reset();
-									parserState = State::Idle;
-									break;
+							if (message.type >= MessageType::TypeEnd) {
+								reset();
+								return i;
 							}
+
+							if (Helpers::getMessageSizeByType(message.type)) {
+								parserState = State::ConstPayload;
+							} else {
+								parserState = State::VolatilePayload;
+							}
+							break;
 						}
 					} else {
 						reset();
 						return i;
 					}
 					break;
-				case State::Command:
-					if (position < kCommandSize) {
+
+				case State::ConstPayload: {
+					const size_t messageSize = Helpers::getMessageSizeByType(message.type);
+					if (position < messageSize) {
 						buffer[position] = value;
+
 						++position;
 
-						if (position == kCommandSize) {
+						if (position == messageSize) {
 							parserState = State::Crc;
 						}
 					} else {
 						reset();
 						return i;
 					}
-					break;
-				case State::Request:
-					if (position < kRequestSize) {
-						buffer[position] = value;
+					} break;
 
-						++position;
+				case State::VolatilePayload: {
+					const size_t baseSize = Helpers::getVolatileMessageBaseSize(message.type);
+					const size_t payloadMaxSize = Helpers::getVolatileMessageMaxPayloadSize(message.type);
 
-						if (position == kRequestSize) {
-							parserState = State::Crc;
-						}
-					} else {
+					if (baseSize == 0 || payloadMaxSize == 0) {
+						// Сообщение не поддерживается, сброс
 						reset();
 						return i;
 					}
-					break;
-				case State::Answer:
-					if (position < kAnswerSize) {
+
+					if (position < baseSize) {
 						buffer[position] = value;
 						++position;
 
-						if (position == kAnswerSize) {
-							message.answerSize = value;
+						if (position == baseSize) {
+							message.chunkSize = value;
 
-							if (message.answerSize > kMaxAnswerPayload) {
+							if (message.chunkSize > payloadMaxSize) {
 								reset();
 								return i;
 							}
 						}
-					} else {
-						if (position < message.answerSize + kAnswerSize) {
-							buffer[position] = value;
-							++position;
-
-							if (position == message.answerSize + kAnswerSize) {
-								parserState = State::Crc;
-								break;
-							}
-						}
-					}
-					break;
-
-				case State::Ack:
-					if (position < kAckSize) {
+					} else if (position < baseSize + payloadMaxSize) {
 						buffer[position] = value;
 						++position;
 
-						if (position == kAckSize) {
+						if (position == baseSize + message.chunkSize) {
 							parserState = State::Crc;
+							break;
 						}
-					} else {
-						reset();
-						return i;
 					}
-					break;
 
-				case State::Probe:
-					if (position < kProbeSize) {
-						buffer[position] = value;
-						++position;
-
-						if (position == kProbeSize) {
-							parserState = State::Crc;
-						}
-					} else {
-						reset();
-						return i;
-					}
-					break;
+					} break;
 
 				case State::Crc: {
 					uint8_t crc = CRC::calculate(buffer, position);
@@ -208,13 +161,11 @@ public:
 		return aLength;
 	}
 
-	///
 	/// \brief Создает сообщение протокола UtilitaryRS из сообщения
 	/// \param aBuffer - указатель на сырой буффер, внутри которого будет создано сообщение
 	/// \param aData - указатель на сообщение
 	/// \param aLength - длина сообщения
 	/// \return возвращает конечную длину сообщения UtilitaryRS
-	///
 	size_t create(void *aBuffer, const void *aData, size_t aLength)
 	{
 		uint8_t *const position = static_cast<uint8_t *>(aBuffer);
@@ -260,6 +211,11 @@ public:
 		message = {};
 	}
 
+	bool isReady() const
+	{
+		return parserState == State::Done;
+	}
+
 private:
 	size_t position;
 	State parserState;
@@ -267,11 +223,6 @@ private:
 	BufferedMessage message;
 
 	static constexpr char kPreambl{'R'};
-
-	bool isReady() const
-	{
-		return parserState == State::Done;
-	}
 };
 
 } // namespace RS

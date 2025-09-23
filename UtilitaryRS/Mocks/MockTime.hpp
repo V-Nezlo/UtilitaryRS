@@ -1,18 +1,28 @@
-#if not defined MOCKTIME_HPP and defined RSLIB_TESTING
-#define MOCKTIME_HPP
 
+#include <thread>
+#if not defined MOCKTIME_HPP
+#define MOCKTIME_HPP
+#include <chrono>
 #include <stdint.h>
 
 class MockTime {
 public:
-	uint32_t milliseconds()
+	static std::chrono::milliseconds milliseconds()
 	{
-		return 0;
+		using clk = std::chrono::steady_clock;
+		static const auto t0 = clk::now();
+		auto delta = std::chrono::duration_cast<std::chrono::milliseconds>(clk::now() - t0);
+		return delta;
 	}
 
-	uint32_t seconds()
+	static std::chrono::seconds seconds()
 	{
-		return 0;
+		return std::chrono::duration_cast<std::chrono::seconds>(milliseconds());
+	}
+
+	static void delay(std::chrono::milliseconds aMillis)
+	{
+		std::this_thread::sleep_for(aMillis);
 	}
 };
 

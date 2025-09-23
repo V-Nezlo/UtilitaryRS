@@ -1,12 +1,14 @@
 cmake_minimum_required(VERSION 3.9.0)
 project(UtilRS CXX)
 
+option(RSLIB_TESTING "Testing" OFF)
+
 include(CTest)
 enable_testing()
 
 add_executable(UtilRS main.cpp)
 
-add_definitions(-DRSLIB_TESTING)
+#add_definitions(-DRSLIB_TESTING)
 
 include_directories("UtilitaryRS")
 add_subdirectory(UtilitaryRS)
