@@ -33,6 +33,7 @@ public:
 	virtual void deviceInfoReceivedEv(const std::string &aName, DeviceVersion aVersion) = 0;
 
 	virtual Result fileWriteResultEv(const std::string &aName, Result aReturn) = 0;
+	virtual void deviceHealthReceivedEv(const std::string &aName, Health aHealth, uint16_t aFlags) = 0;
 };
 
 template<uint8_t MaxDeviceCount, class Interface, typename Time, typename Crc8, typename CrcFile, size_t ParserSize>
@@ -42,7 +43,6 @@ class DeviceHub : public RsHandler<Interface, Crc8, ParserSize> {
 	static constexpr size_t kTimeoutErrorForLost{20};
 
 	struct PendingTrans {
-		bool active; // Флаг активности ожидания
 		uint8_t messageNumber; // Номер сообщения, который был отправлен
 		MessageType msgType; // Тип сообщения которое отправили
 		std::chrono::milliseconds timestamp; // время отправления
@@ -74,7 +74,7 @@ class DeviceHub : public RsHandler<Interface, Crc8, ParserSize> {
 		std::string name;
 		DeviceVersion version;
 		DeviceState state{DeviceState::InfoRequest};
-		PendingTrans pending;
+		std::optional<PendingTrans> pending;
 
 		std::chrono::milliseconds nextCall{std::chrono::milliseconds{0}};
 		std::chrono::milliseconds lastAck{std::chrono::milliseconds{0}};
@@ -127,8 +127,7 @@ public:
 			processDevice(dev, aTime);
 
 			// Проверим таймауты
-			if (dev.pending.active && aTime - dev.pending.timestamp >= std::chrono::milliseconds{200}) {
-				dev.pending.active = false;
+			if (dev.pending.has_value() && aTime - dev.pending.value().timestamp >= std::chrono::milliseconds{200}) {
 				++dev.timeoutCounter;
 
 				if (dev.timeoutCounter >= kTimeoutErrorForLost) {
@@ -137,13 +136,15 @@ public:
 				}
 
 				if (observer) {
-					observer->onAckNotReceivedEv(dev.name, dev.pending.msgType);
+					observer->onAckNotReceivedEv(dev.name, dev.pending.value().msgType);
 				}
 
 				// Сбросим процедуру отправки файла если зафакапились
 				if (dev.state == DeviceState::FileTransfer) {
 					dev.fileTransContext.state = FileTransferContext::State::Cancel;
 				}
+
+				dev.pending.reset();
 			}
 		}
 	}
@@ -288,11 +289,9 @@ private:
 		// Иначе разбираемся что это за ответ
 		dev->lastAck = Time::milliseconds();
 		// Если мы ожидаем ответа и получаем ответ с правильным номером сообщения
-		if (dev->pending.active && dev->pending.messageNumber == aMessageNumber) {
-			dev->pending.active = false;
-
+		if (dev->pending.has_value() && dev->pending.value().messageNumber == aMessageNumber) {
 			if (observer) {
-				observer->onAckReceivedEv(dev->name, dev->pending.msgType, aReturnCode);
+				observer->onAckReceivedEv(dev->name, dev->pending.value().msgType, aReturnCode);
 			}
 
 			switch (dev->state) {
@@ -303,7 +302,7 @@ private:
 
 				case DeviceState::Running: {
 					// Если ответ пришел в рабочем режиме - смотрим что мы отправляли
-					switch (dev->pending.msgType) {
+					switch (dev->pending.value().msgType) {
 						case MessageType::Command:
 							if (observer)
 								observer->onCommandResultEv(dev->name, aReturnCode);
@@ -323,7 +322,7 @@ private:
 				} break;
 
 				case DeviceState::FileTransfer: {
-					switch (dev->pending.msgType) {
+					switch (dev->pending.value().msgType) {
 						case MessageType::FileWriteChunk:
 							dev->fileTransContext.packetAck = aReturnCode;
 
@@ -343,6 +342,7 @@ private:
 					}
 				}
 			}
+			dev->pending.reset();
 		}
 	}
 
@@ -357,14 +357,32 @@ private:
 		}
 
 		// Проверим что спрашивали мы
-		if (dev->pending.active && dev->pending.messageNumber == aMessageNumber
-			&& dev->pending.msgType == MessageType::BlobRequest) {
-			dev->pending.active = false;
+		if (dev->pending.has_value() && dev->pending.value().messageNumber == aMessageNumber
+			&& dev->pending.value().msgType == MessageType::BlobRequest) {
+
 
 			if (observer) return observer->blobAnswerEvReceived(dev->name, aRequest, aData, aLength);
+			dev->pending.reset();
 		}
 
 		return Result::Error;
+	}
+
+	void handleDeviceHealth(uint8_t aTransmitUID, uint8_t aMessageNumber, Health aHealth, uint16_t aFlags) override
+	{
+		DeviceWrapper *dev = getDevice(aTransmitUID);
+
+		// Если устройства нет - непонятно кто там отправляет блобы без реквеста
+		if (dev == nullptr) {
+			return;
+		}
+
+		if (dev->pending.has_value() && dev->pending.value().messageNumber == aMessageNumber && dev->pending.value().msgType == MessageType::HealthReq) {
+
+			if (observer) observer->deviceHealthReceivedEv(dev->name, aHealth, aFlags);
+			dev->pending.reset();
+		}
+
 	}
 
 	void cmdToDeviceImpl(std::string &aDeviceName, uint8_t aCommand, uint8_t aValue)
@@ -376,11 +394,7 @@ private:
 		}
 
 		DeviceWrapper &dev = hub[devUid];
-
-		dev.pending.active = true;
-		dev.pending.msgType = MessageType::Command;
-		dev.pending.timestamp = Time::milliseconds();
-		dev.pending.messageNumber = Base::sendCommand(devUid, aCommand, aValue);
+		updateDevicePending(dev, Base::sendCommand(devUid, aCommand, aValue), MessageType::Command);
 	}
 
 	void deviceRequestImpl(std::string &aDeviceName, uint8_t aRequest, uint8_t aRequestSize)
@@ -392,11 +406,7 @@ private:
 		}
 
 		DeviceWrapper &dev = hub[devUid];
-
-		dev.pending.active = true;
-		dev.pending.msgType = MessageType::BlobRequest;
-		dev.pending.timestamp = Time::milliseconds();
-		dev.pending.messageNumber = Base::sendBlobRequest(devUid, aRequest, aRequestSize);
+		updateDevicePending(dev, Base::sendBlobRequest(devUid, aRequest, aRequestSize), MessageType::BlobRequest);
 	}
 
 	void deviceFileWriteRequestImpl(std::string &aDeviceName, uint8_t aFile, size_t aSize)
@@ -408,11 +418,7 @@ private:
 		}
 
 		DeviceWrapper &dev = hub[devUid];
-
-		dev.pending.active = true;
-		dev.pending.msgType = MessageType::FileWriteRequest;
-		dev.pending.timestamp = Time::milliseconds();
-		dev.pending.messageNumber = Base::fileWriteRequest(devUid, aFile, aSize);
+		updateDevicePending(dev, Base::fileWriteRequest(devUid, aFile, aSize), MessageType::FileWriteRequest);
 	}
 
 	void sendChunkImpl(std::string &aDeviceName, uint8_t aFileNum, const void *aChunk, uint8_t aChunkSize)
@@ -424,11 +430,7 @@ private:
 		}
 
 		DeviceWrapper &dev = hub[devUid];
-
-		dev.pending.active = true;
-		dev.pending.msgType = MessageType::FileWriteChunk;
-		dev.pending.timestamp = Time::milliseconds();
-		dev.pending.messageNumber = Base::fileWriteChunk(devUid, dev.fileTransContext.file, aChunk, aChunkSize);
+		updateDevicePending(dev, Base::fileWriteChunk(devUid, dev.fileTransContext.file, aChunk, aChunkSize), MessageType::FileWriteChunk);
 	}
 
 	void fileWriteFinalizeImpl(std::string &aDeviceName, uint8_t aFileNum, uint16_t aChunkNumber, uint64_t aCrc)
@@ -440,11 +442,7 @@ private:
 		}
 
 		DeviceWrapper &dev = hub[devUid];
-
-		dev.pending.active = true;
-		dev.pending.msgType = MessageType::FileWriteFinalize;
-		dev.pending.timestamp = Time::milliseconds();
-		dev.pending.messageNumber = Base::fileWriteFinalize(devUid, aFileNum, aChunkNumber, aCrc);
+		updateDevicePending(dev, Base::fileWriteFinalize(devUid, aFileNum, aChunkNumber, aCrc), MessageType::FileWriteFinalize);
 	}
 
 	uint8_t getUIDFromName(const std::string &aName)
@@ -463,21 +461,15 @@ private:
 			auto updateTime = std::chrono::milliseconds{50};
 
 			switch (aDevice.state) {
-				case DeviceState::Probing:
-					aDevice.pending.active = true;
-					aDevice.pending.messageNumber = Base::sendProbe(getUIDFromName(aDevice.name));
-					aDevice.pending.msgType = MessageType::Probe;
-					aDevice.pending.timestamp = aTime;
+				case DeviceState::Probing: {
+					updateDevicePending(aDevice, Base::sendProbe(getUIDFromName(aDevice.name)), MessageType::Probe);
 					updateTime = std::chrono::milliseconds{1000};
-					break;
-				case DeviceState::InfoRequest:
-					aDevice.pending.active = true;
-					aDevice.pending.messageNumber = Base::sendDeviceInfoRequest(probedUID);
-					aDevice.pending.msgType = MessageType::DeviceInfoReq;
-					aDevice.pending.timestamp = aTime;
+				} break;
+				case DeviceState::InfoRequest: {
+					updateDevicePending(aDevice, Base::sendDeviceInfoRequest(probedUID), MessageType::DeviceInfoReq);
 					probedUID = 0xFF;
 					updateTime = std::chrono::milliseconds{1000};
-					break;
+				} break;
 				case DeviceState::Running: {
 					// Сначала посмотрим в очередь команд
 					if (!aDevice.commandQueue.empty()) {
@@ -605,6 +597,15 @@ private:
 		if (it == hub.end())
 			return nullptr;
 		return &it->second;
+	}
+
+	static void updateDevicePending(DeviceWrapper &aDevice, uint8_t aMessageNumber, MessageType aMessageType)
+	{
+		PendingTrans pending;
+		pending.messageNumber = aMessageNumber;
+		pending.msgType = aMessageType;
+		pending.timestamp = Time::milliseconds();
+		aDevice.pending.emplace(pending);
 	}
 };
 } // namespace RS

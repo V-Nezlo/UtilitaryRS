@@ -5,6 +5,7 @@
 #include <Crc8.hpp>
 #include <iostream>
 #include <cstdint>
+#include <assert.h>
 
 // NOLINTBEGIN
 template<class Interface, typename Crc, size_t ParserSize>
@@ -108,7 +109,7 @@ int main()
 	const uint8_t ackMessage[] = {0x52, 0xff, 0x01, 0x01, 0x00, 0x00, 0xed};
 
 //	Command message parsed
-	const uint8_t commandMessage[] = {0x52, 0xff, 0xab, 0x8, 0x1, 0x6, 0x7, 0x8, 0x6e};
+	const uint8_t commandMessage[] = {0x52, 0xff, 0xab, 0xa, 0x1, 0x6, 0x7, 0x8, 0xed};
 
 //	Probe message parsed
 	const uint8_t probeMessage[] = {0x52, 0xff, 0x1, 0x0, 0x7, 0x8, 0xea};
@@ -157,6 +158,7 @@ int main()
 	// Проверяем факт парсинга и корректность ответа (ACK::OK)
 	handler.update(commandMessage, sizeof(commandMessage));
 	const uint8_t expectedCmdAck[] = {0x52, 0xab, 0xff, 0x1, 0x0, 0x0, 0x3};
+	assert(serial.size() == sizeof(expectedCmdAck));
 	if (!memcmp(serial.data(), expectedCmdAck, sizeof(expectedCmdAck))) {
 		commandAckReceived = true;
 	}

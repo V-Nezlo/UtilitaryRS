@@ -239,6 +239,16 @@ public:
 		return message.number;
 	}
 
+	/// \brief Обработать полученное health
+	/// \param aTransmitUID номер отправителя
+	/// \param aMessageNumber номер сообщения
+	/// \param aHealth здоровье
+	/// \param aFlags флаги
+	virtual void handleDeviceHealth(uint8_t aTransmitUID, uint8_t aMessageNumber, Health aHealth, uint16_t aFlags)
+	{
+		return;
+	}
+
 	/// \brief Функция обработки запроса, реализуется на стороне клиента, внутри функции собираются и отправляются
 	/// данные запрашиваемому Если нужно ответить на запрос то необходимо вызывать функцию sendAnswer внутри этой
 	/// функции и вернуть true, иначе просто вернуть false, будет отправлен Ack с ошибкой запроса
@@ -560,6 +570,17 @@ private:
 				case MessageType::FileWriteFinalize: {
 					const auto chunkFinal = reinterpret_cast<const FileWriteFinalizeMessage *>(aMessage);
 					ackCode = handleWriteChunkFinalize(header->transmitUID, chunkFinal->payload.fileNum, chunkFinal->payload.chunksNumber, chunkFinal->payload.crc);
+				} break;
+
+				case MessageType::HealthReq: {
+					sendHealth(header->transmitUID, header->number);
+					ackNeeded = false;
+				} break;
+
+				case MessageType::HealthAnw: {
+					const auto healthMes = reinterpret_cast<const HealthAnwMessage *>(aMessage);
+					handleDeviceHealth(header->transmitUID, header->number, healthMes->payload.health, healthMes->payload.flags);
+					ackCode = Result::Ok;
 				} break;
 
 				default:
