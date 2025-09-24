@@ -4,7 +4,7 @@
 #include "Mocks/MockTime.hpp"
 #include "RsTypes.hpp"
 #include <DeviceHub.hpp>
-#include <assert.h>
+#include <cassert>
 #include <chrono>
 #include <iostream>
 #include <vector>
@@ -170,7 +170,7 @@ public:
 		lastBlobName = aName;
 		return RS::Result::Ok;
 	}
-	void deviceInfoReceivedEv(const std::string &aName, RS::DeviceVersion aVersion) override
+	void deviceRegisteredEv(const std::string &aName, RS::DeviceVersion aVersion) override
 	{
 		lastDeviceRegistered = aName;
 		deviceVersion = aVersion;
@@ -185,6 +185,11 @@ public:
 
 
 	void deviceHealthReceivedEv(const std::string &aName, RS::Health aHealth, uint16_t aFlags) override
+	{
+		return;
+	}
+
+	void deviceLostEv(const std::string &aName) override
 	{
 		return;
 	}
@@ -209,7 +214,6 @@ public:
 	RS::Result lastFileResult{RS::Result::Error};
 
 	bool anwerCorrected;
-
 };
 
 int main()

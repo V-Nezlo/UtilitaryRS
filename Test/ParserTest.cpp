@@ -327,6 +327,61 @@ bool createAndParseDeviceInfoAnwMessage()
 	}
 }
 
+bool createAndParseHealthReqMessage()
+{
+	RS::RsParser<100, Crc8> parser;
+	RS::HealthReqMessage message;
+	uint8_t preBuffer[100];
+	uint8_t buffer[100];
+
+	message.receiverUID = 0xFF;
+	message.transmitUID = 0x01;
+	message.messageType = RS::MessageType::HealthReq;
+	message.number = 10;
+
+	size_t length = parser.create(buffer, &message, sizeof(message));
+	parser.update(buffer, length);
+
+	printBuffer(buffer, length);
+
+	if (parser.isReady()) {
+		std::cout << "HealthReq message parsed" << std::endl;
+		return true;
+	} else {
+		std::cout << "HealthReq parsing failed" << std::endl;
+		return false;
+	}
+}
+
+bool createAndParseHealthAnwMessage()
+{
+	RS::RsParser<100, Crc8> parser;
+	RS::HealthAnwMessage message;
+	uint8_t preBuffer[100];
+	uint8_t buffer[100];
+
+	message.receiverUID = 0xFF;
+	message.transmitUID = 0x01;
+	message.messageType = RS::MessageType::HealthAnw;
+	message.number = 10;
+
+	message.payload.health = RS::Health::Healhy;
+	message.payload.flags = 7;
+
+	size_t length = parser.create(buffer, &message, sizeof(message));
+	parser.update(buffer, length);
+
+	printBuffer(buffer, length);
+
+	if (parser.isReady()) {
+		std::cout << "HealthAnw message parsed" << std::endl;
+		return true;
+	} else {
+		std::cout << "HealthAnw parsing failed" << std::endl;
+		return false;
+	}
+}
+
 int main()
 {
 	bool success = true;
@@ -342,6 +397,8 @@ int main()
 	success &= createAndParseBlobAnswerMessage();
 	success &= createAndParseWriteChunkMessage();
 	success &= createAndParseDeviceInfoAnwMessage();
+	success &= createAndParseHealthReqMessage();
+	success &= createAndParseHealthAnwMessage();
 
 	return !success;
 }

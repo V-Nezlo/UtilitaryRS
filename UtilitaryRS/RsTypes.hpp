@@ -19,9 +19,13 @@ static constexpr uint8_t kReservedUID{0xFF};
 /// подверждение приема сообщения
 // clang-format off
 enum class MessageType : uint8_t {
-	Probe = 0,
+	// UtilitaryRS, версия 1
+	Probe,
 	Ack,
-
+	Command,
+	BlobRequest,
+	BlobAnswer,
+	// UtilitaryRS, версия 2
 	DeviceInfoReq,
 	DeviceInfoAnw,
 
@@ -33,10 +37,6 @@ enum class MessageType : uint8_t {
 	HealthAnw,
 
 	Reboot,
-
-	Command,
-	BlobRequest,
-	BlobAnswer,
 
 	TypeEnd
 };
