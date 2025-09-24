@@ -30,7 +30,9 @@ public:
 	virtual void onRequestErrorEv(const std::string &aName, Result aReturn) = 0;
 
 	virtual Result blobAnswerEvReceived(const std::string &aName, uint8_t Request, const void *aData, size_t aSize) = 0;
-	virtual void deviceInfoReceivedEv(const std::string &aName, DeviceVersion aVersion) = 0;
+
+	virtual void deviceRegisteredEv(const std::string &aName, DeviceVersion aVersion) = 0;
+	virtual void deviceLostEv(const std::string &aName) = 0;
 
 	virtual Result fileWriteResultEv(const std::string &aName, Result aReturn) = 0;
 	virtual void deviceHealthReceivedEv(const std::string &aName, Health aHealth, uint16_t aFlags) = 0;
@@ -103,7 +105,11 @@ public:
 	/// \param aName имя хаба, по умолчанию Master
 	/// \param aUID uid хаба, по умолчанию 0
 	DeviceHub(DeviceVersion &aHubVersion, Interface &aIface, std::string aName = "Master", uint8_t aUID = 0) :
-		Base(aName.c_str(), aHubVersion, aUID, aIface), hub{}, observer{nullptr}
+		Base(aName.c_str(), aHubVersion, aUID, aIface),
+		hub{},
+		observer{nullptr},
+		nameToUid{},
+		temporaryUid{std::nullopt}
 	{ }
 
 	/// \brief Зарегистрировать наблюдателя
@@ -250,7 +256,7 @@ private:
 	std::map<uint8_t, DeviceWrapper> hub;
 	DeviceHubObserver *observer;
 	std::map<std::string, uint8_t> nameToUid;
-	uint8_t probedUID{0xFF};
+	std::optional<uint8_t> temporaryUid;
 
 	// RsHandler interface
 	void handleDeviceInfoAnswer(uint8_t aTranceiverUID, uint8_t aMessageNumber, DeviceVersion aVersion,
@@ -273,7 +279,7 @@ private:
 			nameToUid[dev->name] = aTranceiverUID;
 
 			if (observer)
-				observer->deviceInfoReceivedEv(dev->name, dev->version);
+				observer->deviceRegisteredEv(dev->name, dev->version);
 		}
 	}
 
@@ -284,7 +290,7 @@ private:
 		// Если устройства нет - создаем его и выходим
 		if (dev == nullptr) {
 			hub[aTranceiverUID] = DeviceWrapper{};
-			probedUID = aTranceiverUID;
+			temporaryUid = aTranceiverUID;
 			return;
 		}
 
@@ -481,8 +487,12 @@ private:
 					updateTime = std::chrono::milliseconds{1000};
 				} break;
 				case DeviceState::InfoRequest: {
-					updateDevicePending(aDevice, Base::sendDeviceInfoRequest(probedUID), MessageType::DeviceInfoReq);
-					probedUID = 0xFF;
+					if (temporaryUid) {
+						updateDevicePending(aDevice, Base::sendDeviceInfoRequest(temporaryUid.value()), MessageType::DeviceInfoReq);
+						temporaryUid.reset();
+					} else {
+						updateDevicePending(aDevice, Base::sendDeviceInfoRequest(getUIDFromName(aDevice.name)), MessageType::DeviceInfoReq);
+					}
 					updateTime = std::chrono::milliseconds{1000};
 				} break;
 				case DeviceState::Running: {
@@ -603,6 +613,7 @@ private:
 				case DeviceState::Suspended:
 					break;
 				case DeviceState::Lost:
+					if (observer) observer->deviceLostEv(aDevice.name);
 					aDevice.state = DeviceState::Probing;
 					break;
 			}
