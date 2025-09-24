@@ -16,7 +16,7 @@ namespace RS {
 ///
 /// \brief Энумератор типов сообщений - сообщения имеют следующие типы: Команда, Запрос данных, Ответ на запрос данных, подверждение приема сообщения
 ///
-enum class MessageType : uint8_t { Command = 0, Request, Answer, Ack, Probe};
+enum class MessageType : uint8_t { Probe = 0, Ack, Command, Request, Answer };
 
 ///
 /// \brief Заголовок сообщения, содержит UID отправителя, UID получателя и тип сообщения
