@@ -168,11 +168,11 @@ public:
 	/// \return возвращает конечную длину сообщения UtilitaryRS
 	size_t create(void *aBuffer, const void *aData, size_t aLength)
 	{
-		uint8_t *const position = static_cast<uint8_t *>(aBuffer);
+		uint8_t *const pos = static_cast<uint8_t *>(aBuffer);
 
-		position[0] = kPreambl;
-		memcpy(&position[1], aData, aLength);
-		position[aLength + 1] = CRC::calculate(aData, aLength);
+		pos[0] = kPreambl;
+		memcpy(&pos[1], aData, aLength);
+		pos[aLength + 1] = CRC::calculate(aData, aLength);
 
 		return aLength + 2;
 	}
