@@ -1,8 +1,8 @@
 
 #include "Mocks/MockSerial.hpp"
-#include "RsHandler.hpp"
-#include "RsTypes.hpp"
-#include <Crc8.hpp>
+#include <UtilitaryRS/RsHandler.hpp>
+#include <UtilitaryRS/RsTypes.hpp>
+#include <UtilitaryRS/Crc8.hpp>
 
 #include <cassert>
 #include <cstdint>
@@ -184,6 +184,8 @@ int main()
 	// REBOOT
 	handler.update(rebootMsg, sizeof(rebootMsg));
 	const uint8_t expectedRebootAck[] = {0x52, 0x1, 0xff, 0x1, 0x0, 0x2, 0x31};
+
+	return 0;
 
 	//	uint8_t ackBuffer[] = {0x52, 0xff, 0x01, 0x03, 0x06, 0x00, 0x08};
 	//	handler.update(ackBuffer, sizeof(ackBuffer));
