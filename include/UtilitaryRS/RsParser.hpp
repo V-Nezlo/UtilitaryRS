@@ -161,6 +161,20 @@ public:
 		return aLength;
 	}
 
+	/// \brief Получить receiver сообщения из самого сообщения
+	/// \param aBuffer сообщение
+	/// \param aLength длина
+	/// \return UID
+	static uint8_t getReceiverFromMsg(const uint8_t *aBuffer, size_t aLength)
+	{
+		if (aBuffer == nullptr || aLength < sizeof(Header)) {
+			return RS::kReservedUID;
+		}
+
+		const Header* header = reinterpret_cast<const Header*>(aBuffer + 1);
+		return header->receiverUID;
+	}
+
 	/// \brief Создает сообщение протокола UtilitaryRS из сообщения
 	/// \param aBuffer - указатель на сырой буффер, внутри которого будет создано сообщение
 	/// \param aData - указатель на сообщение
