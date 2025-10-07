@@ -504,8 +504,9 @@ private:
 		}
 
 		const auto *header = reinterpret_cast<const Header *>(aMessage);
+		const bool broadcast = header->receiverUID == kReservedUID;
 
-		if (header->receiverUID == nodeUID) {
+		if (header->receiverUID == nodeUID || broadcast) {
 			bool ackNeeded = true;
 			Result ackCode{Result::Unsupported};
 
