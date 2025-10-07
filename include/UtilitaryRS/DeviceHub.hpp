@@ -120,9 +120,11 @@ public:
 	}
 
 	/// \brief Просканировать шину
-	void probeAll()
+	/// \param aBroadcast - широковещательный запрос, для шин с арбитражем или систем с селективной адресацией
+	/// Для шин без арбитража строго prohibited, вызовет конфликты
+	void probeAll(bool aBroadcast = false)
 	{
-		for (uint8_t uid = 1; uid < MaxDeviceCount; ++uid) { Base::sendProbe(uid); }
+		for (uint8_t uid = 1; uid < MaxDeviceCount; ++uid) { Base::sendProbe(aBroadcast ? kReservedUID : uid); }
 	}
 
 	/// \brief Базовая функция, вызывать в планировщике
