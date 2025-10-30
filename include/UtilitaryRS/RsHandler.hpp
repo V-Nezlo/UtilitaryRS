@@ -27,7 +27,7 @@ public:
 	/// \param aVersion версия устройства
 	/// \param aNodeUID номер данной ноды (от 0 до 255)
 	/// \param aInterface ссылка на экземпляр типа Interface, заданного шаблоном
-	RsHandler(const char *aName, DeviceVersion &aVersion, uint8_t aNodeUID, Interface &aInterface) :
+	RsHandler(const char *aName, const DeviceVersion &aVersion, uint8_t aNodeUID, Interface &aInterface) :
 		name{aName},
 		version{aVersion},
 		health{Health::WarnUp},

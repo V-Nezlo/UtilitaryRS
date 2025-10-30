@@ -11,6 +11,7 @@
 #define LIB_RSHELPERS_HPP
 
 #include "RsTypes.hpp"
+#include <string>
 #include <string.h>
 
 namespace RS::Helpers {
@@ -72,6 +73,30 @@ static constexpr size_t getVolatileMessageMaxPayloadSize(MessageType aType)
 			return 0xFF;
 		default:
 			return 0;
+	}
+}
+
+std::string retToString(Result aResult)
+{
+	switch (aResult) {
+		case Result::Busy:
+			return "Busy";
+		case Result::ChecksumFailed:
+			return "Checksum failed";
+		case Result::Error:
+			return "Error";
+		case Result::InvalidArg:
+			return "Invalid argument";
+		case Result::Ok:
+			return "Success";
+		case Result::Wait:
+			return "Wait";
+		case Result::Timeout:
+			return "Timeout";
+		case Result::Unsupported:
+			return "Unsupported";
+		default:
+			return "Custom return code: " + std::to_string(static_cast<unsigned>(aResult));
 	}
 }
 

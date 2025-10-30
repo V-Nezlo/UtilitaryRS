@@ -104,7 +104,7 @@ public:
 	/// \param aIface интерфейс связи
 	/// \param aName имя хаба, по умолчанию Master
 	/// \param aUID uid хаба, по умолчанию 0
-	DeviceHub(DeviceVersion &aHubVersion, Interface &aIface, std::string aName = "Master", uint8_t aUID = 0) :
+	DeviceHub(const DeviceVersion &aHubVersion, Interface &aIface, std::string aName = "Master", uint8_t aUID = 0) :
 		Base(aName.c_str(), aHubVersion, aUID, aIface),
 		hub{},
 		observer{nullptr},
@@ -164,7 +164,7 @@ public:
 	/// \param aCommand команда
 	/// \param aValue аргумент
 	/// \return true если успех
-	bool sendCmdToDevice(std::string &aDeviceName, uint8_t aCommand, uint8_t aValue)
+	bool sendCmdToDevice(const std::string &aDeviceName, uint8_t aCommand, uint8_t aValue)
 	{
 		uint8_t devUid = getUIDFromName(aDeviceName);
 		if (devUid == kReservedUID) {
@@ -185,7 +185,7 @@ public:
 	/// \param aDeviceName имя устройства
 	/// \param aBlobRequest номер запроса
 	/// \return true если успех
-	bool sendBlobRequestToDevice(std::string &aDeviceName, uint8_t aBlobRequest, uint8_t aBlobSize)
+	bool sendBlobRequestToDevice(const std::string &aDeviceName, uint8_t aBlobRequest, uint8_t aBlobSize)
 	{
 		uint8_t devUid = getUIDFromName(aDeviceName);
 		if (devUid == kReservedUID) {
@@ -209,7 +209,7 @@ public:
 	/// \param aTimeout период опроса
 	/// \return true если успех
 	bool createSchedRequest(
-		std::string &aDeviceName, uint8_t aReq, uint8_t aReqSize, std::chrono::milliseconds aTimeout)
+		const std::string &aDeviceName, uint8_t aReq, uint8_t aReqSize, std::chrono::milliseconds aTimeout)
 	{
 		uint8_t devUid = getUIDFromName(aDeviceName);
 		if (devUid == kReservedUID) {
@@ -230,7 +230,7 @@ public:
 	/// \param aSize длина данных
 	/// \param aChunkSize размер чанка
 	/// \return true если команда принята
-	bool sendFile(std::string &aDeviceName, uint8_t aFile, const void *aData, size_t aSize, size_t aChunkSize)
+	bool sendFile(const std::string &aDeviceName, uint8_t aFile, const void *aData, size_t aSize, size_t aChunkSize)
 	{
 		uint8_t devUid = getUIDFromName(aDeviceName);
 		if (devUid == kReservedUID) {
@@ -396,7 +396,7 @@ private:
 		}
 	}
 
-	void cmdToDeviceImpl(std::string &aDeviceName, uint8_t aCommand, uint8_t aValue)
+	void cmdToDeviceImpl(const std::string &aDeviceName, uint8_t aCommand, uint8_t aValue)
 	{
 		uint8_t devUid = getUIDFromName(aDeviceName);
 
@@ -408,7 +408,7 @@ private:
 		updateDevicePending(dev, Base::sendCommand(devUid, aCommand, aValue), MessageType::Command);
 	}
 
-	void deviceRequestImpl(std::string &aDeviceName, uint8_t aRequest, uint8_t aRequestSize)
+	void deviceRequestImpl(const std::string &aDeviceName, uint8_t aRequest, uint8_t aRequestSize)
 	{
 		uint8_t devUid = getUIDFromName(aDeviceName);
 
@@ -420,7 +420,7 @@ private:
 		updateDevicePending(dev, Base::sendBlobRequest(devUid, aRequest, aRequestSize), MessageType::BlobRequest);
 	}
 
-	void deviceFileWriteRequestImpl(std::string &aDeviceName, uint8_t aFile, size_t aSize)
+	void deviceFileWriteRequestImpl(const std::string &aDeviceName, uint8_t aFile, size_t aSize)
 	{
 		uint8_t devUid = getUIDFromName(aDeviceName);
 
@@ -432,7 +432,7 @@ private:
 		updateDevicePending(dev, Base::fileWriteRequest(devUid, aFile, aSize), MessageType::FileWriteRequest);
 	}
 
-	void sendChunkImpl(std::string &aDeviceName, uint8_t aFileNum, const void *aChunk, uint8_t aChunkSize)
+	void sendChunkImpl(const std::string &aDeviceName, uint8_t aFileNum, const void *aChunk, uint8_t aChunkSize)
 	{
 		uint8_t devUid = getUIDFromName(aDeviceName);
 
@@ -444,7 +444,7 @@ private:
 		updateDevicePending(dev, Base::fileWriteChunk(devUid, dev.fileTransContext.file, aChunk, aChunkSize), MessageType::FileWriteChunk);
 	}
 
-	void fileWriteFinalizeImpl(std::string &aDeviceName, uint8_t aFileNum, uint16_t aChunkNumber, uint64_t aCrc)
+	void fileWriteFinalizeImpl(const std::string &aDeviceName, uint8_t aFileNum, uint16_t aChunkNumber, uint64_t aCrc)
 	{
 		uint8_t devUid = getUIDFromName(aDeviceName);
 
@@ -456,7 +456,7 @@ private:
 		updateDevicePending(dev, Base::fileWriteFinalize(devUid, aFileNum, aChunkNumber, aCrc), MessageType::FileWriteFinalize);
 	}
 
-	void deviceHealthReqImpl(std::string &aDeviceName)
+	void deviceHealthReqImpl(const std::string &aDeviceName)
 	{
 		uint8_t devUid = getUIDFromName(aDeviceName);
 
