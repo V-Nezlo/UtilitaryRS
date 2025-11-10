@@ -119,7 +119,7 @@ public:
 	}
 
 	/// \brief Просканировать шину
-	/// \param aBroadcast - широковещательный запрос, для шин с арбитражем или систем с селективной адресацией
+	/// \param aBroadcast широковещательный запрос, для шин с арбитражем или систем с селективной адресацией
 	/// Для шин без арбитража строго prohibited, вызовет конфликты
 	void probeAll(bool aBroadcast = false)
 	{
@@ -265,18 +265,18 @@ private:
 	{
 		DeviceWrapper *dev = getDevice(aTranceiverUID);
 
-		// Если устройства нет - то походу это не нам ответили
+		// Если устройства нет - то это не нам ответили
 		if (dev == nullptr) {
 			return;
 		}
 
-		if (dev->state == DeviceState::InfoRequest) {
+		if (dev->pending && dev->pending.value().messageNumber == aMessageNumber && dev->state == DeviceState::InfoRequest) {
+			dev->pending.reset();
 			// Заполним дескриптор
 			dev->name.clear();
 			dev->name.assign(static_cast<const char *>(aName), aNameLen);
 			dev->version = aVersion;
 			dev->state = DeviceState::Running;
-
 			nameToUid[dev->name] = aTranceiverUID;
 
 			if (observer)
@@ -298,7 +298,7 @@ private:
 		// Иначе разбираемся что это за ответ
 		dev->lastAck = Time::milliseconds();
 		// Если мы ожидаем ответа и получаем ответ с правильным номером сообщения
-		if (dev->pending.has_value() && dev->pending.value().messageNumber == aMessageNumber) {
+		if (dev->pending && dev->pending.value().messageNumber == aMessageNumber) {
 			if (observer) {
 				observer->onAckReceivedEv(dev->name, dev->pending.value().msgType, aReturnCode);
 			}
@@ -349,9 +349,16 @@ private:
 							if (observer)
 								observer->fileWriteResultEv(dev->name, aReturnCode);
 							break;
+						// Недопустимо или слейв сам иницирует взаимодействие
+						default:
+							break;
 					}
 				}
+
+				default:
+					break;
 			}
+
 			dev->pending.reset();
 		}
 	}
@@ -440,6 +447,11 @@ private:
 		}
 
 		DeviceWrapper &dev = hub[devUid];
+
+		if (aFileNum != dev.fileTransContext.file) {
+			return;
+		}
+
 		updateDevicePending(dev, Base::fileWriteChunk(devUid, dev.fileTransContext.file, aChunk, aChunkSize), MessageType::FileWriteChunk);
 	}
 
@@ -551,8 +563,8 @@ private:
 								if (!aDevice.fileTransContext.packetAck) {
 									aDevice.fileTransContext.state = FileTransferContext::State::Cancel;
 								} else {
-									const size_t lastChunk = std::min(aDevice.fileTransContext.chunkSize,
-										aDevice.fileTransContext.totalSize - aDevice.fileTransContext.sentOffset);
+									const uint8_t lastChunk = static_cast<uint8_t>(std::min(aDevice.fileTransContext.chunkSize,
+										aDevice.fileTransContext.totalSize - aDevice.fileTransContext.sentOffset));
 
 									// Ответ пришел,смотрим что там устройство сообщило
 									if (aDevice.fileTransContext.packetAck.value() == Result::Busy) {
@@ -575,8 +587,8 @@ private:
 											aDevice.fileTransContext.packetAck.reset();
 											updateTime = std::chrono::milliseconds{500};
 										} else {
-											const size_t nextChunk = std::min(aDevice.fileTransContext.chunkSize,
-												aDevice.fileTransContext.totalSize - aDevice.fileTransContext.sentOffset);
+											const uint8_t nextChunk = static_cast<uint8_t>(std::min(aDevice.fileTransContext.chunkSize,
+												aDevice.fileTransContext.totalSize - aDevice.fileTransContext.sentOffset));
 
 											const uint8_t *ptr = static_cast<const uint8_t *>(aDevice.fileTransContext.data)
 												+ aDevice.fileTransContext.sentOffset;
@@ -597,14 +609,14 @@ private:
 							const auto crc
 								= CrcFile::calculate(aDevice.fileTransContext.data, aDevice.fileTransContext.totalSize);
 							fileWriteFinalizeImpl(
-								aDevice.name, aDevice.fileTransContext.file, aDevice.fileTransContext.chunkSent, crc);
+								aDevice.name, aDevice.fileTransContext.file, static_cast<uint16_t>(aDevice.fileTransContext.chunkSent), crc);
 							updateTime = std::chrono::milliseconds{500};
 						} break;
 
 						case FileTransferContext::State::Cancel: {
 							// Сбросим режим если вернулась ошибка
 							aDevice.fileTransContext = FileTransferContext{};
-							aDevice.state == DeviceState::Running;
+							aDevice.state = DeviceState::Running;
 							Result result = aDevice.fileTransContext.packetAck ? aDevice.fileTransContext.packetAck.value() : Result::Error;
 							if (observer) observer->fileWriteResultEv(aDevice.name, result);
 						} break;

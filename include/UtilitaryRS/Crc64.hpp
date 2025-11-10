@@ -87,8 +87,8 @@ class Crc64 {
 public:
 	///
 	/// \brief Рассчитывает CRC64 для буфера
-	/// \param aData - указатель на буфер с данными
-	/// \param aLength - длина буфера с данными
+	/// \param aData указатель на буфер с данными
+	/// \param aLength длина буфера с данными
 	/// \return Рассчитанный CRC64
 	///
 	static uint64_t calculate(const void *aData, size_t aLength)
@@ -103,9 +103,9 @@ public:
 
 	///
 	/// \brief Функция для расчета CRC64 для принимаемых сообщений
-	/// \param aChecksum - текущая контрольная сумма
-	/// \param aBuffer - указатель на буфер с данными
-	/// \param aLength - размер буфера
+	/// \param aChecksum текущая контрольная сумма
+	/// \param aBuffer указатель на буфер с данными
+	/// \param aLength размер буфера
 	/// \return Рассчитанный CRC64
 	///
 	static uint64_t update(uint64_t aChecksum, const void *aBuffer, size_t aLength)

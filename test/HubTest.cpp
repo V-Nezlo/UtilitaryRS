@@ -44,8 +44,8 @@ private:
 template<typename Interface, typename Crc, size_t ParserSize>
 class DeviceNode : public RS::RsHandler<Interface, Crc, ParserSize> {
 public:
-	DeviceNode(const char *name, RS::DeviceVersion &ver, uint8_t uid, Interface &iface) :
-		RS::RsHandler<Interface, Crc, ParserSize>(name, ver, uid, iface)
+	DeviceNode(const char *aName, RS::DeviceVersion &ver, uint8_t uid, Interface &iface) :
+		RS::RsHandler<Interface, Crc, ParserSize>(aName, ver, uid, iface)
 	{ }
 
 	// Обрабатывать BlobRequest: если request == 2 и ожидается 4 байта, отправляем 0xAABBCCDD
