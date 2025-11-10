@@ -16,14 +16,14 @@
 namespace RS {
 
 template<size_t ParserSize, typename CRC, typename... Ts>
-class CompositeDevice {
+class MultiNode {
 	using Parser = RS::RsParser<ParserSize, CRC>;
 
 	std::tuple<Ts&...> devices;
 	Parser parser;
 public:
 	template<typename... ARGs>
-	CompositeDevice(const std::tuple<ARGs...> &args) : devices{args}
+	MultiNode(const std::tuple<ARGs...> &args) : devices{args}
 	{
 	}
 
