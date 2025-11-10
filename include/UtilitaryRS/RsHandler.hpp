@@ -22,7 +22,7 @@ class RsHandler {
 
 	// Композит должен быть другом чтобы не нарушать инкапсуляцию
 	template<size_t, typename, typename...>
-	friend class CompositeDevice;
+	friend class MultiNode;
 
 public:
 

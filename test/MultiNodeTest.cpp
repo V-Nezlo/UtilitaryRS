@@ -3,7 +3,7 @@
 #include <UtilitaryRS/RsHandler.hpp>
 #include <UtilitaryRS/RsTypes.hpp>
 #include <UtilitaryRS/Crc8.hpp>
-#include <UtilitaryRS/CompositeDevice.hpp>
+#include <UtilitaryRS/MultiNode.hpp>
 
 #include <cassert>
 #include <cstdint>
@@ -204,7 +204,7 @@ int main()
 	Device1<MockSerial, Crc8, 100> device1("Device1", version, 1, serial);
 	Device2<MockSerial, Crc8, 100> device2("Device2", version, 2, serial);
 
-	RS::CompositeDevice<256, Crc8, decltype(device1), decltype(device2)> composite(std::tie(device1, device2));
+	RS::MultiNode<256, Crc8, decltype(device1), decltype(device2)> composite(std::tie(device1, device2));
 
 	uint8_t message1[64];
 	uint8_t message2[64];
