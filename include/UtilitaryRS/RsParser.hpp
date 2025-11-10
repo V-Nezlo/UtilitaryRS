@@ -161,7 +161,7 @@ public:
 		return aLength;
 	}
 
-	/// \brief Получить receiver сообщения из самого сообщения
+	/// \brief Получить receiver сообщения из самого сообщения (полное сообщение, включая преамбулу)
 	/// \param aBuffer сообщение
 	/// \param aLength длина
 	/// \return UID
@@ -172,6 +172,20 @@ public:
 		}
 
 		const Header* header = reinterpret_cast<const Header*>(aBuffer + 1);
+		return header->receiverUID;
+	}
+
+	/// \brief Получить receiver сообщения из самого сообщения (только header+payload)
+	/// \param aBuffer сообщение
+	/// \param aLength длина
+	/// \return UID
+	static uint8_t getReceiverFromPayload(const uint8_t *aBuffer, size_t aLength)
+	{
+		if (aBuffer == nullptr || aLength < sizeof(Header)) {
+			return RS::kReservedUID;
+		}
+
+		const Header* header = reinterpret_cast<const Header*>(aBuffer);
 		return header->receiverUID;
 	}
 

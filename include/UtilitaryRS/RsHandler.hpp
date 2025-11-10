@@ -20,6 +20,10 @@ template<class Interface, typename Crc, size_t ParserSize>
 class RsHandler {
 	using Parser = RsParser<ParserSize, Crc>;
 
+	// Композит должен быть другом чтобы не нарушать инкапсуляцию
+	template<size_t, typename, typename...>
+	friend class CompositeDevice;
+
 public:
 
 	/// \brief Конструктор класса RsHandler
@@ -37,6 +41,11 @@ public:
 		interface{aInterface},
 		messageBuffer{}
 	{ }
+
+	const uint8_t getUid() const
+	{
+		return nodeUID;
+	}
 
 	/// \brief Основная функция, прокидывающая получаемые байты в парсер и отправляющие в протокольный обработчик
 	/// \param aData - указатель на валидные данные
