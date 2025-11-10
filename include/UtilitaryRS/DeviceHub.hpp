@@ -4,7 +4,6 @@
 \author V-Nezlo (vlladimirka@gmail.com)
 \date 23.09.2025
 \version 2.0
-
 */
 
 #ifndef LIB_DEVICEHUB_HPP_
