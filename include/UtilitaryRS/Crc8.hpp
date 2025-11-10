@@ -55,8 +55,8 @@ class Crc8 {
 public:
 	///
 	/// \brief Рассчитывает CRC8 для буфера
-	/// \param aData - указатель на буффер с данными
-	/// \param aLength - длина буффера с данными
+	/// \param aData указатель на буффер с данными
+	/// \param aLength длина буффера с данными
 	/// \return Рассчитанный CRC8
 	///
 	static uint8_t calculate(const void *aData, size_t aLength)
@@ -73,9 +73,9 @@ public:
 
 	///
 	/// \brief Функция для расчета CRC8 для принимаемых сообщений
-	/// \param aChecksum - текущая контрольная сумма
-	/// \param aBuffer - указатель на буффер с данными
-	/// \param aLength - размер буффера
+	/// \param aChecksum текущая контрольная сумма
+	/// \param aBuffer указатель на буффер с данными
+	/// \param aLength размер буффера
 	/// \return Рассчитанный CRC8
 	///
 	static uint8_t update(uint8_t aChecksum, const void *aBuffer, size_t aLength)

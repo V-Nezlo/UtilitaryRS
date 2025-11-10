@@ -32,12 +32,10 @@ public:
 	RsParser() : position{0}, parserState{State::Idle}, buffer{}, message{}
 	{ }
 
-	///
 	/// \brief Основная функция парсера
-	/// \param aBuffer - указатель на данные, которые нужно отпарсить
-	/// \param aLength - длина пришедших данных для парсинга
+	/// \param aBuffer указатель на данные, которые нужно отпарсить
+	/// \param aLength длина пришедших данных для парсинга
 	/// \return возвращает количество отпарcенных байт
-	///
 	size_t update(const uint8_t *aBuffer, size_t aLength)
 	{
 		if (isReady()) {
@@ -190,9 +188,9 @@ public:
 	}
 
 	/// \brief Создает сообщение протокола UtilitaryRS из сообщения
-	/// \param aBuffer - указатель на сырой буффер, внутри которого будет создано сообщение
-	/// \param aData - указатель на сообщение
-	/// \param aLength - длина сообщения
+	/// \param aBuffer указатель на сырой буффер, внутри которого будет создано сообщение
+	/// \param aData указатель на сообщение
+	/// \param aLength длина сообщения
 	/// \return возвращает конечную длину сообщения UtilitaryRS
 	size_t create(void *aBuffer, const void *aData, size_t aLength)
 	{
@@ -205,33 +203,25 @@ public:
 		return aLength + 2;
 	}
 
-	///
 	/// \return Возвращает текущий статус парсера
-	///
 	State state() const
 	{
 		return parserState;
 	}
 
-	///
 	/// \return Возвращает указатель на сырые данные парсера
-	///
 	const uint8_t *data() const
 	{
 		return buffer;
 	}
 
-	///
 	/// \return Возвращает текущую позицию парсера
-	///
 	size_t length() const
 	{
 		return position;
 	}
 
-	///
 	/// \brief Сброс парсера
-	///
 	void reset()
 	{
 		position = 0;

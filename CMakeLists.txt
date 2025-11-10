@@ -9,10 +9,28 @@ target_include_directories(UtilitaryRS INTERFACE
     $<INSTALL_INTERFACE:include>
 )
 
+set(COMMON_FLAGS
+    -pedantic
+    -Wall
+    -Wcast-align
+    -Wcast-qual
+    -Wconversion
+    -Wextra
+    -Wshadow
+    -Wold-style-cast
+    -Woverloaded-virtual
+    -Wimplicit-fallthrough
+    -Wdouble-promotion
+    -Wduplicated-cond
+    -fms-extensions
+)
+
 set_target_properties(UtilitaryRS PROPERTIES
     CXX_STANDARD 17
     CXX_STANDARD_REQUIRED YES
 )
+
+target_compile_options(${PROJECT_NAME} INTERFACE ${COMMON_FLAGS})
 
 if (UTILITARY_RS_TESTING)
     include(CTest)

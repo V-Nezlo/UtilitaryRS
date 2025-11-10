@@ -42,14 +42,14 @@ public:
 		messageBuffer{}
 	{ }
 
-	const uint8_t getUid() const
+	uint8_t getUid() const
 	{
 		return nodeUID;
 	}
 
 	/// \brief Основная функция, прокидывающая получаемые байты в парсер и отправляющие в протокольный обработчик
-	/// \param aData - указатель на валидные данные
-	/// \param aLength - размер валидных данных
+	/// \param aData указатель на валидные данные
+	/// \param aLength размер валидных данных
 	void update(const uint8_t *aData, size_t aLength)
 	{
 		size_t left = aLength;
@@ -71,9 +71,9 @@ public:
 	}
 
 	/// \brief Функция для отправки команды от текущей ноды
-	/// \param aReceiverUID - UID получателя команды
-	/// \param aCommand - номер команды
-	/// \param aArgument - аргумент для команды (может быть незадействован)
+	/// \param aReceiverUID UID получателя команды
+	/// \param aCommand номер команды
+	/// \param aArgument аргумент для команды (может быть незадействован)
 	/// \return номер сообщения
 	uint8_t sendCommand(uint8_t aReceiverUID, uint8_t aCommand, uint8_t aArgument)
 	{
@@ -253,7 +253,7 @@ public:
 	/// \param aMessageNumber номер сообщения
 	/// \param aHealth здоровье
 	/// \param aFlags флаги
-	virtual void handleDeviceHealth(uint8_t aTransmitUID, uint8_t aMessageNumber, Health aHealth, uint16_t aFlags)
+	virtual void handleDeviceHealth(uint8_t /*aTransmitUID*/, uint8_t /*aMessageNumber*/, Health /*aHealth*/, uint16_t /*aFlags*/)
 	{
 		return;
 	}
@@ -261,30 +261,30 @@ public:
 	/// \brief Функция обработки запроса, реализуется на стороне клиента, внутри функции собираются и отправляются
 	/// данные запрашиваемому Если нужно ответить на запрос то необходимо вызывать функцию sendAnswer внутри этой
 	/// функции и вернуть true, иначе просто вернуть false, будет отправлен Ack с ошибкой запроса
-	/// \param aTransmitUID - UID получателя ответа на запрос
+	/// \param aTransmitUID UID получателя ответа на запрос
 	/// \param aMessageNumber номер сообщения, ответ должен содержать такой же номер
-	/// \param aRequest - номер запроса
-	/// \param aRequestedDataSize - размер отправляемых данных
+	/// \param aRequest номер запроса
+	/// \param aRequestedDataSize размер отправляемых данных
 	/// \return статус выполнения команды
 	///
 	/// Пример реализации:
 	/// \code
 	/// if (aRequest == 2) {
 	///     uint32_t data = 0xAABBCCDD;
-	///     return BaseType::sendAnswer(aTransmitUID, aRequest, aRequestedDataSize, reinterpret_cast<void *>(&data),
+	///     return BaseType::sendAnswer(aTransmitUID, aMessageNumber, aRequest, aRequestedDataSize, &data),
 	///     sizeof(data));
 	/// }
 	/// return false;
 	/// \endcode
-	virtual Result processBlobRequest(uint8_t aTransmitUID, uint8_t aMessageNumber, uint8_t aRequest, uint8_t aRequestedDataSize)
+	virtual Result processBlobRequest(uint8_t /*aTransmitUID*/, uint8_t /*aMessageNumber*/, uint8_t /*aRequest*/, uint8_t /*aRequestedDataSize*/)
 	{
 		return Result::Unsupported;
 	}
 
 	/// \brief Функция обработки команд. возвращает статус, который затем автоматически отправляется как
 	/// Code в Ack сообщении отправителю команды
-	/// \param aCommand - номер команды
-	/// \param aArgument - аргумент команды
+	/// \param aCommand номер команды
+	/// \param aArgument аргумент команды
 	/// \return статус выполнения команды
 	///
 	/// Пример реализации:
@@ -296,7 +296,7 @@ public:
 	///     return 0;
 	/// }
 	/// \endcode
-	virtual Result handleCommand(uint8_t aCommand, uint8_t aArgument)
+	virtual Result handleCommand(uint8_t /*aCommand*/, uint8_t /*aArgument*/)
 	{
 		return Result::Unsupported;
 	}
@@ -306,7 +306,7 @@ public:
 	/// \param aFile номер файла
 	/// \param aFileSize размер файла
 	/// \return статус выполнения команды
-	virtual Result handleFileWriteRequest(uint8_t aTranceiverUID, uint8_t aFile, uint32_t aFileSize)
+	virtual Result handleFileWriteRequest(uint8_t /*aTranceiverUID*/, uint8_t /*aFile*/, uint32_t /*aFileSize*/)
 	{
 		return Result::Unsupported;
 	}
@@ -317,7 +317,7 @@ public:
 	/// \param aChunkData данные чанка
 	/// \param aChunkLen длина чанка
 	/// \return статус выполнения команды
-	virtual Result handleWriteChunk(uint8_t aTransmitUID, uint8_t aFileNum, const void *aChunkData, size_t aChunkLen)
+	virtual Result handleWriteChunk(uint8_t /*aTransmitUID*/, uint8_t /*aFileNum*/, const void * /*aChunkData*/, size_t /*aChunkLen*/)
 	{
 		return Result::Unsupported;
 	}
@@ -329,7 +329,7 @@ public:
 	/// \param aFileCRC CRC64 от всех чанков
 	/// \return статус выполнения команды
 	virtual Result handleWriteChunkFinalize(
-		uint8_t aTransmitUID, uint8_t aFileNum, uint16_t aChunkCount, uint64_t aFileCRC)
+		uint8_t /*aTransmitUID*/, uint8_t /*aFileNum*/, uint16_t /*aChunkCount*/, uint64_t /*aFileCRC*/)
 	{
 		return Result::Unsupported;
 	}
@@ -340,12 +340,12 @@ public:
 	/// \param aVersion версия ПО
 	/// \param aName имя устройства
 	/// \param nameLen длина имени устройства
-	virtual void handleDeviceInfoAnswer(uint8_t aTranceiverUID, uint8_t aMessageNumber, DeviceVersion aVersion, const void *aName, size_t nameLen) {}
+	virtual void handleDeviceInfoAnswer(uint8_t /*aTranceiverUID*/, uint8_t /*aMessageNumber*/, DeviceVersion /*aVersion*/, const void */*aName*/, size_t /*nameLen*/) {}
 
 	/// \brief Функция обработки ответа, можно использовать как индикатор того что адресат вообще жив
-	/// \param aTranceiverUID - отправитель Ack
+	/// \param aTranceiverUID отправитель Ack
 	/// \param aMessageNumber номер сообщения
-	/// \param aReturnCode - код возврата, который пришел с Ack
+	/// \param aReturnCode код возврата, который пришел с Ack
 	///
 	/// Пример реализации:
 	/// \code
@@ -355,22 +355,25 @@ public:
 	///     showSuccess();
 	/// }
 	/// \endcode
-	virtual void handleAck(uint8_t aTranceiverUID, uint8_t aMessageNumber, Result aReturnCode) {}
+	virtual void handleAck(uint8_t /*aTranceiverUID*/, uint8_t /*aMessageNumber*/, Result /*aReturnCode*/)
+	{
+
+	}
 
 	/// \brief Функция обработки команды ребута
-	/// \param aMagic - магические числа для типа ребута
+	/// \param aMagic магические числа для типа ребута
 	/// \return результат выполнения команды
-	virtual Result handleReboot(uint64_t aMagic)
+	virtual Result handleReboot(uint64_t /*aMagic*/)
 	{
 		return Result::Unsupported;
 	}
 
 	/// \brief Функция обработки ответа
-	/// \param aTranceiverUID - UID отправителя
+	/// \param aTranceiverUID UID отправителя
 	/// \param aMessageNumber номер сообщения
-	/// \param aRequest - номер запроса
-	/// \param aData - указатель на данные ответа
-	/// \param aLength - размер данных ответа
+	/// \param aRequest номер запроса
+	/// \param aData указатель на данные ответа
+	/// \param aLength размер данных ответа
 	/// \return статус обработки ответа
 	///
 	/// Пример реализации:
@@ -383,19 +386,19 @@ public:
 	///     return 0; // Ack вернется с ошибкой
 	/// }
 	/// \endcode
-	virtual Result handleBlobAnswer(uint8_t aTranceiverUID, uint8_t aMessageNumber, uint8_t aRequest, const uint8_t *aData, uint8_t aLength)
+	virtual Result handleBlobAnswer(uint8_t /*aTranceiverUID*/, uint8_t /*aMessageNumber*/, uint8_t /*aRequest*/, const uint8_t */*aData*/, uint8_t /*aLength*/)
 	{
 		return Result::Unsupported;
 	}
 
 protected:
 	/// \brief Функция, которая отправляет ответ, собранный в функции processRequest. Вызывать через базовый класс
-	/// \param aTranceiverUID - UID отправителя ответа
+	/// \param aTranceiverUID UID отправителя ответа
 	/// \param aMessageNumber номер сообщения
-	/// \param aRequest - номер запроса
-	/// \param aRequestedDataSize - количество байт данных, которые были запрошены
-	/// \param aData - указатель на данные для отправки
-	/// \param aSize - размер данных для отправки
+	/// \param aRequest номер запроса
+	/// \param aRequestedDataSize количество байт данных, которые были запрошены
+	/// \param aData указатель на данные для отправки
+	/// \param aSize размер данных для отправки
 	/// \return в случае ошибки возвращает false, иначе - true
 	bool sendAnswer(uint8_t aReceiverUID, uint8_t aMessageNumber, uint8_t aRequest, uint8_t aRequestedDataSize, void *aData, uint8_t aSize)
 	{
@@ -442,9 +445,9 @@ private:
 	uint8_t messageNumber;
 
 	/// \brief Функция отправки ответа
-	/// \param aTransmitterUID - получатель ответа (отправитель команд\запросов)
+	/// \param aTransmitterUID получатель ответа (отправитель команд\запросов)
 	/// \param aMessageNumber номер сообщения, такой же как у сообщения на который формируется ack
-	/// \param aReturnCode - код возврата
+	/// \param aReturnCode код возврата
 	void sendAck(uint8_t aTransmitterUID, uint8_t aMessageNumber, Result aReturnCode)
 	{
 		AckMessage message;
@@ -503,8 +506,8 @@ private:
 
 	/// \brief Основная функция для взаимодействия внутри протокола, обработка идет только если сообщение предназначено
 	/// именно этой ноде
-	/// \param aMessage - указатель на распаршенное сообщение
-	/// \param aLength - длина сообщения (пока не
+	/// \param aMessage указатель на распаршенное сообщение
+	/// \param aLength длина сообщения (пока не
 	/// зайдествована)
 	void process(const uint8_t *aMessage, size_t aLength)
 	{
@@ -561,7 +564,6 @@ private:
 
 				case MessageType::DeviceInfoAnw: {
 					const auto deviceInfo = reinterpret_cast<const DeviceInfoAnwMessage *>(aMessage);
-					const size_t nameLen = deviceInfo->payload.nameLen;
 					handleDeviceInfoAnswer(header->transmitUID, header->number, deviceInfo->payload.version,
 					&aMessage[sizeof(DeviceInfoAnwMessage)], deviceInfo->payload.nameLen);
 					ackCode = Result::Ok;

@@ -19,8 +19,9 @@ template<size_t ParserSize, typename CRC, typename... Ts>
 class MultiNode {
 	using Parser = RS::RsParser<ParserSize, CRC>;
 
-	std::tuple<Ts&...> devices;
+	std::tuple<Ts &...> devices;
 	Parser parser;
+
 public:
 	template<typename... ARGs>
 	MultiNode(const std::tuple<ARGs...> &args) : devices{args}
@@ -28,8 +29,8 @@ public:
 	}
 
 	/// \brief Основная функция, прокидывающая получаемые байты в парсер и отправляющие в протокольный обработчик
-	/// \param aData - указатель на валидные данные
-	/// \param aLength - размер валидных данных
+	/// \param aData указатель на валидные данные
+	/// \param aLength размер валидных данных
 	void update(const uint8_t *aData, size_t aLength)
 	{
 		size_t left = aLength;
@@ -51,7 +52,6 @@ public:
 	}
 
 private:
-
 	/// \brief Функция маршрутизации для устройств
 	void routeMessage(const uint8_t *aMessage, size_t aLength)
 	{
