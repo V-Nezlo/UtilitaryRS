@@ -16,6 +16,7 @@
 #include <optional>
 #include <queue>
 #include <string>
+#include <thread>
 
 namespace RS {
 
@@ -121,9 +122,17 @@ public:
 	/// \brief Просканировать шину
 	/// \param aBroadcast широковещательный запрос, для шин с арбитражем или систем с селективной адресацией
 	/// Для шин без арбитража строго prohibited, вызовет конфликты
-	void probeAll(bool aBroadcast = false)
+	void probeAll(bool aBroadcast = false, bool aBlocking = false)
 	{
-		for (uint8_t uid = 1; uid < MaxDeviceCount; ++uid) { Base::sendProbe(aBroadcast ? kReservedUID : uid); }
+		if (!aBlocking) {
+			for (uint8_t uid = 1; uid < MaxDeviceCount; ++uid) { Base::sendProbe(aBroadcast ? kReservedUID : uid); }
+		} else {
+			for (uint8_t uid = 1; uid < MaxDeviceCount; ++uid) {
+				Base::sendProbe(aBroadcast ? kReservedUID : uid);
+				std::this_thread::sleep_for(std::chrono::milliseconds{100});
+			}
+		}
+
 	}
 
 	/// \brief Базовая функция, вызывать в планировщике

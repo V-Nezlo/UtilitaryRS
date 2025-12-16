@@ -173,6 +173,20 @@ public:
 		return header->receiverUID;
 	}
 
+	/// \brief Получить отправителя сообщения из самого сообщения (полное сообщение, включая преамбулу)
+	/// \param aBuffer сообщение
+	/// \param aLength длина
+	/// \return UID
+	static uint8_t getTranceiverFromMsg(const uint8_t *aBuffer, size_t aLength)
+	{
+		if (aBuffer == nullptr || aLength < sizeof(Header)) {
+			return RS::kReservedUID;
+		}
+
+		const Header* header = reinterpret_cast<const Header*>(aBuffer + 1);
+		return header->transmitUID;
+	}
+
 	/// \brief Получить receiver сообщения из самого сообщения (только header+payload)
 	/// \param aBuffer сообщение
 	/// \param aLength длина
