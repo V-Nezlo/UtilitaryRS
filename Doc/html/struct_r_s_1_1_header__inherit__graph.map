@@ -1,5 +1,0 @@
-<map id="RS::Header" name="RS::Header">
-<area shape="rect" id="Node000001" title="Заголовок сообщения, содержит UID отправителя, UID получателя и тип сообщения" alt="" coords="21,5,112,31"/>
-<area shape="rect" id="Node000002" href="$struct_r_s_1_1_packet.html" title=" " alt="" coords="5,79,128,104"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="69,44,69,79,64,79,64,44"/>
-</map>
