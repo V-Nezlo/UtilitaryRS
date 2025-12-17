@@ -501,7 +501,7 @@ private:
 	{
 		if (aTime >= aDevice.nextCall) {
 			// Базовое время следующего действия
-			auto updateTime = std::chrono::milliseconds{50};
+			auto updateTime = std::chrono::milliseconds{100};
 
 			switch (aDevice.state) {
 				case DeviceState::Probing: {
