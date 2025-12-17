@@ -57,13 +57,12 @@ private:
 	{
 		const uint8_t targetUID = Parser::getReceiverFromPayload(aMessage, aLength);
 
-		if (targetUID != RS::kReservedUID) {
-			std::apply(
-				[&](auto &...device) {
-					((device.getUid() == targetUID ? device.process(aMessage, aLength) : void()), ...);
-				},
-				devices);
-		}
+		std::apply(
+			[&](auto &...device)
+			{
+				(((device.getUid() == targetUID || targetUID == RS::kReservedUID) ? device.process(aMessage, aLength) : void()), ...);
+			},
+			devices);
 	}
 };
 
