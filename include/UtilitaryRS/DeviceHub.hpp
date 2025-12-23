@@ -386,9 +386,10 @@ private:
 		if (dev->pending.has_value() && dev->pending.value().messageNumber == aMessageNumber
 			&& dev->pending.value().msgType == MessageType::BlobRequest) {
 
-
-			if (observer) return observer->blobAnswerEvReceived(dev->name, aRequest, aData, aLength);
 			dev->pending.reset();
+			if (observer)  {
+				return observer->blobAnswerEvReceived(dev->name, aRequest, aData, aLength);
+			}
 		}
 
 		return Result::Error;
@@ -523,11 +524,15 @@ private:
 						const auto val = aDevice.commandQueue.front();
 						aDevice.commandQueue.pop();
 						cmdToDeviceImpl(aDevice.name, val.first, val.second);
-						// Потом в очередь запросов
+						// Потом в очередь запросов (ручных)
 					} else if (!aDevice.requestQueue.empty()) {
 						const auto request = aDevice.requestQueue.front();
 						aDevice.requestQueue.pop();
 						deviceRequestImpl(aDevice.name, request.first, request.second);
+						// Потом посмотрим, не пора ли спросить флаги и health
+					} else if (aTime - aDevice.lastHealthReq >= kHealthTimeout) {
+						aDevice.lastHealthReq = aTime;
+						deviceHealthReqImpl(aDevice.name);
 						// Потом в очередь расписаний телеметрии
 					} else if (!aDevice.telemSched.empty()) {
 						TelemetryUnit *telem = nullptr;
@@ -540,10 +545,6 @@ private:
 						if (telem != nullptr) {
 							deviceRequestImpl(aDevice.name, telem->req, telem->reqSize);
 						}
-						// Потом посмотрим, не пора ли спросить флаги и health
-					} else if (aTime - aDevice.lastHealthReq >= kHealthTimeout) {
-						aDevice.lastHealthReq = aTime;
-						deviceHealthReqImpl(aDevice.name);
 					} else {
 						// Делать нечего
 					}
