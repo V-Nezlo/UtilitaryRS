@@ -14,6 +14,12 @@
 namespace RS {
 
 static constexpr uint8_t kReservedUID{0xFF};
+/// \brief Максимальное число нод, адреса устройств находятся в диапазоне 1...32
+static constexpr uint8_t kMaxNodeCount{32};
+/// \brief Адрес отправителя неаллоцированной ноды, используется только при аллокации
+static constexpr uint8_t kUnallocatedUID{kReservedUID};
+/// \brief Число хеш-групп при обнаружении неаллоцированных нод
+static constexpr uint8_t kAllocationBucketCount{32};
 
 /// \brief Энумератор типов сообщений - сообщения имеют следующие типы: Команда, Запрос данных, Ответ на запрос данных,
 /// подверждение приема сообщения
@@ -37,6 +43,12 @@ enum class MessageType : uint8_t {
 	HealthAnw,
 
 	Reboot,
+
+	// Динамическая аллокация адресов
+	DiscoverReq,
+	DiscoverAnw,
+	AssignAddressReq,
+	AssignAddressAnw,
 
 	TypeEnd
 };
@@ -70,6 +82,12 @@ struct DeviceVersion {
 	uint64_t hash;
 };
 
+/// \brief Постоянный идентификатор логической ноды, не зависит от ее адреса на шине
+/// Заполняется приложением и должен быть уникальным для каждой ноды, включая ноды составного устройства
+struct NodeUid {
+	uint8_t bytes[16];
+} __attribute__((packed));
+
 /// \brief Заголовок сообщения, содержит UID отправителя, UID получателя и тип сообщения
 struct Header {
 	uint8_t receiverUID;
@@ -96,6 +114,33 @@ struct DeviceInfoAnwPayload {
 	__attribute__((packed, aligned(1))) DeviceVersion version;
 	uint8_t nameLen;
 	// name
+} __attribute__((packed));
+
+/// \brief Широковещательный запрос мастера, отвечают только неаллоцированные ноды указанной хеш-группы
+/// Группа определяется как hash(uid, roundNonce) % kAllocationBucketCount, автоматический ACK не требуется
+struct DiscoverReqPayload {
+	uint32_t roundNonce;
+	uint8_t bucket; // От 0 до kAllocationBucketCount - 1
+} __attribute__((packed));
+
+/// \brief Ответ на запрос обнаружения, адрес отправителя в заголовке равен kUnallocatedUID
+struct DiscoverAnwPayload {
+	uint32_t roundNonce;
+	NodeUid uid;
+} __attribute__((packed));
+
+/// \brief Широковещательное назначение адреса, обрабатывается только нодой с указанным постоянным UID
+struct AssignAddressReqPayload {
+	NodeUid uid;
+	uint32_t transactionId; // Повтор назначения использует тот же номер транзакции
+	uint8_t nodeId; // От 1 до kMaxNodeCount
+} __attribute__((packed));
+
+/// \brief Подтверждение назначения в ответ мастеру, отправляется с назначенного адреса
+struct AssignAddressAnwPayload {
+	NodeUid uid;
+	uint32_t transactionId;
+	uint8_t nodeId;
 } __attribute__((packed));
 
 struct FileWriteRequestPayload {
@@ -162,6 +207,11 @@ using AckMessage = Packet<AckPayload>;
 
 using DeviceInfoReqMessage = Packet<DeviceInfoReqPayload>;
 using DeviceInfoAnwMessage = Packet<DeviceInfoAnwPayload>;
+
+using DiscoverReqMessage = Packet<DiscoverReqPayload>;
+using DiscoverAnwMessage = Packet<DiscoverAnwPayload>;
+using AssignAddressReqMessage = Packet<AssignAddressReqPayload>;
+using AssignAddressAnwMessage = Packet<AssignAddressAnwPayload>;
 
 using FileWriteRequestMessage = Packet<FileWriteRequestPayload>;
 using FileWriteChunkMessage = Packet<FileWriteChunkPayload>;

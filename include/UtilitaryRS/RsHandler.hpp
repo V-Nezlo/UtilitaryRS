@@ -39,7 +39,8 @@ public:
 		nodeUID{aNodeUID},
 		parser{},
 		interface{aInterface},
-		messageBuffer{}
+		messageBuffer{},
+		messageNumber{0}
 	{ }
 
 	uint8_t getUid() const

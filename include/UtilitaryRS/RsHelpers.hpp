@@ -42,6 +42,14 @@ static constexpr size_t getMessageSizeByType(MessageType aType)
 			return sizeof(HealthReqMessage);
 		case MessageType::HealthAnw:
 			return sizeof(HealthAnwMessage);
+		case MessageType::DiscoverReq:
+			return sizeof(DiscoverReqMessage);
+		case MessageType::DiscoverAnw:
+			return sizeof(DiscoverAnwMessage);
+		case MessageType::AssignAddressReq:
+			return sizeof(AssignAddressReqMessage);
+		case MessageType::AssignAddressAnw:
+			return sizeof(AssignAddressAnwMessage);
 
 		default:
 			return 0;

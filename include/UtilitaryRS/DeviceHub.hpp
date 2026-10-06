@@ -16,7 +16,6 @@
 #include <optional>
 #include <queue>
 #include <string>
-#include <thread>
 
 namespace RS {
 
@@ -38,12 +37,13 @@ public:
 	virtual void deviceHealthReceivedEv(const std::string &aName, Health aHealth, uint16_t aFlags) = 0;
 };
 
-template<uint8_t MaxDeviceCount, class Interface, typename Time, typename Crc8, typename CrcFile, size_t ParserSize>
+template<class Interface, typename Time, typename Crc8, typename CrcFile, size_t ParserSize>
 class DeviceHub : public RsHandler<Interface, Crc8, ParserSize> {
 	using Base = RsHandler<Interface, Crc8, ParserSize>;
 
 	static constexpr size_t kTimeoutErrorForLost{20};
 	static constexpr auto kHealthTimeout{std::chrono::milliseconds{1000}};
+	static constexpr auto kResponseTimeout{std::chrono::milliseconds{200}};
 
 	struct PendingTrans {
 		uint8_t messageNumber; // Номер сообщения, который был отправлен
@@ -109,7 +109,8 @@ public:
 		hub{},
 		observer{nullptr},
 		nameToUid{},
-		temporaryUid{std::nullopt}
+		scanUid{0},
+		scanPending{std::nullopt}
 	{ }
 
 	/// \brief Зарегистрировать наблюдателя
@@ -119,20 +120,19 @@ public:
 		observer = aObserver;
 	}
 
-	/// \brief Просканировать шину
-	/// \param aBroadcast широковещательный запрос, для шин с арбитражем или систем с селективной адресацией
-	/// Для шин без арбитража строго prohibited, вызовет конфликты
-	void probeAll(bool aBroadcast = false, bool aBlocking = false)
+	/// \brief Начать последовательный опрос аллоцированных нод с адресами 1...32
+	/// Сканирование выполняется в process(), адреса устройств не изменяются
+	void probeAll()
 	{
-		if (!aBlocking) {
-			for (uint8_t uid = 1; uid < MaxDeviceCount; ++uid) { Base::sendProbe(aBroadcast ? kReservedUID : uid); }
-		} else {
-			for (uint8_t uid = 1; uid < MaxDeviceCount; ++uid) {
-				Base::sendProbe(aBroadcast ? kReservedUID : uid);
-				std::this_thread::sleep_for(std::chrono::milliseconds{100});
-			}
+		if (!isScanning()) {
+			scanUid = 1;
 		}
+	}
 
+	/// \brief Проверить, выполняется ли сканирование нод
+	bool isScanning() const
+	{
+		return scanUid != 0;
 	}
 
 	/// \brief Базовая функция, вызывать в планировщике
@@ -142,10 +142,12 @@ public:
 		for (auto &pos : hub) {
 			// Базовая обработка
 			DeviceWrapper &dev = pos.second;
-			processDevice(dev, aTime);
+			if (!isScanning()) {
+				processDevice(pos.first, dev, aTime);
+			}
 
 			// Проверим таймауты
-			if (dev.pending.has_value() && aTime - dev.pending.value().timestamp >= std::chrono::milliseconds{200}) {
+			if (dev.pending.has_value() && aTime - dev.pending.value().timestamp >= kResponseTimeout) {
 				++dev.timeoutCounter;
 
 				if (dev.timeoutCounter >= kTimeoutErrorForLost) {
@@ -164,6 +166,10 @@ public:
 
 				dev.pending.reset();
 			}
+		}
+
+		if (isScanning()) {
+			processScan(aTime);
 		}
 	}
 
@@ -266,12 +272,49 @@ private:
 	std::map<uint8_t, DeviceWrapper> hub;
 	DeviceHubObserver *observer;
 	std::map<std::string, uint8_t> nameToUid;
-	std::optional<uint8_t> temporaryUid;
+	uint8_t scanUid;
+	std::optional<PendingTrans> scanPending;
+
+	/// \brief Опросить следующий адрес после ответа или таймаута предыдущего
+	void processScan(std::chrono::milliseconds aTime)
+	{
+		if (scanPending) {
+			if (aTime - scanPending.value().timestamp < kResponseTimeout) {
+				return;
+			}
+			advanceScan();
+			if (!isScanning()) {
+				return;
+			}
+		}
+
+		// Дождемся завершения обмена, начатого до сканирования
+		for (const auto &pos : hub) {
+			if (pos.second.pending) {
+				return;
+			}
+		}
+
+		scanPending = PendingTrans{Base::sendDeviceInfoRequest(scanUid), MessageType::DeviceInfoReq, aTime};
+	}
+
+	void advanceScan()
+	{
+		scanPending.reset();
+		scanUid = scanUid < kMaxNodeCount ? static_cast<uint8_t>(scanUid + 1) : 0;
+	}
 
 	// RsHandler interface
 	void handleDeviceInfoAnswer(uint8_t aTranceiverUID, uint8_t aMessageNumber, DeviceVersion aVersion,
 		const void *aName, size_t aNameLen) override
 	{
+		if (scanPending && aTranceiverUID == scanUid && scanPending.value().messageNumber == aMessageNumber) {
+			DeviceWrapper &dev = hub[aTranceiverUID];
+			registerDevice(dev, aTranceiverUID, aVersion, aName, aNameLen);
+			advanceScan();
+			return;
+		}
+
 		DeviceWrapper *dev = getDevice(aTranceiverUID);
 
 		// Если устройства нет - то это не нам ответили
@@ -280,27 +323,35 @@ private:
 		}
 
 		if (dev->pending && dev->pending.value().messageNumber == aMessageNumber && dev->state == DeviceState::InfoRequest) {
-			dev->pending.reset();
-			// Заполним дескриптор
-			dev->name.clear();
-			dev->name.assign(static_cast<const char *>(aName), aNameLen);
-			dev->version = aVersion;
-			dev->state = DeviceState::Running;
-			nameToUid[dev->name] = aTranceiverUID;
-
-			if (observer)
-				observer->deviceRegisteredEv(dev->name, dev->version);
+			registerDevice(*dev, aTranceiverUID, aVersion, aName, aNameLen);
 		}
+	}
+
+	void registerDevice(DeviceWrapper &aDevice, uint8_t aUID, DeviceVersion aVersion, const void *aName, size_t aNameLen)
+	{
+		// Удалим прежнее имя при повторном обнаружении того же адреса
+		auto pos = nameToUid.find(aDevice.name);
+		if (pos != nameToUid.end() && pos->second == aUID) {
+			nameToUid.erase(pos);
+		}
+
+		aDevice.pending.reset();
+		aDevice.name.assign(static_cast<const char *>(aName), aNameLen);
+		aDevice.version = aVersion;
+		aDevice.state = DeviceState::Running;
+		aDevice.timeoutCounter = 0;
+		nameToUid[aDevice.name] = aUID;
+
+		if (observer)
+			observer->deviceRegisteredEv(aDevice.name, aDevice.version);
 	}
 
 	void handleAck(uint8_t aTranceiverUID, uint8_t aMessageNumber, Result aReturnCode) override
 	{
 		DeviceWrapper *dev = getDevice(aTranceiverUID);
 
-		// Если устройства нет - создаем его и выходим
+		// Не регистрируем устройства по неподтвержденному ACK
 		if (dev == nullptr) {
-			hub[aTranceiverUID] = DeviceWrapper{};
-			temporaryUid = aTranceiverUID;
 			return;
 		}
 
@@ -498,7 +549,7 @@ private:
 		return it->second;
 	}
 
-	void processDevice(DeviceWrapper &aDevice, std::chrono::milliseconds aTime)
+	void processDevice(uint8_t aUID, DeviceWrapper &aDevice, std::chrono::milliseconds aTime)
 	{
 		if (aTime >= aDevice.nextCall) {
 			// Базовое время следующего действия
@@ -506,16 +557,11 @@ private:
 
 			switch (aDevice.state) {
 				case DeviceState::Probing: {
-					updateDevicePending(aDevice, Base::sendProbe(getUIDFromName(aDevice.name)), MessageType::Probe);
+					updateDevicePending(aDevice, Base::sendProbe(aUID), MessageType::Probe);
 					updateTime = std::chrono::milliseconds{1000};
 				} break;
 				case DeviceState::InfoRequest: {
-					if (temporaryUid) {
-						updateDevicePending(aDevice, Base::sendDeviceInfoRequest(temporaryUid.value()), MessageType::DeviceInfoReq);
-						temporaryUid.reset();
-					} else {
-						updateDevicePending(aDevice, Base::sendDeviceInfoRequest(getUIDFromName(aDevice.name)), MessageType::DeviceInfoReq);
-					}
+					updateDevicePending(aDevice, Base::sendDeviceInfoRequest(aUID), MessageType::DeviceInfoReq);
 					updateTime = std::chrono::milliseconds{1000};
 				} break;
 				case DeviceState::Running: {

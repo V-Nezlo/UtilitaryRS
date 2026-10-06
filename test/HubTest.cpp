@@ -219,7 +219,7 @@ public:
 
 int main()
 {
-	using Hub = RS::DeviceHub<2, MockSerial, MockTime, Crc8, Crc64, 256>;
+	using Hub = RS::DeviceHub<MockSerial, MockTime, Crc8, Crc64, 256>;
 	using Device = DeviceNode<MockSerial, Crc8, 256>;
 
 	// Версии
@@ -248,34 +248,21 @@ int main()
 
 	DeviceHubObserverMock obs;
 	hub.registerObserver(&obs);
-	// Начнем опрос устройств
+	// Последовательно просканируем все адреса, устройство отвечает только на адрес 1
 	hub.probeAll();
-	// Передадим данные из мастера в устройство
-	auto m2d = masterSerial.readAll();
-	assert(!m2d.empty()); // мы должны получить probe
-	device.update(m2d.data(), m2d.size());
-	// Девайс должен отправить ack
-	auto d2m = deviceSerial.readAll();
-	assert(!d2m.empty());
-	hub.update(d2m.data(), d2m.size());
-
-	// После получения ACK hub должен создать запись (в handleAck он делает hub[uid] = DeviceWrapper{})
-	// и на следующем process отправит DeviceInfoReq. Вызовем process с текущим временем.
-	hub.process(MockTime::milliseconds());
-
-	// hub написал DeviceInfoReq в masterSerial
-	m2d = masterSerial.readAll();
-	assert(!m2d.empty());
-	device.update(m2d.data(), m2d.size());
-
-	// device ответил DeviceInfoAnw (в процессе processDeviceInfoRequest)
-	d2m = deviceSerial.readAll();
-	assert(!d2m.empty());
-	hub.update(d2m.data(), d2m.size());
-
-	// После обработки DeviceInfoAnw observer должен получить уведомление и заполнить lastDeviceRegistered
-	MockTime::delay(std::chrono::milliseconds{1000});
-	hub.process(MockTime::milliseconds());
+	std::vector<uint8_t> m2d;
+	std::vector<uint8_t> d2m;
+	while (hub.isScanning()) {
+		hub.process(MockTime::milliseconds());
+		m2d = masterSerial.readAll();
+		device.update(m2d.data(), m2d.size());
+		d2m = deviceSerial.readAll();
+		hub.update(d2m.data(), d2m.size());
+		// Доставим ACK на ответ с информацией до следующего запроса
+		m2d = masterSerial.readAll();
+		device.update(m2d.data(), m2d.size());
+		MockTime::delay(std::chrono::milliseconds{200});
+	}
 
 	// Проверки
 	if (obs.lastDeviceRegistered != deviceName) {
@@ -291,7 +278,7 @@ int main()
 	assert(r && "sendCmdToDevice returned false");
 
 	// Дадим время, чтобы process отправил команду
-	MockTime::delay(std::chrono::milliseconds{50});
+	MockTime::delay(std::chrono::milliseconds{100});
 	hub.process(MockTime::milliseconds());
 
 	// master -> device (команда)
@@ -324,7 +311,7 @@ int main()
 	assert(sendBlob && "sendBlobRequestToDevice returned false");
 
 	// Позволим hub'у отправить запрос
-	MockTime::delay(std::chrono::milliseconds{50});
+	MockTime::delay(std::chrono::milliseconds{100});
 	hub.process(MockTime::milliseconds());
 
 	// master -> device (BlobRequest)

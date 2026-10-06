@@ -383,6 +383,63 @@ bool createAndParseHealthAnwMessage()
 	}
 }
 
+template<class T>
+bool createAndParseAllocationMessage(const T &aMessage)
+{
+	RS::RsParser<100, Crc8> parser;
+	uint8_t buffer[100];
+	const size_t length = parser.create(buffer, &aMessage, sizeof(aMessage));
+
+	// Сообщение может приходить частями, готовность наступает только после CRC
+	for (size_t i = 0; i < length; ++i) {
+		if (parser.isReady() || parser.update(&buffer[i], 1) != 1) {
+			return false;
+		}
+	}
+
+	return parser.isReady() && parser.length() == sizeof(aMessage)
+		&& memcmp(parser.data(), &aMessage, sizeof(aMessage)) == 0;
+}
+
+bool createAndParseAllocationMessages()
+{
+	RS::NodeUid uid{{0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF,
+		0xFE, 0xDC, 0xBA, 0x98, 0x76, 0x54, 0x32, 0x10}};
+
+	RS::DiscoverReqMessage discover{};
+	discover.receiverUID = RS::kReservedUID;
+	discover.transmitUID = 0;
+	discover.messageType = RS::MessageType::DiscoverReq;
+	discover.payload.roundNonce = 0x12345678;
+	discover.payload.bucket = RS::kAllocationBucketCount - 1;
+
+	RS::DiscoverAnwMessage discovered{};
+	discovered.receiverUID = 0;
+	discovered.transmitUID = RS::kUnallocatedUID;
+	discovered.messageType = RS::MessageType::DiscoverAnw;
+	discovered.payload.roundNonce = discover.payload.roundNonce;
+	discovered.payload.uid = uid;
+
+	RS::AssignAddressReqMessage assign{};
+	assign.receiverUID = RS::kReservedUID;
+	assign.transmitUID = 0;
+	assign.messageType = RS::MessageType::AssignAddressReq;
+	assign.payload.uid = uid;
+	assign.payload.transactionId = 0x87654321;
+	assign.payload.nodeId = RS::kMaxNodeCount;
+
+	RS::AssignAddressAnwMessage assigned{};
+	assigned.receiverUID = 0;
+	assigned.transmitUID = assign.payload.nodeId;
+	assigned.messageType = RS::MessageType::AssignAddressAnw;
+	assigned.payload.uid = uid;
+	assigned.payload.transactionId = assign.payload.transactionId;
+	assigned.payload.nodeId = assign.payload.nodeId;
+
+	return createAndParseAllocationMessage(discover) && createAndParseAllocationMessage(discovered)
+		&& createAndParseAllocationMessage(assign) && createAndParseAllocationMessage(assigned);
+}
+
 int main()
 {
 	bool success = true;
@@ -400,6 +457,7 @@ int main()
 	success &= createAndParseDeviceInfoAnwMessage();
 	success &= createAndParseHealthReqMessage();
 	success &= createAndParseHealthAnwMessage();
+	success &= createAndParseAllocationMessages();
 
 	return !success;
 }
