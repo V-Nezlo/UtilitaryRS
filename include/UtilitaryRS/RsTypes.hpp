@@ -10,6 +10,7 @@
 #define LIB_RSTYPES_HPP_
 
 #include <stdint.h>
+#include <array>
 
 namespace RS {
 
@@ -84,9 +85,14 @@ struct DeviceVersion {
 
 /// \brief Постоянный идентификатор логической ноды, не зависит от ее адреса на шине
 /// Заполняется приложением и должен быть уникальным для каждой ноды, включая ноды составного устройства
-struct NodeUid {
-	uint8_t bytes[16];
-} __attribute__((packed));
+using NodeUid = std::array<uint8_t, 16>;
+
+/// \brief Назначение адреса в памяти мастера, восстанавливается опросом нод
+struct NodeAllocation {
+	NodeUid uid;
+	uint32_t transactionId;
+	uint8_t nodeId;
+};
 
 /// \brief Заголовок сообщения, содержит UID отправителя, UID получателя и тип сообщения
 struct Header {
@@ -107,11 +113,12 @@ struct ProbePayload {
 } __attribute__((packed));
 
 struct DeviceInfoReqPayload {
-	uint8_t reserved;
+	uint8_t resetState; // 1 при начальном сканировании мастера, 0 при обычном запросе
 } __attribute__((packed));
 
 struct DeviceInfoAnwPayload {
 	__attribute__((packed, aligned(1))) DeviceVersion version;
+	NodeUid uid;
 	uint8_t nameLen;
 	// name
 } __attribute__((packed));

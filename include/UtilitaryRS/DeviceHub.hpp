@@ -11,39 +11,47 @@
 
 #include "RsHandler.hpp"
 #include "RsTypes.hpp"
+#include <algorithm>
 #include <chrono>
 #include <map>
 #include <optional>
 #include <queue>
-#include <string>
+#include <vector>
 
 namespace RS {
 
-/// \brief Интерфейс наблюдателя за DeviceHub
+/// \brief События DeviceHub с постоянным UID ноды и текущим адресом deviceId (1...32)
 class DeviceHubObserver {
 public:
-	virtual void onAckNotReceivedEv(const std::string &aName, MessageType aMessage) = 0;
-	virtual void onAckReceivedEv(const std::string &aName, MessageType aMessage, Result aCode) = 0;
+	virtual void onAckNotReceivedEv(const NodeUid &aUID, uint8_t aDeviceId, MessageType aMessage) = 0;
+	virtual void onAckReceivedEv(const NodeUid &aUID, uint8_t aDeviceId, MessageType aMessage, Result aCode) = 0;
 
-	virtual void onCommandResultEv(const std::string &aName, Result aReturn) = 0;
-	virtual void onRequestErrorEv(const std::string &aName, Result aReturn) = 0;
+	virtual void onCommandResultEv(const NodeUid &aUID, uint8_t aDeviceId, Result aReturn) = 0;
+	virtual void onRequestErrorEv(const NodeUid &aUID, uint8_t aDeviceId, Result aReturn) = 0;
 
-	virtual Result blobAnswerEvReceived(const std::string &aName, uint8_t Request, const void *aData, size_t aSize) = 0;
+	virtual Result blobAnswerEvReceived(const NodeUid &aUID, uint8_t aDeviceId, uint8_t Request, const void *aData, size_t aSize) = 0;
 
-	virtual void deviceRegisteredEv(const std::string &aName, DeviceVersion aVersion) = 0;
-	virtual void deviceLostEv(const std::string &aName) = 0;
+	virtual void deviceRegisteredEv(const NodeUid &aUID, uint8_t aDeviceId, DeviceVersion aVersion) = 0;
+	virtual void deviceLostEv(const NodeUid &aUID, uint8_t aDeviceId) = 0;
 
-	virtual Result fileWriteResultEv(const std::string &aName, Result aReturn) = 0;
-	virtual void deviceHealthReceivedEv(const std::string &aName, Health aHealth, uint16_t aFlags) = 0;
+	virtual Result fileWriteResultEv(const NodeUid &aUID, uint8_t aDeviceId, Result aReturn) = 0;
+	virtual void deviceHealthReceivedEv(const NodeUid &aUID, uint8_t aDeviceId, Health aHealth, uint16_t aFlags) = 0;
+
 };
 
 template<class Interface, typename Time, typename Crc8, typename CrcFile, size_t ParserSize>
 class DeviceHub : public RsHandler<Interface, Crc8, ParserSize> {
+public:
+	enum class State { Starting, Waiting, Scanning, Allocating, Running };
+
+private:
 	using Base = RsHandler<Interface, Crc8, ParserSize>;
 
 	static constexpr size_t kTimeoutErrorForLost{20};
 	static constexpr auto kHealthTimeout{std::chrono::milliseconds{1000}};
 	static constexpr auto kResponseTimeout{std::chrono::milliseconds{200}};
+	static constexpr auto kAllocationProbeInterval{std::chrono::milliseconds{10000}};
+	static constexpr uint8_t kAllocationAttempts{3};
 
 	struct PendingTrans {
 		uint8_t messageNumber; // Номер сообщения, который был отправлен
@@ -51,7 +59,16 @@ class DeviceHub : public RsHandler<Interface, Crc8, ParserSize> {
 		std::chrono::milliseconds timestamp; // время отправления
 	};
 
-	enum class DeviceState : uint8_t { Probing, InfoRequest, Running, FileTransfer, Suspended, Lost };
+	struct AllocationContext {
+		enum class State { Discovering, Registering } state{State::Discovering};
+		uint32_t roundNonce{0};
+		uint8_t roundsLeft{0};
+		uint8_t bucket{0};
+		std::vector<NodeUid> discovered;
+		std::optional<PendingTrans> pending;
+	};
+
+	enum class DeviceState : uint8_t { Assigning, Probing, InfoRequest, Running, FileTransfer, Suspended, Lost };
 
 	struct TelemetryUnit {
 		uint8_t req;
@@ -74,7 +91,7 @@ class DeviceHub : public RsHandler<Interface, Crc8, ParserSize> {
 	};
 
 	struct DeviceWrapper {
-		std::string name;
+		NodeUid uid{};
 		DeviceVersion version;
 		DeviceState state{DeviceState::InfoRequest};
 		std::optional<PendingTrans> pending;
@@ -88,29 +105,25 @@ class DeviceHub : public RsHandler<Interface, Crc8, ParserSize> {
 
 		std::vector<TelemetryUnit> telemSched;
 		size_t timeoutCounter{0};
+		uint8_t allocationAttempts{0};
 
 		FileTransferContext fileTransContext;
-
-		DeviceWrapper()
-		{
-			name.reserve(16);
-		}
 	};
 
 public:
 
 	/// \brief Конструктор хаба
 	/// \param aHubVersion версия устройства хаба
+	/// \param aUID постоянный UID мастера
 	/// \param aIface интерфейс связи
 	/// \param aName имя хаба, по умолчанию Master
-	/// \param aUID uid хаба, по умолчанию 0
-	DeviceHub(const DeviceVersion &aHubVersion, Interface &aIface, std::string aName = "Master", uint8_t aUID = 0) :
-		Base(aName.c_str(), aHubVersion, aUID, aIface),
+	DeviceHub(const DeviceVersion &aHubVersion, const NodeUid &aUID, Interface &aIface, const char *aName = "Master") :
+		Base(aName, aHubVersion, aUID, aIface, 0),
 		hub{},
 		observer{nullptr},
-		nameToUid{},
-		scanUid{0},
-		scanPending{std::nullopt}
+		scanUid{1},
+		scanPending{std::nullopt},
+		nextAllocationProbe{Time::milliseconds() + kAllocationProbeInterval}
 	{ }
 
 	/// \brief Зарегистрировать наблюдателя
@@ -121,71 +134,89 @@ public:
 	}
 
 	/// \brief Начать последовательный опрос аллоцированных нод с адресами 1...32
-	/// Сканирование выполняется в process(), адреса устройств не изменяются
-	void probeAll()
+	bool probeAll()
 	{
-		if (!isScanning()) {
-			scanUid = 1;
+		if ((hubState != State::Starting && hubState != State::Running) || hasFileTransfer()) {
+			return false;
 		}
+		beginAllocation(State::Scanning, 0);
+		return true;
 	}
 
-	/// \brief Проверить, выполняется ли сканирование нод
-	bool isScanning() const
+	/// \brief Начать аллокацию после сканирования занятых адресов
+	/// \param aRounds число полных проходов хеш-групп с разными nonce
+	bool allocateNodes(uint8_t aRounds = 4)
 	{
-		return scanUid != 0;
+		if (aRounds == 0 || (hubState != State::Starting && hubState != State::Running) || hasFileTransfer()) {
+			return false;
+		}
+		beginAllocation(State::Scanning, aRounds);
+		return true;
+	}
+
+	State state() const
+	{
+		return hubState;
+	}
+
+	/// \brief Получить все резервирования, включая назначения без подтверждения
+	const std::array<std::optional<NodeAllocation>, kMaxNodeCount> &getNodeAllocations() const
+	{
+		return nodeAllocations;
 	}
 
 	/// \brief Базовая функция, вызывать в планировщике
 	/// \param aTime текущее время
 	void process(std::chrono::milliseconds aTime)
 	{
-		for (auto &pos : hub) {
-			// Базовая обработка
-			DeviceWrapper &dev = pos.second;
-			if (!isScanning()) {
-				processDevice(pos.first, dev, aTime);
-			}
-
-			// Проверим таймауты
-			if (dev.pending.has_value() && aTime - dev.pending.value().timestamp >= kResponseTimeout) {
-				++dev.timeoutCounter;
-
-				if (dev.timeoutCounter >= kTimeoutErrorForLost) {
-					dev.timeoutCounter = 0;
-					dev.state = DeviceState::Lost;
-				}
-
-				if (observer) {
-					observer->onAckNotReceivedEv(dev.name, dev.pending.value().msgType);
-				}
-
-				// Сбросим процедуру отправки файла если зафакапились
-				if (dev.state == DeviceState::FileTransfer) {
-					dev.fileTransContext.state = FileTransferContext::State::Cancel;
-				}
-
-				dev.pending.reset();
+		if (hubState == State::Starting) {
+			beginAllocation(State::Scanning, 1);
+		}
+		if (hubState == State::Running) {
+			processPending(aTime);
+			if (aTime >= nextAllocationProbe && !hasFileTransfer()) {
+				beginAllocation(State::Allocating, 1);
+			} else {
+				processDevices(aTime);
+				return;
 			}
 		}
+		if (hubState == State::Waiting) {
+			// Закончим предыдущий обмен, не запуская обычную работу хаба
+			processPending(aTime);
+			for (const auto &pos : hub) {
+				if (pos.second.pending) {
+					return;
+				}
+			}
+			hubState = nextState;
+		}
 
-		if (isScanning()) {
-			processScan(aTime);
+		switch (hubState) {
+			case State::Scanning:
+				processScan(aTime);
+				break;
+			case State::Allocating:
+				processAllocation(aTime);
+				break;
+			default:
+				break;
 		}
 	}
 
 	/// \brief Отправить команду на устройство - обработка через очередь
-	/// \param aDeviceName имя устройства
+	/// \param aDeviceId текущий адрес устройства на шине (1...32)
 	/// \param aCommand команда
 	/// \param aValue аргумент
 	/// \return true если успех
-	bool sendCmdToDevice(const std::string &aDeviceName, uint8_t aCommand, uint8_t aValue)
+	bool sendCmdToDevice(uint8_t aDeviceId, uint8_t aCommand, uint8_t aValue)
 	{
-		uint8_t devUid = getUIDFromName(aDeviceName);
-		if (devUid == kReservedUID) {
+		DeviceWrapper *device = getDevice(aDeviceId);
+		if (device == nullptr) {
 			return false;
 		}
 
-		DeviceWrapper &dev = hub[devUid];
+		DeviceWrapper &dev = *device;
 
 		if (dev.state != DeviceState::Running) {
 			return false;
@@ -196,17 +227,17 @@ public:
 	}
 
 	/// \brief Отправить разовый реквест на устройство, очередь
-	/// \param aDeviceName имя устройства
+	/// \param aDeviceId текущий адрес устройства на шине (1...32)
 	/// \param aBlobRequest номер запроса
 	/// \return true если успех
-	bool sendBlobRequestToDevice(const std::string &aDeviceName, uint8_t aBlobRequest, uint8_t aBlobSize)
+	bool sendBlobRequestToDevice(uint8_t aDeviceId, uint8_t aBlobRequest, uint8_t aBlobSize)
 	{
-		uint8_t devUid = getUIDFromName(aDeviceName);
-		if (devUid == kReservedUID) {
+		DeviceWrapper *device = getDevice(aDeviceId);
+		if (device == nullptr) {
 			return false;
 		}
 
-		DeviceWrapper &dev = hub[devUid];
+		DeviceWrapper &dev = *device;
 
 		if (dev.state != DeviceState::Running) {
 			return false;
@@ -217,20 +248,20 @@ public:
 	}
 
 	/// \brief Создать запрос по расписанию для устройства
-	/// \param aDeviceName имя устройства
+	/// \param aDeviceId текущий адрес устройства на шине (1...32)
 	/// \param aReq запрос
 	/// \param aReqSize длина запроса
 	/// \param aTimeout период опроса
 	/// \return true если успех
 	bool createSchedRequest(
-		const std::string &aDeviceName, uint8_t aReq, uint8_t aReqSize, std::chrono::milliseconds aTimeout)
+		uint8_t aDeviceId, uint8_t aReq, uint8_t aReqSize, std::chrono::milliseconds aTimeout)
 	{
-		uint8_t devUid = getUIDFromName(aDeviceName);
-		if (devUid == kReservedUID) {
+		DeviceWrapper *device = getDevice(aDeviceId);
+		if (device == nullptr) {
 			return false;
 		}
 
-		DeviceWrapper &dev = hub[devUid];
+		DeviceWrapper &dev = *device;
 
 		TelemetryUnit entry{aReq, aReqSize, aTimeout, std::chrono::milliseconds{0}};
 		dev.telemSched.push_back(entry);
@@ -238,20 +269,23 @@ public:
 	}
 
 	/// \brief Отправить файл
-	/// \param aDeviceName имя устройства
+	/// \param aDeviceId текущий адрес устройства на шине (1...32)
 	/// \param aFile номер файла
 	/// \param aData данные
 	/// \param aSize длина данных
 	/// \param aChunkSize размер чанка
 	/// \return true если команда принята
-	bool sendFile(const std::string &aDeviceName, uint8_t aFile, const void *aData, size_t aSize, size_t aChunkSize)
+	bool sendFile(uint8_t aDeviceId, uint8_t aFile, const void *aData, size_t aSize, size_t aChunkSize)
 	{
-		uint8_t devUid = getUIDFromName(aDeviceName);
-		if (devUid == kReservedUID) {
+		if (hubState != State::Running) {
+			return false;
+		}
+		DeviceWrapper *device = getDevice(aDeviceId);
+		if (device == nullptr) {
 			return false;
 		}
 
-		DeviceWrapper &dev = hub[devUid];
+		DeviceWrapper &dev = *device;
 		if (dev.state != DeviceState::Running) {
 			return false;
 		}
@@ -271,9 +305,168 @@ public:
 private:
 	std::map<uint8_t, DeviceWrapper> hub;
 	DeviceHubObserver *observer;
-	std::map<std::string, uint8_t> nameToUid;
 	uint8_t scanUid;
 	std::optional<PendingTrans> scanPending;
+	AllocationContext allocation;
+	std::array<std::optional<NodeAllocation>, kMaxNodeCount> nodeAllocations{};
+	uint32_t allocationNonce{0};
+	uint32_t allocationTransaction{0};
+	State hubState{State::Starting};
+	State nextState{State::Scanning};
+	uint8_t lastDevice{0};
+	bool resetNodesDuringScan{true};
+	std::chrono::milliseconds nextAllocationProbe;
+
+	bool hasFileTransfer() const
+	{
+		for (const auto &pos : hub) {
+			if (pos.second.state == DeviceState::FileTransfer) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	void beginAllocation(State aFirstState, uint8_t aRounds)
+	{
+		allocation = AllocationContext{};
+		allocation.roundsLeft = aRounds;
+		allocation.roundNonce = ++allocationNonce;
+		scanUid = 1;
+		nextState = aFirstState;
+		hubState = State::Waiting;
+		nextAllocationProbe = Time::milliseconds() + kAllocationProbeInterval;
+	}
+
+	/// \brief Проверить только завершение уже отправленных запросов
+	void processPending(std::chrono::milliseconds aTime)
+	{
+		for (auto &pos : hub) {
+			DeviceWrapper &dev = pos.second;
+			if (!dev.pending || aTime - dev.pending.value().timestamp < kResponseTimeout) {
+				continue;
+			}
+			if (hubState == State::Allocating &&
+				(dev.state == DeviceState::Assigning || dev.state == DeviceState::InfoRequest)) {
+				dev.pending.reset();
+				if (dev.allocationAttempts >= kAllocationAttempts) {
+					dev.state = DeviceState::Suspended;
+				}
+				continue;
+			}
+			if (++dev.timeoutCounter >= kTimeoutErrorForLost) {
+				dev.timeoutCounter = 0;
+				dev.state = DeviceState::Lost;
+			}
+			if (observer) {
+				observer->onAckNotReceivedEv(dev.uid, pos.first, dev.pending.value().msgType);
+			}
+			if (dev.state == DeviceState::FileTransfer) {
+				dev.fileTransContext.state = FileTransferContext::State::Cancel;
+			}
+			dev.pending.reset();
+		}
+	}
+
+	/// \brief Продолжить обнаружение после обработки ответов одной группы
+	void advanceAllocationBucket()
+	{
+		allocation.pending.reset();
+		allocation.discovered.clear();
+		if (++allocation.bucket == kAllocationBucketCount) {
+			allocation.bucket = 0;
+			if (--allocation.roundsLeft == 0) {
+				hubState = State::Running;
+				return;
+			}
+			allocation.roundNonce = ++allocationNonce;
+		}
+		allocation.state = AllocationContext::State::Discovering;
+	}
+
+	uint8_t reserveNodeAddress(const NodeUid &aUID)
+	{
+		for (const auto &entry : nodeAllocations) {
+			if (entry && entry.value().uid == aUID) {
+				return entry.value().nodeId;
+			}
+		}
+		for (uint8_t uid = 1; uid <= kMaxNodeCount; ++uid) {
+			if (!nodeAllocations[uid - 1] && hub.find(uid) == hub.end()) {
+				// Адрес остается зарезервированным даже при потере всех подтверждений
+				nodeAllocations[uid - 1] = NodeAllocation{aUID, ++allocationTransaction, uid};
+				return uid;
+			}
+		}
+		return kReservedUID;
+	}
+
+	/// \brief Обнаружение нод и обслуживание их автоматов регистрации
+	void processAllocation(std::chrono::milliseconds aTime)
+	{
+		if (allocation.state == AllocationContext::State::Discovering) {
+			if (!allocation.pending) {
+				const uint8_t number = Base::sendDiscoverRequest(allocation.roundNonce, allocation.bucket);
+				allocation.pending = PendingTrans{number, MessageType::DiscoverReq, aTime};
+				return;
+			}
+			if (aTime - allocation.pending.value().timestamp < kResponseTimeout) {
+				return;
+			}
+			allocation.pending.reset();
+			// Ответы всей группы собраны; дальнейший обмен хранится в каждой ноде
+			for (const NodeUid &uid : allocation.discovered) {
+				const uint8_t address = reserveNodeAddress(uid);
+				if (address == kReservedUID) {
+					continue;
+				}
+				DeviceWrapper &dev = hub[address];
+				dev.uid = uid;
+				dev.state = DeviceState::Assigning;
+				dev.allocationAttempts = 0;
+				dev.nextCall = aTime;
+			}
+			allocation.state = AllocationContext::State::Registering;
+		}
+
+		processPending(aTime);
+		processDevices(aTime);
+		for (const auto &pos : hub) {
+			if (pos.second.state == DeviceState::Assigning || pos.second.state == DeviceState::InfoRequest) {
+				return;
+			}
+		}
+		advanceAllocationBucket();
+		if (hubState == State::Allocating) {
+			const uint8_t number = Base::sendDiscoverRequest(allocation.roundNonce, allocation.bucket);
+			allocation.pending = PendingTrans{number, MessageType::DiscoverReq, aTime};
+		}
+	}
+
+	/// \brief Последовательно обслуживать устройства без блокирующего ожидания ответа
+	void processDevices(std::chrono::milliseconds aTime)
+	{
+		for (const auto &pos : hub) {
+			if (pos.second.pending) {
+				return; // На общей шине одновременно ожидаем ответ на один запрос
+			}
+		}
+		auto pos = hub.upper_bound(lastDevice);
+		for (size_t count = 0; count < hub.size(); ++count) {
+			if (pos == hub.end()) {
+				pos = hub.begin();
+			}
+			lastDevice = pos->first;
+			DeviceWrapper &dev = pos->second;
+			if (hubState == State::Running || dev.state == DeviceState::Assigning || dev.state == DeviceState::InfoRequest) {
+				processDevice(pos->first, dev, aTime);
+				if (dev.pending) {
+					return;
+				}
+			}
+			++pos;
+		}
+	}
 
 	/// \brief Опросить следующий адрес после ответа или таймаута предыдущего
 	void processScan(std::chrono::milliseconds aTime)
@@ -282,36 +475,71 @@ private:
 			if (aTime - scanPending.value().timestamp < kResponseTimeout) {
 				return;
 			}
-			advanceScan();
-			if (!isScanning()) {
+			nextScanAddress();
+			if (hubState != State::Scanning) {
 				return;
 			}
 		}
 
-		// Дождемся завершения обмена, начатого до сканирования
-		for (const auto &pos : hub) {
-			if (pos.second.pending) {
-				return;
-			}
-		}
-
-		scanPending = PendingTrans{Base::sendDeviceInfoRequest(scanUid), MessageType::DeviceInfoReq, aTime};
+		scanPending = PendingTrans{Base::sendDeviceInfoRequest(scanUid, resetNodesDuringScan), MessageType::DeviceInfoReq, aTime};
 	}
 
-	void advanceScan()
+	/// \brief Перейти к следующему адресу после ответа или таймаута
+	void nextScanAddress()
 	{
 		scanPending.reset();
-		scanUid = scanUid < kMaxNodeCount ? static_cast<uint8_t>(scanUid + 1) : 0;
+		if (++scanUid > kMaxNodeCount) {
+			resetNodesDuringScan = false;
+			hubState = allocation.roundsLeft ? State::Allocating : State::Running;
+		}
 	}
 
+protected:
 	// RsHandler interface
-	void handleDeviceInfoAnswer(uint8_t aTranceiverUID, uint8_t aMessageNumber, DeviceVersion aVersion,
-		const void *aName, size_t aNameLen) override
+	void handleDiscoverAnswer(uint8_t aMessageNumber, uint32_t aRoundNonce, const NodeUid &aUID) override
 	{
-		if (scanPending && aTranceiverUID == scanUid && scanPending.value().messageNumber == aMessageNumber) {
+		if (hubState != State::Allocating || allocation.state != AllocationContext::State::Discovering || !allocation.pending
+			|| allocation.pending.value().messageNumber != aMessageNumber
+			|| aRoundNonce != allocation.roundNonce || Helpers::getAllocationBucket(aUID, aRoundNonce) != allocation.bucket) {
+			return;
+		}
+		for (const NodeUid &uid : allocation.discovered) {
+			if (uid == aUID) {
+				return;
+			}
+		}
+		if (allocation.discovered.size() < kMaxNodeCount) {
+			allocation.discovered.push_back(aUID);
+		}
+	}
+
+	void handleAssignAddressAnswer(uint8_t aMessageNumber, const NodeUid &aUID,
+		uint32_t aTransactionId, uint8_t aNodeId) override
+	{
+		DeviceWrapper *dev = getDevice(aNodeId);
+		if (hubState != State::Allocating || dev == nullptr || dev->state != DeviceState::Assigning
+			|| !dev->pending || dev->pending.value().msgType != MessageType::AssignAddressReq
+			|| dev->pending.value().messageNumber != aMessageNumber) {
+			return;
+		}
+		const NodeAllocation &entry = nodeAllocations[aNodeId - 1].value();
+		if (entry.uid == aUID && entry.transactionId == aTransactionId) {
+			dev->pending.reset();
+			dev->allocationAttempts = 0;
+			dev->nextCall = Time::milliseconds();
+			dev->state = DeviceState::InfoRequest;
+		}
+	}
+
+private:
+	void handleDeviceInfoAnswer(uint8_t aTranceiverUID, uint8_t aMessageNumber, DeviceVersion aVersion,
+		const NodeUid &aUID, const void * /*aName*/, size_t /*aNameLen*/) override
+	{
+
+		if (hubState == State::Scanning && scanPending && aTranceiverUID == scanUid && scanPending.value().messageNumber == aMessageNumber) {
 			DeviceWrapper &dev = hub[aTranceiverUID];
-			registerDevice(dev, aTranceiverUID, aVersion, aName, aNameLen);
-			advanceScan();
+			registerDevice(dev, aTranceiverUID, aVersion, aUID);
+			nextScanAddress();
 			return;
 		}
 
@@ -322,28 +550,33 @@ private:
 			return;
 		}
 
-		if (dev->pending && dev->pending.value().messageNumber == aMessageNumber && dev->state == DeviceState::InfoRequest) {
-			registerDevice(*dev, aTranceiverUID, aVersion, aName, aNameLen);
+		if (dev->pending && dev->pending.value().msgType == MessageType::DeviceInfoReq
+			&& dev->pending.value().messageNumber == aMessageNumber && dev->state == DeviceState::InfoRequest) {
+			if (hubState == State::Allocating && nodeAllocations[aTranceiverUID - 1].value().uid != aUID) {
+				return;
+			}
+			registerDevice(*dev, aTranceiverUID, aVersion, aUID);
 		}
 	}
 
-	void registerDevice(DeviceWrapper &aDevice, uint8_t aUID, DeviceVersion aVersion, const void *aName, size_t aNameLen)
+	void registerDevice(DeviceWrapper &aDevice, uint8_t aDeviceId, DeviceVersion aVersion,
+		const NodeUid &aPermanentUID)
 	{
-		// Удалим прежнее имя при повторном обнаружении того же адреса
-		auto pos = nameToUid.find(aDevice.name);
-		if (pos != nameToUid.end() && pos->second == aUID) {
-			nameToUid.erase(pos);
+		// Восстановим связь постоянного UID и адреса непосредственно из ответа ноды
+		auto &entry = nodeAllocations[aDeviceId - 1];
+		if (!entry || entry.value().uid != aPermanentUID) {
+			entry = NodeAllocation{aPermanentUID, ++allocationTransaction, aDeviceId};
 		}
 
 		aDevice.pending.reset();
-		aDevice.name.assign(static_cast<const char *>(aName), aNameLen);
+		aDevice.uid = aPermanentUID;
 		aDevice.version = aVersion;
 		aDevice.state = DeviceState::Running;
 		aDevice.timeoutCounter = 0;
-		nameToUid[aDevice.name] = aUID;
+		aDevice.allocationAttempts = 0;
 
 		if (observer)
-			observer->deviceRegisteredEv(aDevice.name, aDevice.version);
+			observer->deviceRegisteredEv(aDevice.uid, aDeviceId, aDevice.version);
 	}
 
 	void handleAck(uint8_t aTranceiverUID, uint8_t aMessageNumber, Result aReturnCode) override
@@ -355,12 +588,16 @@ private:
 			return;
 		}
 
+		if (hubState == State::Allocating) {
+			return; // Назначение и регистрация завершаются только своими ответами
+		}
+
 		// Иначе разбираемся что это за ответ
 		dev->lastAck = Time::milliseconds();
 		// Если мы ожидаем ответа и получаем ответ с правильным номером сообщения
 		if (dev->pending && dev->pending.value().messageNumber == aMessageNumber) {
 			if (observer) {
-				observer->onAckReceivedEv(dev->name, dev->pending.value().msgType, aReturnCode);
+				observer->onAckReceivedEv(dev->uid, aTranceiverUID, dev->pending.value().msgType, aReturnCode);
 			}
 
 			switch (dev->state) {
@@ -374,7 +611,7 @@ private:
 					switch (dev->pending.value().msgType) {
 						case MessageType::Command:
 							if (observer)
-								observer->onCommandResultEv(dev->name, aReturnCode);
+								observer->onCommandResultEv(dev->uid, aTranceiverUID, aReturnCode);
 							break;
 
 						case MessageType::Reboot:
@@ -382,7 +619,7 @@ private:
 							break;
 						case MessageType::BlobRequest:
 							if (observer)
-								observer->onRequestErrorEv(dev->name, aReturnCode);
+								observer->onRequestErrorEv(dev->uid, aTranceiverUID, aReturnCode);
 							break;
 
 						default:
@@ -407,7 +644,7 @@ private:
 						case MessageType::FileWriteFinalize:
 							dev->state = DeviceState::Running;
 							if (observer)
-								observer->fileWriteResultEv(dev->name, aReturnCode);
+								observer->fileWriteResultEv(dev->uid, aTranceiverUID, aReturnCode);
 							break;
 						// Недопустимо или слейв сам иницирует взаимодействие
 						default:
@@ -439,7 +676,7 @@ private:
 
 			dev->pending.reset();
 			if (observer)  {
-				return observer->blobAnswerEvReceived(dev->name, aRequest, aData, aLength);
+				return observer->blobAnswerEvReceived(dev->uid, aTranceiverUID, aRequest, aData, aLength);
 			}
 		}
 
@@ -458,127 +695,123 @@ private:
 		if (dev->pending.has_value() && dev->pending.value().messageNumber == aMessageNumber
 			&& dev->pending.value().msgType == MessageType::HealthReq) {
 			if (observer)
-				observer->deviceHealthReceivedEv(dev->name, aHealth, aFlags);
+				observer->deviceHealthReceivedEv(dev->uid, aTransmitUID, aHealth, aFlags);
 			dev->pending.reset();
 		}
 	}
 
-	void cmdToDeviceImpl(const std::string &aDeviceName, uint8_t aCommand, uint8_t aValue)
+	void cmdToDeviceImpl(uint8_t aDeviceId, uint8_t aCommand, uint8_t aValue)
 	{
-		uint8_t devUid = getUIDFromName(aDeviceName);
-
-		if (devUid == kReservedUID) {
+		DeviceWrapper *device = getDevice(aDeviceId);
+		if (device == nullptr) {
 			return;
 		}
 
-		DeviceWrapper &dev = hub[devUid];
-		updateDevicePending(dev, Base::sendCommand(devUid, aCommand, aValue), MessageType::Command);
+		DeviceWrapper &dev = *device;
+		updateDevicePending(dev, Base::sendCommand(aDeviceId, aCommand, aValue), MessageType::Command);
 	}
 
-	void deviceRequestImpl(const std::string &aDeviceName, uint8_t aRequest, uint8_t aRequestSize)
+	void deviceRequestImpl(uint8_t aDeviceId, uint8_t aRequest, uint8_t aRequestSize)
 	{
-		uint8_t devUid = getUIDFromName(aDeviceName);
-
-		if (devUid == kReservedUID) {
+		DeviceWrapper *device = getDevice(aDeviceId);
+		if (device == nullptr) {
 			return;
 		}
 
-		DeviceWrapper &dev = hub[devUid];
-		updateDevicePending(dev, Base::sendBlobRequest(devUid, aRequest, aRequestSize), MessageType::BlobRequest);
+		DeviceWrapper &dev = *device;
+		updateDevicePending(dev, Base::sendBlobRequest(aDeviceId, aRequest, aRequestSize), MessageType::BlobRequest);
 	}
 
-	void deviceFileWriteRequestImpl(const std::string &aDeviceName, uint8_t aFile, size_t aSize)
+	void deviceFileWriteRequestImpl(uint8_t aDeviceId, uint8_t aFile, size_t aSize)
 	{
-		uint8_t devUid = getUIDFromName(aDeviceName);
-
-		if (devUid == kReservedUID) {
+		DeviceWrapper *device = getDevice(aDeviceId);
+		if (device == nullptr) {
 			return;
 		}
 
-		DeviceWrapper &dev = hub[devUid];
-		updateDevicePending(dev, Base::fileWriteRequest(devUid, aFile, aSize), MessageType::FileWriteRequest);
+		DeviceWrapper &dev = *device;
+		updateDevicePending(dev, Base::fileWriteRequest(aDeviceId, aFile, aSize), MessageType::FileWriteRequest);
 	}
 
-	void sendChunkImpl(const std::string &aDeviceName, uint8_t aFileNum, const void *aChunk, uint8_t aChunkSize)
+	void sendChunkImpl(uint8_t aDeviceId, uint8_t aFileNum, const void *aChunk, uint8_t aChunkSize)
 	{
-		uint8_t devUid = getUIDFromName(aDeviceName);
-
-		if (devUid == kReservedUID) {
+		DeviceWrapper *device = getDevice(aDeviceId);
+		if (device == nullptr) {
 			return;
 		}
 
-		DeviceWrapper &dev = hub[devUid];
+		DeviceWrapper &dev = *device;
 
 		if (aFileNum != dev.fileTransContext.file) {
 			return;
 		}
 
-		updateDevicePending(dev, Base::fileWriteChunk(devUid, dev.fileTransContext.file, aChunk, aChunkSize), MessageType::FileWriteChunk);
+		updateDevicePending(dev, Base::fileWriteChunk(aDeviceId, dev.fileTransContext.file, aChunk, aChunkSize), MessageType::FileWriteChunk);
 	}
 
-	void fileWriteFinalizeImpl(const std::string &aDeviceName, uint8_t aFileNum, uint16_t aChunkNumber, uint64_t aCrc)
+	void fileWriteFinalizeImpl(uint8_t aDeviceId, uint8_t aFileNum, uint16_t aChunkNumber, uint64_t aCrc)
 	{
-		uint8_t devUid = getUIDFromName(aDeviceName);
-
-		if (devUid == kReservedUID) {
+		DeviceWrapper *device = getDevice(aDeviceId);
+		if (device == nullptr) {
 			return;
 		}
 
-		DeviceWrapper &dev = hub[devUid];
-		updateDevicePending(dev, Base::fileWriteFinalize(devUid, aFileNum, aChunkNumber, aCrc), MessageType::FileWriteFinalize);
+		DeviceWrapper &dev = *device;
+		updateDevicePending(dev, Base::fileWriteFinalize(aDeviceId, aFileNum, aChunkNumber, aCrc), MessageType::FileWriteFinalize);
 	}
 
-	void deviceHealthReqImpl(const std::string &aDeviceName)
+	void deviceHealthReqImpl(uint8_t aDeviceId)
 	{
-		uint8_t devUid = getUIDFromName(aDeviceName);
-
-		if (devUid == kReservedUID) {
+		DeviceWrapper *device = getDevice(aDeviceId);
+		if (device == nullptr) {
 			return;
 		}
 
-		DeviceWrapper &dev = hub[devUid];
-		updateDevicePending(dev, Base::sendHealthRequest(devUid), MessageType::HealthReq);
+		DeviceWrapper &dev = *device;
+		updateDevicePending(dev, Base::sendHealthRequest(aDeviceId), MessageType::HealthReq);
 	}
 
-	uint8_t getUIDFromName(const std::string &aName)
-	{
-		auto it = nameToUid.find(aName);
-		if (it == nameToUid.end()) {
-			return kReservedUID; // если имя не найдено
-		}
-		return it->second;
-	}
-
-	void processDevice(uint8_t aUID, DeviceWrapper &aDevice, std::chrono::milliseconds aTime)
+	void processDevice(uint8_t aDeviceId, DeviceWrapper &aDevice, std::chrono::milliseconds aTime)
 	{
 		if (aTime >= aDevice.nextCall) {
 			// Базовое время следующего действия
 			auto updateTime = std::chrono::milliseconds{100};
 
 			switch (aDevice.state) {
+				case DeviceState::Assigning: {
+					const NodeAllocation &entry = nodeAllocations[aDeviceId - 1].value();
+					updateDevicePending(aDevice, Base::sendAssignAddressRequest(entry.uid, entry.transactionId, aDeviceId), MessageType::AssignAddressReq);
+					++aDevice.allocationAttempts;
+					updateTime = std::chrono::milliseconds{0};
+				} break;
 				case DeviceState::Probing: {
-					updateDevicePending(aDevice, Base::sendProbe(aUID), MessageType::Probe);
+					updateDevicePending(aDevice, Base::sendProbe(aDeviceId), MessageType::Probe);
 					updateTime = std::chrono::milliseconds{1000};
 				} break;
 				case DeviceState::InfoRequest: {
-					updateDevicePending(aDevice, Base::sendDeviceInfoRequest(aUID), MessageType::DeviceInfoReq);
-					updateTime = std::chrono::milliseconds{1000};
+					updateDevicePending(aDevice, Base::sendDeviceInfoRequest(aDeviceId), MessageType::DeviceInfoReq);
+					if (hubState == State::Allocating) {
+						++aDevice.allocationAttempts;
+						updateTime = std::chrono::milliseconds{0};
+					} else {
+						updateTime = std::chrono::milliseconds{1000};
+					}
 				} break;
 				case DeviceState::Running: {
 					// Сначала посмотрим в очередь команд
 					if (!aDevice.commandQueue.empty()) {
 						const auto val = aDevice.commandQueue.front();
 						aDevice.commandQueue.pop();
-						cmdToDeviceImpl(aDevice.name, val.first, val.second);
+						cmdToDeviceImpl(aDeviceId, val.first, val.second);
 						// Потом в очередь запросов (ручных)
 					} else if (!aDevice.requestQueue.empty()) {
 						const auto request = aDevice.requestQueue.front();
 						aDevice.requestQueue.pop();
-						deviceRequestImpl(aDevice.name, request.first, request.second);
+						deviceRequestImpl(aDeviceId, request.first, request.second);
 						// Потом посмотрим, не пора ли спросить флаги и health
 					} else if (aTime - aDevice.lastHealthReq >= kHealthTimeout) {
 						aDevice.lastHealthReq = aTime;
-						deviceHealthReqImpl(aDevice.name);
+						deviceHealthReqImpl(aDeviceId);
 						// Потом в очередь расписаний телеметрии
 					} else if (!aDevice.telemSched.empty()) {
 						TelemetryUnit *telem = nullptr;
@@ -589,7 +822,7 @@ private:
 							}
 						}
 						if (telem != nullptr) {
-							deviceRequestImpl(aDevice.name, telem->req, telem->reqSize);
+							deviceRequestImpl(aDeviceId, telem->req, telem->reqSize);
 						}
 					} else {
 						// Делать нечего
@@ -599,7 +832,7 @@ private:
 					switch (aDevice.fileTransContext.state) {
 						case FileTransferContext::State::Request: {
 							deviceFileWriteRequestImpl(
-								aDevice.name, aDevice.fileTransContext.file, aDevice.fileTransContext.totalSize);
+								aDeviceId, aDevice.fileTransContext.file, aDevice.fileTransContext.totalSize);
 							// Раньше будет или ответ или ошибка таймаута
 							updateTime = std::chrono::milliseconds{50};
 						} break;
@@ -611,7 +844,7 @@ private:
 									aDevice.fileTransContext.totalSize - aDevice.fileTransContext.sentOffset);
 								const uint8_t *ptr = static_cast<const uint8_t *>(aDevice.fileTransContext.data)
 									+ aDevice.fileTransContext.sentOffset;
-								sendChunkImpl(aDevice.name, aDevice.fileTransContext.file, ptr, chunk);
+								sendChunkImpl(aDeviceId, aDevice.fileTransContext.file, ptr, chunk);
 								aDevice.fileTransContext.firstPacket = false;
 							} else {
 								// Теперь можно уже оформлять event-based с переповторами
@@ -627,7 +860,7 @@ private:
 										// Было занято, переотправим последний пакет
 										const uint8_t *ptr = static_cast<const uint8_t *>(aDevice.fileTransContext.data)
 											+ aDevice.fileTransContext.sentOffset;
-										sendChunkImpl(aDevice.name, aDevice.fileTransContext.file, ptr, lastChunk);
+										sendChunkImpl(aDeviceId, aDevice.fileTransContext.file, ptr, lastChunk);
 									} else if (aDevice.fileTransContext.packetAck.value() == Result::Wait) {
 										// Подождем немножко
 										updateTime = std::chrono::milliseconds{200};
@@ -648,7 +881,7 @@ private:
 
 											const uint8_t *ptr = static_cast<const uint8_t *>(aDevice.fileTransContext.data)
 												+ aDevice.fileTransContext.sentOffset;
-											sendChunkImpl(aDevice.name, aDevice.fileTransContext.file, ptr, nextChunk);
+											sendChunkImpl(aDeviceId, aDevice.fileTransContext.file, ptr, nextChunk);
 										}
 									} else {
 										// Во всех других случаях пишем ошибку
@@ -665,7 +898,7 @@ private:
 							const auto crc
 								= CrcFile::calculate(aDevice.fileTransContext.data, aDevice.fileTransContext.totalSize);
 							fileWriteFinalizeImpl(
-								aDevice.name, aDevice.fileTransContext.file, static_cast<uint16_t>(aDevice.fileTransContext.chunkSent), crc);
+								aDeviceId, aDevice.fileTransContext.file, static_cast<uint16_t>(aDevice.fileTransContext.chunkSent), crc);
 							updateTime = std::chrono::milliseconds{500};
 						} break;
 
@@ -674,7 +907,7 @@ private:
 							aDevice.fileTransContext = FileTransferContext{};
 							aDevice.state = DeviceState::Running;
 							Result result = aDevice.fileTransContext.packetAck ? aDevice.fileTransContext.packetAck.value() : Result::Error;
-							if (observer) observer->fileWriteResultEv(aDevice.name, result);
+							if (observer) observer->fileWriteResultEv(aDevice.uid, aDeviceId, result);
 						} break;
 					}
 				} break;
@@ -682,7 +915,7 @@ private:
 				case DeviceState::Suspended:
 					break;
 				case DeviceState::Lost:
-					if (observer) observer->deviceLostEv(aDevice.name);
+					if (observer) observer->deviceLostEv(aDevice.uid, aDeviceId);
 					aDevice.state = DeviceState::Probing;
 					break;
 			}
@@ -691,9 +924,9 @@ private:
 		}
 	}
 
-	DeviceWrapper *getDevice(uint8_t uid)
+	DeviceWrapper *getDevice(uint8_t aDeviceId)
 	{
-		auto it = hub.find(uid);
+		auto it = hub.find(aDeviceId);
 		if (it == hub.end())
 			return nullptr;
 		return &it->second;

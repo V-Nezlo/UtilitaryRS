@@ -15,7 +15,7 @@ class Device1 : public RS::RsHandler<Interface, Crc, ParserSize> {
 	using BaseType = RS::RsHandler<Interface, Crc, ParserSize>;
 public:
 	Device1(const char *aName, RS::DeviceVersion &aVersion, uint8_t aNodeUID, Interface &aInterface):
-		BaseType{aName, aVersion, aNodeUID, aInterface}
+		BaseType{aName, aVersion, RS::NodeUid{aNodeUID}, aInterface, aNodeUID}
 	{
 
 	}
@@ -56,7 +56,7 @@ public:
 		return RS::Ok;
 	}
 
-	void handleDeviceInfoAnswer(uint8_t aTranceiverUID, uint8_t aMessageNumber, RS::DeviceVersion aVersion, const void *aName, size_t nameLen) override
+	void handleDeviceInfoAnswer(uint8_t aTranceiverUID, uint8_t aMessageNumber, RS::DeviceVersion aVersion, const RS::NodeUid &aUID, const void *aName, size_t nameLen) override
 	{
 		return;
 	}
@@ -94,7 +94,7 @@ class Device2 : public RS::RsHandler<Interface, Crc, ParserSize> {
 	using BaseType = RS::RsHandler<Interface, Crc, ParserSize>;
 public:
 	Device2(const char *aName, RS::DeviceVersion &aVersion, uint8_t aNodeUID, Interface &aInterface):
-		BaseType{aName, aVersion, aNodeUID, aInterface}
+		BaseType{aName, aVersion, RS::NodeUid{aNodeUID}, aInterface, aNodeUID}
 	{
 
 	}
@@ -135,7 +135,7 @@ public:
 		return RS::Ok;
 	}
 
-	void handleDeviceInfoAnswer(uint8_t aTranceiverUID, uint8_t aMessageNumber, RS::DeviceVersion aVersion, const void *aName, size_t nameLen) override
+	void handleDeviceInfoAnswer(uint8_t aTranceiverUID, uint8_t aMessageNumber, RS::DeviceVersion aVersion, const RS::NodeUid &aUID, const void *aName, size_t nameLen) override
 	{
 		return;
 	}

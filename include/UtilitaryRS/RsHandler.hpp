@@ -13,6 +13,7 @@
 
 #include "RsParser.hpp"
 #include "RsTypes.hpp"
+#include <optional>
 
 namespace RS {
 
@@ -26,22 +27,28 @@ class RsHandler {
 
 public:
 
-	/// \brief Конструктор класса RsHandler
-	/// \param aName имя устройства
-	/// \param aVersion версия устройства
-	/// \param aNodeUID номер данной ноды (от 0 до 255)
-	/// \param aInterface ссылка на экземпляр типа Interface, заданного шаблоном
-	RsHandler(const char *aName, const DeviceVersion &aVersion, uint8_t aNodeUID, Interface &aInterface) :
+	/// \brief Конструктор ноды или мастера, постоянный UID копируется в обработчик
+	/// \param aUID уникальный идентификатор логической ноды, подготовленный приложением
+	/// \param aNodeId адрес: 0 для мастера, 1...32 для ноды, kUnallocatedUID до аллокации
+	RsHandler(const char *aName, const DeviceVersion &aVersion, const NodeUid &aUID, Interface &aInterface,
+		uint8_t aNodeId = kUnallocatedUID) :
 		name{aName},
 		version{aVersion},
 		health{Health::WarnUp},
 		flags{0},
-		nodeUID{aNodeUID},
+		nodeUID{aNodeId},
+		permanentUid{aUID},
+		allocationTransaction{std::nullopt},
 		parser{},
 		interface{aInterface},
 		messageBuffer{},
 		messageNumber{0}
 	{ }
+
+	const NodeUid &getNodeUid() const
+	{
+		return permanentUid;
+	}
 
 	uint8_t getUid() const
 	{
@@ -114,10 +121,11 @@ public:
 	/// \brief Функция отправки запроса информации о устройстве
 	/// \param aReceiverUID UID получателя запроса
 	/// \return номер сообщения
-	uint8_t sendDeviceInfoRequest(uint8_t aReceiverUID)
+	uint8_t sendDeviceInfoRequest(uint8_t aReceiverUID, bool aResetState = false)
 	{
 		DeviceInfoReqMessage message;
 		message.messageType = MessageType::DeviceInfoReq;
+		message.payload.resetState = aResetState ? 1 : 0;
 		message.receiverUID = aReceiverUID;
 		message.transmitUID = nodeUID;
 		message.number = ++messageNumber;
@@ -249,6 +257,55 @@ public:
 		return message.number;
 	}
 
+	/// \brief Уведомить приложение о сбросе обмена при начальном адресном опросе
+	virtual void handleExchangeReset() { }
+
+	/// \brief Запросить обнаружение неаллоцированных нод указанной группы
+	/// \return номер сообщения, 0 если отправитель не мастер или группа недопустима
+	uint8_t sendDiscoverRequest(uint32_t aRoundNonce, uint8_t aBucket)
+	{
+		static_assert(sizeof(DiscoverReqMessage) + 2 <= ParserSize, "Allocation message buffer is too small");
+		if (nodeUID != 0 || aBucket >= kAllocationBucketCount) {
+			return 0;
+		}
+
+		DiscoverReqMessage message{};
+		message.receiverUID = kReservedUID;
+		message.transmitUID = nodeUID;
+		message.messageType = MessageType::DiscoverReq;
+		message.number = nextAllocationMessageNumber();
+		message.payload.roundNonce = aRoundNonce;
+		message.payload.bucket = aBucket;
+
+		const size_t length = parser.create(messageBuffer, &message, sizeof(message));
+		interface.write(messageBuffer, length);
+		return message.number;
+	}
+
+	/// \brief Отправить назначение адреса ноде с указанным постоянным UID
+	/// Повтор назначения должен использовать тот же aTransactionId, адрес автоматически не изменяется
+	/// \return номер сообщения, 0 если отправитель не мастер или адрес недопустим
+	uint8_t sendAssignAddressRequest(const NodeUid &aUID, uint32_t aTransactionId, uint8_t aNodeId)
+	{
+		static_assert(sizeof(AssignAddressReqMessage) + 2 <= ParserSize, "Allocation message buffer is too small");
+		if (nodeUID != 0 || aNodeId == 0 || aNodeId > kMaxNodeCount) {
+			return 0;
+		}
+
+		AssignAddressReqMessage message{};
+		message.receiverUID = kReservedUID;
+		message.transmitUID = nodeUID;
+		message.messageType = MessageType::AssignAddressReq;
+		message.number = nextAllocationMessageNumber();
+		message.payload.uid = aUID;
+		message.payload.transactionId = aTransactionId;
+		message.payload.nodeId = aNodeId;
+
+		const size_t length = parser.create(messageBuffer, &message, sizeof(message));
+		interface.write(messageBuffer, length);
+		return message.number;
+	}
+
 	/// \brief Обработать полученное health
 	/// \param aTransmitUID номер отправителя
 	/// \param aMessageNumber номер сообщения
@@ -341,7 +398,8 @@ public:
 	/// \param aVersion версия ПО
 	/// \param aName имя устройства
 	/// \param nameLen длина имени устройства
-	virtual void handleDeviceInfoAnswer(uint8_t /*aTranceiverUID*/, uint8_t /*aMessageNumber*/, DeviceVersion /*aVersion*/, const void */*aName*/, size_t /*nameLen*/) {}
+	virtual void handleDeviceInfoAnswer(uint8_t /*aTranceiverUID*/, uint8_t /*aMessageNumber*/, DeviceVersion /*aVersion*/,
+		const NodeUid &/*aUID*/, const void */*aName*/, size_t /*nameLen*/) {}
 
 	/// \brief Функция обработки ответа, можно использовать как индикатор того что адресат вообще жив
 	/// \param aTranceiverUID отправитель Ack
@@ -393,6 +451,80 @@ public:
 	}
 
 protected:
+	/// \brief Обработать ответ обнаружения после проверки формата и адресов в RsHandler
+	/// DeviceHub сопоставляет номер запроса, nonce и группу с текущим раундом обнаружения
+	virtual void handleDiscoverAnswer(uint8_t /*aMessageNumber*/, uint32_t /*aRoundNonce*/, const NodeUid &/*aUID*/)
+	{ }
+
+	/// \brief Обработать подтверждение назначения после проверки формата и адресов в RsHandler
+	/// aNodeId совпадает с адресом отправителя; DeviceHub проверяет ожидаемый запрос, UID и транзакцию
+	virtual void handleAssignAddressAnswer(uint8_t /*aMessageNumber*/, const NodeUid &/*aUID*/,
+		uint32_t /*aTransactionId*/, uint8_t /*aNodeId*/)
+	{ }
+
+	/// \brief Сбросить состояние обмена без изменения постоянного UID и адреса
+	void resetProtocolState()
+	{
+		parser.reset();
+		messageNumber = 0;
+		allocationTransaction.reset();
+	}
+
+	/// \brief Установить адрес ноды после проверки назначения
+	bool setNodeId(uint8_t aNodeId)
+	{
+		if (aNodeId == 0 || aNodeId > kMaxNodeCount) {
+			return false;
+		}
+		nodeUID = aNodeId;
+		return true;
+	}
+
+	/// \brief Ответить мастеру на запрос обнаружения, сохранив номер запроса
+	/// Вызывать только в ответ на подходящий запрос мастера
+	bool sendDiscoverAnswer(uint8_t aReceiverUID, uint8_t aMessageNumber, uint32_t aRoundNonce, const NodeUid &aUID)
+	{
+		static_assert(sizeof(DiscoverAnwMessage) + 2 <= ParserSize, "Allocation message buffer is too small");
+		if (aReceiverUID != 0 || nodeUID != kUnallocatedUID) {
+			return false;
+		}
+
+		DiscoverAnwMessage message{};
+		message.receiverUID = aReceiverUID;
+		message.transmitUID = nodeUID;
+		message.messageType = MessageType::DiscoverAnw;
+		message.number = aMessageNumber;
+		message.payload.roundNonce = aRoundNonce;
+		message.payload.uid = aUID;
+
+		const size_t length = parser.create(messageBuffer, &message, sizeof(message));
+		interface.write(messageBuffer, length);
+		return true;
+	}
+
+	/// \brief Подтвердить назначение после установки адреса, сохранив номер запроса
+	bool sendAssignAddressAnswer(uint8_t aReceiverUID, uint8_t aMessageNumber, const NodeUid &aUID,
+		uint32_t aTransactionId, uint8_t aNodeId)
+	{
+		static_assert(sizeof(AssignAddressAnwMessage) + 2 <= ParserSize, "Allocation message buffer is too small");
+		if (aReceiverUID != 0 || aNodeId == 0 || aNodeId > kMaxNodeCount || nodeUID != aNodeId) {
+			return false;
+		}
+
+		AssignAddressAnwMessage message{};
+		message.receiverUID = aReceiverUID;
+		message.transmitUID = nodeUID;
+		message.messageType = MessageType::AssignAddressAnw;
+		message.number = aMessageNumber;
+		message.payload.uid = aUID;
+		message.payload.transactionId = aTransactionId;
+		message.payload.nodeId = aNodeId;
+
+		const size_t length = parser.create(messageBuffer, &message, sizeof(message));
+		interface.write(messageBuffer, length);
+		return true;
+	}
+
 	/// \brief Функция, которая отправляет ответ, собранный в функции processRequest. Вызывать через базовый класс
 	/// \param aTranceiverUID UID отправителя ответа
 	/// \param aMessageNumber номер сообщения
@@ -440,10 +572,46 @@ private:
 	uint16_t flags;
 
 	uint8_t nodeUID;
+	const NodeUid permanentUid;
+	std::optional<uint32_t> allocationTransaction;
 	Parser parser;
 	Interface &interface;
 	uint8_t messageBuffer[ParserSize];
 	uint8_t messageNumber;
+
+	/// \brief Ответить своим UID только на запрос своей хеш-группы
+	void processDiscoverRequest(uint8_t aTransmitUID, uint8_t aMessageNumber, uint32_t aRoundNonce, uint8_t aBucket)
+	{
+		if (Helpers::getAllocationBucket(permanentUid, aRoundNonce) == aBucket) {
+			sendDiscoverAnswer(aTransmitUID, aMessageNumber, aRoundNonce, permanentUid);
+		}
+	}
+
+	/// \brief Принять собственное назначение или повторно подтвердить ту же транзакцию
+	void processAssignAddressRequest(uint8_t aTransmitUID, uint8_t aMessageNumber, const NodeUid &aUID,
+		uint32_t aTransactionId, uint8_t aNodeId)
+	{
+		if (permanentUid != aUID) {
+			return;
+		}
+		if (nodeUID != kUnallocatedUID && (nodeUID != aNodeId
+			|| (allocationTransaction && allocationTransaction.value() != aTransactionId))) {
+			return;
+		}
+
+		setNodeId(aNodeId);
+		allocationTransaction = aTransactionId;
+		sendAssignAddressAnswer(aTransmitUID, aMessageNumber, permanentUid, aTransactionId, aNodeId);
+	}
+
+	/// \brief Для запросов аллокации номер 0 зарезервирован как признак ошибки отправки
+	uint8_t nextAllocationMessageNumber()
+	{
+		if (++messageNumber == 0) {
+			++messageNumber;
+		}
+		return messageNumber;
+	}
 
 	/// \brief Функция отправки ответа
 	/// \param aTransmitterUID получатель ответа (отправитель команд\запросов)
@@ -485,12 +653,13 @@ private:
 	/// \param aMessageNumber
 	void processDeviceInfoRequest(uint8_t aReceiverUID, uint8_t aMessageNumber)
 	{
-		DeviceInfoAnwMessage message;
+		DeviceInfoAnwMessage message{};
 		message.messageType = MessageType::DeviceInfoAnw;
 		message.transmitUID = nodeUID;
 		message.receiverUID = aReceiverUID;
 		message.number = aMessageNumber;
 		message.payload.version = version;
+		message.payload.uid = permanentUid;
 		message.payload.nameLen = strlen(name);
 
 		uint8_t *payloadStart = messageBuffer + 1;
@@ -519,11 +688,64 @@ private:
 		const auto *header = reinterpret_cast<const Header *>(aMessage);
 		const bool broadcast = header->receiverUID == kReservedUID;
 
+		// Нода без адреса участвует только в аллокации и молчит на обычные запросы
+		if (nodeUID == kUnallocatedUID && header->messageType != MessageType::DiscoverReq
+			&& header->messageType != MessageType::AssignAddressReq) {
+			return;
+		}
+
 		if (header->receiverUID == nodeUID || broadcast) {
 			bool ackNeeded = true;
 			Result ackCode{Result::Unsupported};
 
 			switch (header->messageType) {
+				case MessageType::DiscoverReq: {
+					ackNeeded = false;
+					if (aLength != sizeof(DiscoverReqMessage) || !broadcast || header->transmitUID != 0
+						|| nodeUID != kUnallocatedUID) {
+						break;
+					}
+					const auto *request = reinterpret_cast<const DiscoverReqMessage *>(aMessage);
+					if (request->payload.bucket < kAllocationBucketCount) {
+						processDiscoverRequest(header->transmitUID, header->number, request->payload.roundNonce, request->payload.bucket);
+					}
+				} break;
+
+				case MessageType::DiscoverAnw: {
+					ackNeeded = false;
+					if (aLength != sizeof(DiscoverAnwMessage) || nodeUID != 0 || broadcast
+						|| header->transmitUID != kUnallocatedUID) {
+						break;
+					}
+					const auto *answer = reinterpret_cast<const DiscoverAnwMessage *>(aMessage);
+					handleDiscoverAnswer(header->number, answer->payload.roundNonce, answer->payload.uid);
+				} break;
+
+				case MessageType::AssignAddressReq: {
+					ackNeeded = false;
+					if (aLength != sizeof(AssignAddressReqMessage) || !broadcast || header->transmitUID != 0 || nodeUID == 0) {
+						break;
+					}
+					const auto *request = reinterpret_cast<const AssignAddressReqMessage *>(aMessage);
+					if (request->payload.nodeId != 0 && request->payload.nodeId <= kMaxNodeCount) {
+						processAssignAddressRequest(header->transmitUID, header->number,
+							request->payload.uid, request->payload.transactionId, request->payload.nodeId);
+					}
+				} break;
+
+				case MessageType::AssignAddressAnw: {
+					ackNeeded = false;
+					if (aLength != sizeof(AssignAddressAnwMessage) || nodeUID != 0 || broadcast) {
+						break;
+					}
+					const auto *answer = reinterpret_cast<const AssignAddressAnwMessage *>(aMessage);
+					if (answer->payload.nodeId != 0 && answer->payload.nodeId <= kMaxNodeCount
+						&& header->transmitUID == answer->payload.nodeId) {
+						handleAssignAddressAnswer(header->number,
+							answer->payload.uid, answer->payload.transactionId, answer->payload.nodeId);
+					}
+				} break;
+
 				case MessageType::Ack: {
 					const auto ackMsg = reinterpret_cast<const AckMessage *>(aMessage);
 						handleAck(header->transmitUID, header->number, static_cast<Result>(ackMsg->payload.code));
@@ -559,14 +781,31 @@ private:
 				} break;
 
 				case MessageType::DeviceInfoReq: {
+					if (aLength != sizeof(DeviceInfoReqMessage)) {
+						ackNeeded = false;
+						break;
+					}
+					const auto *request = reinterpret_cast<const DeviceInfoReqMessage *>(aMessage);
+					if (request->payload.resetState == 1 && header->transmitUID == 0 && nodeUID != 0) {
+						resetProtocolState();
+						handleExchangeReset();
+					}
 					processDeviceInfoRequest(header->transmitUID, header->number);
 					ackNeeded = false; // После ответа с ПО не нужен ACK
 				} break;
 
 				case MessageType::DeviceInfoAnw: {
+					if (aLength < sizeof(DeviceInfoAnwMessage)) {
+						ackNeeded = false;
+						break;
+					}
 					const auto deviceInfo = reinterpret_cast<const DeviceInfoAnwMessage *>(aMessage);
+					if (aLength != sizeof(DeviceInfoAnwMessage) + deviceInfo->payload.nameLen) {
+						ackNeeded = false;
+						break;
+					}
 					handleDeviceInfoAnswer(header->transmitUID, header->number, deviceInfo->payload.version,
-					&aMessage[sizeof(DeviceInfoAnwMessage)], deviceInfo->payload.nameLen);
+						deviceInfo->payload.uid, &aMessage[sizeof(DeviceInfoAnwMessage)], deviceInfo->payload.nameLen);
 					ackCode = Result::Ok;
 				} break;
 

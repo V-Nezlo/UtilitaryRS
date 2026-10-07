@@ -45,7 +45,7 @@ template<typename Interface, typename Crc, size_t ParserSize>
 class DeviceNode : public RS::RsHandler<Interface, Crc, ParserSize> {
 public:
 	DeviceNode(const char *aName, RS::DeviceVersion &ver, uint8_t uid, Interface &iface) :
-		RS::RsHandler<Interface, Crc, ParserSize>(aName, ver, uid, iface)
+		RS::RsHandler<Interface, Crc, ParserSize>(aName, ver, RS::NodeUid{uid}, iface, uid)
 	{ }
 
 	// Обрабатывать BlobRequest: если request == 2 и ожидается 4 байта, отправляем 0xAABBCCDD
@@ -132,29 +132,34 @@ private:
 
 class DeviceHubObserverMock : public RS::DeviceHubObserver {
 public:
-	void onAckNotReceivedEv(const std::string &aName, RS::MessageType aMessage) override
+	void onAckNotReceivedEv(const RS::NodeUid &aUID, uint8_t aDeviceId, RS::MessageType aMessage) override
 	{
+		assert(aUID == RS::NodeUid{1} && aDeviceId == 1);
 		(void)aMessage;
-		lastNotAckName = aName;
+		lastNotAckDeviceId = aDeviceId;
 	}
-	void onAckReceivedEv(const std::string &aName, RS::MessageType aMessage, RS::Result aCode) override
+	void onAckReceivedEv(const RS::NodeUid &aUID, uint8_t aDeviceId, RS::MessageType aMessage, RS::Result aCode) override
 	{
+		assert(aUID == RS::NodeUid{1} && aDeviceId == 1);
 		(void)aMessage;
-		lastAckName = aName;
+		lastAckDeviceId = aDeviceId;
 		lastAckCode = aCode;
 	}
-	void onCommandResultEv(const std::string &aName, RS::Result aReturn) override
+	void onCommandResultEv(const RS::NodeUid &aUID, uint8_t aDeviceId, RS::Result aReturn) override
 	{
-		lastCommandName = aName;
+		assert(aUID == RS::NodeUid{1} && aDeviceId == 1);
+		lastCommandDeviceId = aDeviceId;
 		lastCommandResult = aReturn;
 	}
-	void onRequestErrorEv(const std::string &aName, RS::Result aReturn) override
+	void onRequestErrorEv(const RS::NodeUid &aUID, uint8_t aDeviceId, RS::Result aReturn) override
 	{
-		lastRequestErrorName = aName;
+		assert(aUID == RS::NodeUid{1} && aDeviceId == 1);
+		lastRequestErrorDeviceId = aDeviceId;
 		lastRequestError = aReturn;
 	}
-	RS::Result blobAnswerEvReceived(const std::string &aName, uint8_t Request, const void *aData, size_t aSize) override
+	RS::Result blobAnswerEvReceived(const RS::NodeUid &aUID, uint8_t aDeviceId, uint8_t Request, const void *aData, size_t aSize) override
 	{
+		assert(aUID == RS::NodeUid{1} && aDeviceId == 1);
 		(void)Request;
 		(void)aData;
 		(void)aSize;
@@ -168,50 +173,54 @@ public:
 			}
 		}
 
-		lastBlobName = aName;
+		lastBlobDeviceId = aDeviceId;
 		return RS::Result::Ok;
 	}
-	void deviceRegisteredEv(const std::string &aName, RS::DeviceVersion aVersion) override
+	void deviceRegisteredEv(const RS::NodeUid &aUID, uint8_t aDeviceId, RS::DeviceVersion aVersion) override
 	{
-		lastDeviceRegistered = aName;
+		assert(aUID == RS::NodeUid{1} && aDeviceId == 1);
+		lastDeviceRegistered = aDeviceId;
 		deviceVersion = aVersion;
 	}
 
-	RS::Result fileWriteResultEv(const std::string &aName, RS::Result aReturn) override
+	RS::Result fileWriteResultEv(const RS::NodeUid &aUID, uint8_t aDeviceId, RS::Result aReturn) override
 	{
-		lastFileName = aName;
+		assert(aUID == RS::NodeUid{1} && aDeviceId == 1);
+		lastFileDeviceId = aDeviceId;
 		lastFileResult = aReturn;
 		return aReturn;
 	}
 
 
-	void deviceHealthReceivedEv(const std::string &aName, RS::Health aHealth, uint16_t aFlags) override
+	void deviceHealthReceivedEv(const RS::NodeUid &aUID, uint8_t aDeviceId, RS::Health aHealth, uint16_t aFlags) override
 	{
+		assert(aUID == RS::NodeUid{1} && aDeviceId == 1);
 		return;
 	}
 
-	void deviceLostEv(const std::string &aName) override
+	void deviceLostEv(const RS::NodeUid &aUID, uint8_t aDeviceId) override
 	{
+		assert(aUID == RS::NodeUid{1} && aDeviceId == 1);
 		return;
 	}
 
 	// тестовые поля
-	std::string lastNotAckName;
-	std::string lastAckName;
+	uint8_t lastNotAckDeviceId{0};
+	uint8_t lastAckDeviceId{0};
 	RS::Result lastAckCode{RS::Result::Error};
 
-	std::string lastDeviceRegistered;
+	uint8_t lastDeviceRegistered{0};
 	RS::DeviceVersion deviceVersion{};
 
-	std::string lastCommandName;
+	uint8_t lastCommandDeviceId{0};
 	RS::Result lastCommandResult{RS::Result::Error};
 
-	std::string lastRequestErrorName;
+	uint8_t lastRequestErrorDeviceId{0};
 	RS::Result lastRequestError{RS::Result::Error};
 
-	std::string lastBlobName;
+	uint8_t lastBlobDeviceId{0};
 
-	std::string lastFileName;
+	uint8_t lastFileDeviceId{0};
 	RS::Result lastFileResult{RS::Result::Error};
 
 	bool anwerCorrected;
@@ -243,7 +252,7 @@ int main()
 	std::string deviceName = "dev1";
 
 	// Создаем hub и device
-	Hub hub(hubVer, masterSerial);
+	Hub hub(hubVer, RS::NodeUid{0x80}, masterSerial);
 	Device device(deviceName.c_str(), devVer, 1, deviceSerial);
 
 	DeviceHubObserverMock obs;
@@ -252,7 +261,7 @@ int main()
 	hub.probeAll();
 	std::vector<uint8_t> m2d;
 	std::vector<uint8_t> d2m;
-	while (hub.isScanning()) {
+	while (hub.state() != Hub::State::Running) {
 		hub.process(MockTime::milliseconds());
 		m2d = masterSerial.readAll();
 		device.update(m2d.data(), m2d.size());
@@ -265,8 +274,8 @@ int main()
 	}
 
 	// Проверки
-	if (obs.lastDeviceRegistered != deviceName) {
-		std::cerr << "Device was not registered: expected 'dev1', got '" << obs.lastDeviceRegistered << "'\n";
+	if (obs.lastDeviceRegistered != 1) {
+		std::cerr << "Device was not registered: expected deviceId 1, got '" << obs.lastDeviceRegistered << "'\n";
 		return 1;
 	}
 
@@ -274,7 +283,7 @@ int main()
 
 	// Тестируем интерфейсы Hub
 	// === 1) Отправка команды (hub -> device) и ACK ===
-	bool r = hub.sendCmdToDevice(deviceName, 0x06, 0x07);
+	bool r = hub.sendCmdToDevice(1, 0x06, 0x07);
 	assert(r && "sendCmdToDevice returned false");
 
 	// Дадим время, чтобы process отправил команду
@@ -292,8 +301,8 @@ int main()
 	hub.update(d2m.data(), d2m.size());
 
 	// обработано — observer должен получить onCommandResultEv
-	if (obs.lastCommandName != deviceName || obs.lastCommandResult != RS::Result::Ok) {
-		std::cerr << "Command path failed: lastCommandName='" << obs.lastCommandName
+	if (obs.lastCommandDeviceId != 1 || obs.lastCommandResult != RS::Result::Ok) {
+		std::cerr << "Command path failed: lastCommandDeviceId='" << obs.lastCommandDeviceId
 				  << "', result=" << static_cast<int>(obs.lastCommandResult) << "\n";
 		return 2;
 	}
@@ -307,7 +316,7 @@ int main()
 
 	// === 2) Blob request (hub -> device -> blob answer -> hub) ===
 	// Hub запросит 4 байта по request id = 2
-	bool sendBlob = hub.sendBlobRequestToDevice(deviceName, 2 /* req */, 4 /* size */);
+	bool sendBlob = hub.sendBlobRequestToDevice(1, 2 /* req */, 4 /* size */);
 	assert(sendBlob && "sendBlobRequestToDevice returned false");
 
 	// Позволим hub'у отправить запрос
@@ -324,9 +333,9 @@ int main()
 	assert(!d2m.empty());
 	hub.update(d2m.data(), d2m.size());
 
-	// После обработки BlobAnswer observer должен видеть имя устройства
-	if (obs.lastBlobName != deviceName) {
-		std::cerr << "Blob handling failed: expected blob from '" << deviceName << "', got '" << obs.lastBlobName
+	// После обработки BlobAnswer observer должен видеть UID и deviceId устройства
+	if (obs.lastBlobDeviceId != 1) {
+		std::cerr << "Blob handling failed: expected blob from '" << 1 << "', got '" << obs.lastBlobDeviceId
 				  << "'\n";
 		return 4;
 	}
@@ -342,7 +351,7 @@ int main()
 	uint8_t buffer[128];
 	for (auto i = 0; i < 128; ++i) { buffer[i] = i; }
 	// Инициируем отправку файла 0
-	hub.sendFile(deviceName, 0, buffer, sizeof(buffer), 16);
+	hub.sendFile(1, 0, buffer, sizeof(buffer), 16);
 	MockTime::delay(std::chrono::milliseconds{1000});
 	hub.process(MockTime::milliseconds());
 	// Прилетает реквест, должен вернуть OK
@@ -388,6 +397,7 @@ int main()
 	hub.update(d2m.data(), d2m.size());
 
 	assert(obs.anwerCorrected && device.isFileOk());
+	assert(obs.lastFileDeviceId == 1 && obs.lastFileResult == RS::Result::Ok);
 	std::cout << "File Transfer OK\n";
 	std::cout << "ALL TESTS PASSED\n";
 

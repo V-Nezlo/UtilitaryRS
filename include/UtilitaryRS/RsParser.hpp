@@ -120,6 +120,9 @@ public:
 								reset();
 								return i;
 							}
+							if (message.chunkSize == 0) {
+								parserState = State::Crc;
+							}
 						}
 					} else if (position < baseSize + payloadMaxSize) {
 						buffer[position] = value;

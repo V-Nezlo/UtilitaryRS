@@ -29,21 +29,25 @@ public:
 
 class ScanObserver : public RS::DeviceHubObserver {
 public:
-	void onAckNotReceivedEv(const std::string &, RS::MessageType) override { }
-	void onAckReceivedEv(const std::string &, RS::MessageType, RS::Result) override { }
-	void onCommandResultEv(const std::string &, RS::Result) override { }
-	void onRequestErrorEv(const std::string &, RS::Result) override { }
-	RS::Result blobAnswerEvReceived(const std::string &, uint8_t, const void *, size_t) override { return RS::Result::Ok; }
-	void deviceLostEv(const std::string &) override { }
-	RS::Result fileWriteResultEv(const std::string &, RS::Result aReturn) override { return aReturn; }
-	void deviceHealthReceivedEv(const std::string &, RS::Health, uint16_t) override { }
+	void onAckNotReceivedEv(const RS::NodeUid &, uint8_t, RS::MessageType) override { }
+	void onAckReceivedEv(const RS::NodeUid &, uint8_t, RS::MessageType, RS::Result) override { }
+	void onCommandResultEv(const RS::NodeUid &aUID, uint8_t aDeviceId, RS::Result) override
+	{ commands.emplace_back(aUID, aDeviceId); }
+	void onRequestErrorEv(const RS::NodeUid &aUID, uint8_t aDeviceId, RS::Result) override
+	{ requestErrors.emplace_back(aUID, aDeviceId); }
+	RS::Result blobAnswerEvReceived(const RS::NodeUid &, uint8_t, uint8_t, const void *, size_t) override { return RS::Result::Ok; }
+	void deviceLostEv(const RS::NodeUid &, uint8_t) override { }
+	RS::Result fileWriteResultEv(const RS::NodeUid &, uint8_t, RS::Result aReturn) override { return aReturn; }
+	void deviceHealthReceivedEv(const RS::NodeUid &, uint8_t, RS::Health, uint16_t) override { }
 
-	void deviceRegisteredEv(const std::string &aName, RS::DeviceVersion) override
+	void deviceRegisteredEv(const RS::NodeUid &aUID, uint8_t aDeviceId, RS::DeviceVersion) override
 	{
-		names.push_back(aName);
+		registered.emplace_back(aUID, aDeviceId);
 	}
 
-	std::vector<std::string> names;
+	std::vector<std::pair<RS::NodeUid, uint8_t>> registered;
+	std::vector<std::pair<RS::NodeUid, uint8_t>> commands;
+	std::vector<std::pair<RS::NodeUid, uint8_t>> requestErrors;
 };
 
 using Hub = RS::DeviceHub<ScanSerial, ScanTime, Crc8, Crc64, 256>;
@@ -65,9 +69,9 @@ void testEmptyScan()
 	ScanTime::now = std::chrono::milliseconds{0};
 	RS::DeviceVersion version{};
 	ScanSerial serial;
-	Hub hub(version, serial);
+	Hub hub(version, RS::NodeUid{0x80}, serial);
 	hub.probeAll();
-	assert(hub.isScanning());
+	assert(hub.state() == Hub::State::Waiting);
 	assert(serial.data.empty());
 
 	for (uint8_t uid = 1; uid <= RS::kMaxNodeCount; ++uid) {
@@ -86,7 +90,7 @@ void testEmptyScan()
 	}
 
 	hub.process(ScanTime::milliseconds());
-	assert(!hub.isScanning());
+	assert(hub.state() == Hub::State::Running);
 	assert(serial.data.empty());
 }
 
@@ -99,13 +103,13 @@ void testAllocatedScan()
 	std::vector<std::unique_ptr<Node>> nodes;
 	for (uint8_t uid = 1; uid <= RS::kMaxNodeCount; ++uid) {
 		names[uid - 1] = "node" + std::to_string(uid);
-		nodes.push_back(std::make_unique<Node>(names[uid - 1].c_str(), version, uid, nodeSerial));
+		nodes.push_back(std::make_unique<Node>(names[uid - 1].c_str(), version, RS::NodeUid{uid}, nodeSerial, uid));
 	}
 
 	// Пересоздание мастера не меняет адреса существующих нод
 	for (int restart = 0; restart < 2; ++restart) {
 		ScanSerial masterSerial;
-		Hub hub(version, masterSerial);
+		Hub hub(version, RS::NodeUid{0x80}, masterSerial);
 		ScanObserver observer;
 		hub.registerObserver(&observer);
 		hub.probeAll();
@@ -117,16 +121,17 @@ void testAllocatedScan()
 			masterSerial.data.clear();
 			hub.update(nodeSerial.data.data(), nodeSerial.data.size());
 			nodeSerial.data.clear();
-			assert(observer.names.size() == uid);
-			assert(observer.names.back() == names[uid - 1]);
+			assert(observer.registered.size() == uid);
+			assert(observer.registered.back().first == RS::NodeUid{uid});
+			assert(observer.registered.back().second == uid);
 			assert(nodes[uid - 1]->getUid() == uid);
 			// Ответ на информацию подтверждается до следующего запроса
 			assert(readHeader(masterSerial).messageType == RS::MessageType::Ack);
 			nodes[uid - 1]->update(masterSerial.data.data(), masterSerial.data.size());
 			masterSerial.data.clear();
 		}
-		assert(!hub.isScanning());
-		assert(hub.sendCmdToDevice("node32", 1, 0));
+		assert(hub.state() == Hub::State::Running);
+		assert(hub.sendCmdToDevice(32, 1, 0));
 	}
 }
 
@@ -136,7 +141,7 @@ void testUnexpectedResponses()
 	RS::DeviceVersion version{};
 	ScanSerial masterSerial;
 	ScanSerial nodeSerial;
-	Hub hub(version, masterSerial);
+	Hub hub(version, RS::NodeUid{0x80}, masterSerial);
 	ScanObserver observer;
 	hub.registerObserver(&observer);
 	hub.probeAll();
@@ -145,14 +150,14 @@ void testUnexpectedResponses()
 	masterSerial.data.clear();
 
 	// Информация с другого адреса не регистрирует устройство
-	Node other("other", version, 2, nodeSerial);
-	Hub sender(version, masterSerial);
+	Node other("other", version, RS::NodeUid{2}, nodeSerial, 2);
+	Hub sender(version, RS::NodeUid{0x80}, masterSerial);
 	sender.sendDeviceInfoRequest(2);
 	other.update(masterSerial.data.data(), masterSerial.data.size());
 	masterSerial.data.clear();
 	hub.update(nodeSerial.data.data(), nodeSerial.data.size());
 	nodeSerial.data.clear();
-	assert(observer.names.empty());
+	assert(observer.registered.empty());
 
 	// ACK от неизвестной ноды и ответ с неверным номером не завершают запрос
 	Parser parser;
@@ -165,7 +170,7 @@ void testUnexpectedResponses()
 	size_t length = parser.create(buffer, &ack, sizeof(ack));
 	hub.update(buffer, length);
 
-	Node node("node1", version, 1, nodeSerial);
+	Node node("node1", version, RS::NodeUid{1}, nodeSerial, 1);
 	RS::DeviceInfoReqMessage wrong{};
 	wrong.receiverUID = 1;
 	wrong.transmitUID = 0;
@@ -175,11 +180,95 @@ void testUnexpectedResponses()
 	node.update(buffer, length);
 	hub.update(nodeSerial.data.data(), nodeSerial.data.size());
 	nodeSerial.data.clear();
-	assert(observer.names.empty());
+	assert(observer.registered.empty());
 	masterSerial.data.clear();
 	hub.process(ScanTime::milliseconds());
 	assert(masterSerial.data.empty());
-	assert(!hub.sendCmdToDevice("node1", 1, 0));
+	assert(!hub.sendCmdToDevice(1, 1, 0));
+}
+
+
+void testDeviceIdRouting()
+{
+	ScanTime::now = std::chrono::milliseconds{0};
+	RS::DeviceVersion version{};
+	ScanSerial masterSerial, nodeSerial;
+	Hub hub(version, RS::NodeUid{0x80}, masterSerial);
+	ScanObserver observer;
+	hub.registerObserver(&observer);
+	Node first("same", version, RS::NodeUid{0xA2}, nodeSerial, 2);
+	Node second("same", version, RS::NodeUid{0xB7}, nodeSerial, 7);
+
+	// Отсутствующие адреса не создают устройства при вызове API.
+	auto checkUnknown = [&](uint8_t id) {
+		assert(!hub.sendCmdToDevice(id, 1, 2));
+		assert(!hub.sendBlobRequestToDevice(id, 3, 4));
+		assert(!hub.createSchedRequest(id, 3, 4, std::chrono::milliseconds{100}));
+		assert(!hub.sendFile(id, 0, "data", 4, 4));
+	};
+	for (uint8_t id : {uint8_t{0}, uint8_t{1}, uint8_t{33}, RS::kReservedUID}) {
+		checkUnknown(id);
+	}
+
+	auto tick = [&]() {
+		hub.process(ScanTime::milliseconds());
+		RS::Header header{};
+		if (!masterSerial.data.empty()) {
+			header = readHeader(masterSerial);
+			first.update(masterSerial.data.data(), masterSerial.data.size());
+			second.update(masterSerial.data.data(), masterSerial.data.size());
+			masterSerial.data.clear();
+			hub.update(nodeSerial.data.data(), nodeSerial.data.size());
+			nodeSerial.data.clear();
+			// ACK на ответ с информацией не требует ответа.
+			masterSerial.data.clear();
+		}
+		ScanTime::now += std::chrono::milliseconds{100};
+		return header;
+	};
+	assert(hub.probeAll());
+	for (unsigned steps = 0; hub.state() != Hub::State::Running; ++steps) {
+		assert(steps < 100);
+		tick();
+	}
+	assert(observer.registered.size() == 2);
+	assert(observer.registered[0].first == first.getNodeUid() && observer.registered[0].second == 2);
+	assert(observer.registered[1].first == second.getNodeUid() && observer.registered[1].second == 7);
+	for (uint8_t id : {uint8_t{0}, uint8_t{1}, uint8_t{33}, RS::kReservedUID}) {
+		checkUnknown(id);
+	}
+
+	auto expectRequest = [&](uint8_t id, RS::MessageType type) {
+		for (unsigned steps = 0; steps < 100; ++steps) {
+			const auto header = tick();
+			if (header.messageType == type) {
+				assert(header.receiverUID == id);
+				return;
+			}
+		}
+		assert(false && "Expected request was not sent");
+	};
+	assert(hub.sendCmdToDevice(2, 1, 2));
+	expectRequest(2, RS::MessageType::Command);
+	assert(hub.sendCmdToDevice(7, 3, 4));
+	expectRequest(7, RS::MessageType::Command);
+	assert(observer.commands.size() == 2);
+	assert(observer.commands[0] == observer.registered[0]);
+	assert(observer.commands[1] == observer.registered[1]);
+
+	assert(hub.sendBlobRequestToDevice(2, 5, 4));
+	expectRequest(2, RS::MessageType::BlobRequest);
+	assert(hub.sendBlobRequestToDevice(7, 6, 4));
+	expectRequest(7, RS::MessageType::BlobRequest);
+	assert(observer.requestErrors.size() == 2); // Ноды возвращают Unsupported.
+	assert(observer.requestErrors[0] == observer.registered[0]);
+	assert(observer.requestErrors[1] == observer.registered[1]);
+
+	assert(hub.createSchedRequest(7, 7, 4, std::chrono::milliseconds{100}));
+	expectRequest(7, RS::MessageType::BlobRequest);
+	assert(observer.requestErrors.back() == observer.registered[1]);
+	assert(hub.sendFile(2, 0, "data", 4, 4));
+	expectRequest(2, RS::MessageType::FileWriteRequest);
 }
 
 int main()
@@ -187,5 +276,6 @@ int main()
 	testEmptyScan();
 	testAllocatedScan();
 	testUnexpectedResponses();
+	testDeviceIdRouting();
 	return 0;
 }

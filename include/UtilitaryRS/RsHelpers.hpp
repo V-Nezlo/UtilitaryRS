@@ -16,6 +16,25 @@
 
 namespace RS::Helpers {
 
+/// \brief Получить хеш-группу ноды для раунда обнаружения
+/// FNV-1a по UID и байтам nonce от младшего к старшему, затем перемешивание всех битов
+static constexpr uint8_t getAllocationBucket(const NodeUid &aUID, uint32_t aRoundNonce)
+{
+	uint32_t hash{2166136261u};
+	for (uint8_t byte : aUID) {
+		hash = (hash ^ byte) * 16777619u;
+	}
+	for (unsigned shift = 0; shift < 32; shift += 8) {
+		hash = (hash ^ static_cast<uint8_t>(aRoundNonce >> shift)) * 16777619u;
+	}
+	hash ^= hash >> 16;
+	hash *= 0x85EBCA6Bu;
+	hash ^= hash >> 13;
+	hash *= 0xC2B2AE35u;
+	hash ^= hash >> 16;
+	return static_cast<uint8_t>(hash % kAllocationBucketCount);
+}
+
 /// \brief Получить длину сообщения из типа
 /// \param aType тип сообщения
 /// \return длина сообщения или 0 если сообщение переменного размера
@@ -84,7 +103,7 @@ static constexpr size_t getVolatileMessageMaxPayloadSize(MessageType aType)
 	}
 }
 
-std::string retToString(Result aResult)
+inline std::string retToString(Result aResult)
 {
 	switch (aResult) {
 		case Result::Busy:

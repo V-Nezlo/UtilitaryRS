@@ -118,7 +118,7 @@ bool createAndParseRebootMessage()
 bool createAndParseDeviceInfoRequestMessage()
 {
 	RS::RsParser<100, Crc8> parser;
-	RS::DeviceInfoReqMessage message;
+	RS::DeviceInfoReqMessage message{};
 	uint8_t buffer[100];
 
 	message.receiverUID = 0xFF;
@@ -292,7 +292,7 @@ bool createAndParseWriteChunkMessage()
 bool createAndParseDeviceInfoAnwMessage()
 {
 	RS::RsParser<100, Crc8> parser;
-	RS::DeviceInfoAnwMessage message;
+	RS::DeviceInfoAnwMessage message{};
 	uint8_t preBuffer[100];
 	uint8_t buffer[100];
 

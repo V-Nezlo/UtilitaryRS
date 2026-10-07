@@ -14,7 +14,7 @@ class MasterHandler : public RS::RsHandler<Interface, Crc, ParserSize> {
 	using BaseType = RS::RsHandler<Interface, Crc, ParserSize>;
 public:
 	MasterHandler(const char *aName, RS::DeviceVersion &aVersion, uint8_t aNodeUID, Interface &aInterface):
-		BaseType{aName, aVersion, aNodeUID, aInterface}
+		BaseType{aName, aVersion, RS::NodeUid{aNodeUID}, aInterface, aNodeUID}
 	{
 
 	}
@@ -57,7 +57,7 @@ public:
 		return RS::Ok;
 	}
 
-	void handleDeviceInfoAnswer(uint8_t aTranceiverUID, uint8_t aMessageNumber, RS::DeviceVersion aVersion, const void *aName, size_t nameLen) override
+	void handleDeviceInfoAnswer(uint8_t aTranceiverUID, uint8_t aMessageNumber, RS::DeviceVersion aVersion, const RS::NodeUid &aUID, const void *aName, size_t nameLen) override
 	{
 		return;
 	}
@@ -156,7 +156,7 @@ int main()
 	version.hash = 0xAABBCCDD;
 
 	MockSerial serial;
-	MasterHandler<MockSerial, Crc8, 100> handler("TestHandler", version, 0xFF, serial);
+	MasterHandler<MockSerial, Crc8, 100> handler("TestHandler", version, 1, serial);
 
 	//ACK
 	// Проверяем факт парсинга
@@ -165,25 +165,34 @@ int main()
 	// COMMAND
 	// Проверяем факт парсинга и корректность ответа (ACK::OK)
 	handler.update(commandMessage, sizeof(commandMessage));
-	const uint8_t expectedCmdAck[] = {0x52, 0xab, 0xff, 0x1, 0x0, 0x0, 0x3};
-	assert(serial.size() == sizeof(expectedCmdAck));
-	if (!memcmp(serial.data(), expectedCmdAck, sizeof(expectedCmdAck))) {
-		commandAckReceived = true;
-	}
+	RS::RsParser<100, Crc8> ackParser;
+	assert(ackParser.update(serial.data(), serial.size()) == serial.size());
+	assert(ackParser.isReady());
+	const auto *commandAck = reinterpret_cast<const RS::AckMessage *>(ackParser.data());
+	assert(commandAck->receiverUID == 0xAB && commandAck->transmitUID == 1);
+	assert(commandAck->number == 1 && commandAck->payload.code == RS::Result::Ok);
+	assert(handler.getContext().commandReceived);
 	serial.clear();
 
 	// PROBE
 	// Проверяем корректность ответа (ACK::OK)
 	handler.update(probeMessage, sizeof(probeMessage));
-	const uint8_t expectedProbeAck[] = {0x52, 0x01, 0xff, 0x1, 0x0, 0x0, 0x8D};
-	if (!memcmp(serial.data(), expectedProbeAck, sizeof(expectedProbeAck))) {
-		probeAckReceived = true;
-	}
+	ackParser.reset();
+	assert(ackParser.update(serial.data(), serial.size()) == serial.size());
+	assert(ackParser.isReady());
+	const auto *probeAck = reinterpret_cast<const RS::AckMessage *>(ackParser.data());
+	assert(probeAck->receiverUID == 1 && probeAck->transmitUID == 1);
+	assert(probeAck->number == 7 && probeAck->payload.code == RS::Result::Ok);
 	serial.clear();
 
 	// REBOOT
 	handler.update(rebootMsg, sizeof(rebootMsg));
-	const uint8_t expectedRebootAck[] = {0x52, 0x1, 0xff, 0x1, 0x0, 0x2, 0x31};
+	ackParser.reset();
+	assert(ackParser.update(serial.data(), serial.size()) == serial.size());
+	assert(ackParser.isReady());
+	const auto *rebootAck = reinterpret_cast<const RS::AckMessage *>(ackParser.data());
+	assert(rebootAck->receiverUID == 1 && rebootAck->transmitUID == 1);
+	assert(rebootAck->number == 8 && rebootAck->payload.code == RS::Result::Wait);
 
 	return 0;
 
